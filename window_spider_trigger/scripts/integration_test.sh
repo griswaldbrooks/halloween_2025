@@ -1,6 +1,6 @@
 #!/bin/bash
 # Integration Test for Spider Window Scare System
-# Tests the complete system: videos, server, and web interface
+# Tests the complete system: video, server, and web interface
 
 set -e  # Exit on error
 
@@ -8,24 +8,14 @@ echo "🧪 Spider Window Scare - Integration Test"
 echo "=========================================="
 echo ""
 
-# Test 1: Check video files
-echo "1️⃣ Checking video files..."
-VIDEOS_OK=true
-
-if [ -f public/videos/spider_jumpscare.mp4 ] || [ -L public/videos/spider_jumpscare.mp4 ]; then
-    echo "  ✓ spider_jumpscare.mp4 exists"
+# Test 1: Check video file
+echo "1️⃣ Checking video file..."
+if [ -f public/videos/spider_jump1.mp4 ]; then
+    echo "  ✓ spider_jump1.mp4 exists"
 else
-    echo "  ❌ spider_jumpscare.mp4 MISSING"
-    VIDEOS_OK=false
-fi
-
-if [ -f public/videos/idle_loop.mp4 ] || [ -L public/videos/idle_loop.mp4 ]; then
-    echo "  ✓ idle_loop.mp4 exists"
-else
-    echo "  ⚠️  idle_loop.mp4 missing (optional, but will cause loading screen hang)"
-    echo "     Creating symlink to spider_jumpscare.mp4 as fallback..."
-    ln -sf spider_jump1.mp4 public/videos/idle_loop.mp4
-    echo "  ✓ Created idle_loop.mp4 symlink"
+    echo "  ❌ spider_jump1.mp4 MISSING"
+    echo "     Please add your jump scare video to public/videos/spider_jump1.mp4"
+    exit 1
 fi
 echo ""
 
@@ -83,7 +73,7 @@ SERVER_PID=$!
 sleep 2
 
 FILES_OK=true
-for file in "client.js" "style.css" "videos/spider_jumpscare.mp4"; do
+for file in "client.js" "style.css" "videos/spider_jump1.mp4"; do
     if curl -sf "http://localhost:3000/$file" --head > /dev/null 2>&1; then
         echo "  ✓ $file accessible"
     else
@@ -104,7 +94,7 @@ echo ""
 echo "✅ Integration tests complete!"
 echo ""
 echo "📋 System Status:"
-echo "  • Video files: Ready"
+echo "  • Video file: Ready"
 echo "  • Server startup: OK"
 echo "  • Web interface: Accessible"
 echo "  • Static files: OK"

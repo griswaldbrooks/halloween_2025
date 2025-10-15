@@ -1,5 +1,38 @@
 # Changelog
 
+## 2025-10-14 (Late Evening) - Code Audit & Cleanup
+
+### Removed
+- **Unnecessary video symlinks**
+  - Deleted `public/videos/spider_jumpscare.mp4` symlink (not used)
+  - Deleted `public/videos/idle_loop.mp4` symlink (not used)
+  - Code directly references `spider_jump1.mp4` only
+
+- **Obsolete Pixi commands**
+  - Removed `quick-test` (referenced old PIR sensor)
+  - Removed `fix-videos` (created unnecessary symlinks)
+  - Updated `check-videos` to check single file
+
+### Updated
+- **Integration test** (`scripts/integration_test.sh`)
+  - Now checks only for `spider_jump1.mp4`
+  - Removed auto-creation of unnecessary symlinks
+  - Tests actual code paths, not legacy assumptions
+
+- **Agent guidelines** (`.claude/claude.md`)
+  - Added "Project Hygiene" section
+  - Code audit methodology
+  - "Read the code" approach to finding unused elements
+
+### Verified
+- ✅ `pixi run integration-test` - All 5 tests pass
+- ✅ No broken dependencies
+- ✅ Web interface loads correctly
+- ✅ Only necessary files remain
+
+### Context
+This session performed thorough codebase audit by reading all files and tracing actual usage, not assumptions. Found and removed unnecessary symlinks, obsolete commands, and outdated test logic.
+
 ## 2025-10-14 (Late Evening) - Documentation Consolidation
 
 ### Changed

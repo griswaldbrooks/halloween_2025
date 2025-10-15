@@ -234,7 +234,6 @@ See `TROUBLESHOOTING.md` for complete guide.
 | `pixi run dev` | Development mode (auto-reload) |
 | `pixi run integration-test` | Full system test |
 | `pixi run beetle-test` | Hardware verification |
-| `pixi run fix-videos` | Fix missing video symlinks |
 | `pixi run fix-permissions` | Fix Arduino permissions |
 | `pixi run clean-all` | Clean build artifacts |
 

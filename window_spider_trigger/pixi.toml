@@ -50,30 +50,13 @@ dev = { cmd = "npx nodemon server.js", env = { SERIAL_PORT = "auto" } }
 # === Combined Workflows ===
 deploy = { depends-on = ["arduino-flash", "start"] }
 
-quick-test = """
-echo "🧪 Quick hardware test..."
-echo "1. Flashing Arduino..."
-pixi run arduino-flash
-echo ""
-echo "2. Testing serial connection..."
-pixi run arduino-monitor &
-MONITOR_PID=$!
-sleep 3
-echo ""
-echo "3. Wave hand in front of sensor - you should see TRIGGER messages"
-echo "   Press Ctrl+C when done"
-wait $MONITOR_PID
-"""
-
 # === Development Tasks ===
 status = { cmd = "bash -c 'echo \"=== Window Spider Trigger Status ===\" && echo \"\" && echo \"📦 Node.js:\" && node --version && echo \"\" && echo \"🔧 npm packages:\" && (npm list --depth=0 2>/dev/null | head -5) && echo \"\" && echo \"⚡ Arduino CLI:\" && .pixi/bin/arduino-cli version && echo \"\" && echo \"🔌 Connected boards:\" && .pixi/bin/arduino-cli board list'" }
 
 clean-all = { depends-on = ["arduino-clean"], cmd = "rm -rf node_modules package-lock.json" }
 
 # === Video Management ===
-check-videos = "bash -c 'echo \"Checking video files...\" && ls -lh public/videos/*.mp4 2>/dev/null || echo \"No video files found\"'"
-
-fix-videos = "bash -c 'echo \"Creating idle_loop.mp4 symlink...\" && cd public/videos && ln -sf spider_jump1.mp4 idle_loop.mp4 && echo \"✓ Done: idle_loop.mp4 -> spider_jump1.mp4\"'"
+check-videos = "bash -c 'echo \"Checking video file...\" && ls -lh public/videos/spider_jump1.mp4 2>/dev/null || echo \"❌ spider_jump1.mp4 not found\"'"
 
 # === Troubleshooting ===
 check-permissions = """

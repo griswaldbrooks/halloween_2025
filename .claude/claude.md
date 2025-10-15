@@ -259,6 +259,32 @@ If agent shuts down unexpectedly:
 
 ---
 
+## Project Hygiene
+
+**Code audit approach** - Periodically review the entire codebase:
+
+1. **Find unused code** by reading all files and understanding dependencies
+   - Check HTML/JS for referenced files
+   - Check scripts for what they actually use
+   - Remove unused CSS, functions, imports
+
+2. **Find unnecessary files**:
+   - Symlinks not referenced in code
+   - Old documentation
+   - Deprecated scripts
+
+3. **Audit Pixi commands**:
+   - Remove commands for removed features
+   - Update command descriptions to match current behavior
+   - Remove obsolete workflows
+
+4. **Test thoroughly** after cleanup:
+   - Run `pixi run integration-test`
+   - Verify nothing broke
+   - Update documentation
+
+**When in doubt, read the code** - Don't assume files are needed, verify by tracing usage.
+
 ## Best Practices
 
 ✅ **DO:**
@@ -268,6 +294,7 @@ If agent shuts down unexpectedly:
 - Update CHANGELOG.md with each commit
 - Keep documentation concise and actionable
 - Run `pixi run integration-test` before committing
+- Periodically audit entire codebase for unused elements
 
 ❌ **DON'T:**
 - Skip testing
@@ -276,6 +303,7 @@ If agent shuts down unexpectedly:
 - Use system tools (always use Pixi)
 - Write verbose documentation
 - Commit without updating CHANGELOG.md
+- Leave unused code/files "just in case"
 
 ---
 
