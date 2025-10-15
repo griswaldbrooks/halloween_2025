@@ -32,22 +32,6 @@ video {
   object-fit: cover;
 }
 
-#idle-video {
-  display: block;
-}
-
-#scare-video {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
-}
-
-#scare-video.active {
-  display: block;
-}
-
 /* Status Overlay */
 #status-overlay {
   position: fixed;

@@ -320,7 +320,6 @@ Environment differences handled via `.env.local` (git-ignored).
 
 ## Performance Notes
 
-- PIR sensors have ~3 second warmup (not used in this version)
 - Switch has 50ms software debounce
 - 3-second cooldown prevents multiple triggers per person
 - Videos should use H.264 codec for browser compatibility
