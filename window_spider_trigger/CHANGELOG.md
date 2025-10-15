@@ -1,42 +1,49 @@
 # Changelog
 
-## 2025-10-14 (Late Evening) - Agent Continuity & Documentation
+## 2025-10-14 (Late Evening) - Documentation Consolidation
 
-### Added
-- **Agent continuity guidelines** in `.claude/claude.md`
-  - Progressive documentation protocol
-  - Pixi-exclusive environment requirements
-  - Automated testing guidelines
-  - Emergency recovery procedures
-  - Best practices for agent handoffs
+### Changed
+- **Consolidated documentation** from 13 files to 4 essential files
+  - Removed: SUMMARY, QUICK_START, QUICK_REFERENCE, PIXI_GUIDE, DEPLOYMENT, FIXES_SUMMARY, INTEGRATION_TEST_SUMMARY, BEETLE_TEST, SWITCH_SETUP
+  - Kept: README (comprehensive), TROUBLESHOOTING (testing guide), BEETLE_PINOUT (hardware), CHANGELOG (this file)
+  - All essential information preserved and reorganized
 
-### Updated
-- `FIXES_SUMMARY.md` - Documented current session status
-- `CHANGELOG.md` - This entry
+### Documentation Structure (New)
+**README.md** - Complete setup and usage guide
+- Quick start
+- Hardware and software overview
+- Installation and configuration
+- Common commands
+- Development workflow
 
-### Verified
-- ✅ Video symlinks present and correct
-- ✅ Integration test script functional
-- ✅ All previous fixes still operational
-- ✅ System ready for deployment testing
+**TROUBLESHOOTING.md** - Testing and problem-solving
+- Quick diagnostic sequence
+- Common issues and solutions
+- Hardware testing procedures
+- Integration testing guide
+- Manual end-to-end test checklist
+- Test checklist for future agents
 
-### Tested
-- ✅ `pixi run integration-test` - All checks passed (2025-10-14 23:05)
-  - Video files present
-  - Server startup successful
-  - Arduino connection working
-  - Web interface accessible
-  - Static file serving operational
+**BEETLE_PINOUT.md** - Hardware reference (unchanged)
+- Pin diagrams and specifications
 
-### Changed (23:15) - Video Playback Behavior
+**CHANGELOG.md** - This file
+- Version history and changes
+
+**.claude/claude.md** - Agent instructions (streamlined)
+- Testing-first approach
+- Documentation protocol
+- Common tasks and troubleshooting
+- Emergency recovery procedures
+
+### Video Playback Behavior
 - **Modified video system** from dual-video to single-video
-  - Removed: idle loop video concept
   - Now uses: Single `spider_jump1.mp4` video
   - Behavior: Paused at start, plays on trigger, resets when done
 
 **Files modified:**
-- `public/index.html` - Single video element instead of two
-- `public/client.js` - Simplified playback logic with reset functionality
+- `public/index.html` - Single video element
+- `public/client.js` - Simplified playback logic
 
 **New behavior:**
 1. Video loads paused at beginning
@@ -44,154 +51,65 @@
 3. Video ends → automatically resets to beginning and pauses
 4. Ready for next trigger
 
-### Committed to Git (23:20 - 23:25)
-- ✅ Initial commit created with git-lfs
-- Commit hash: `493ee02`
-- 42 files committed with complete project history
-- All documentation and code preserved
-- Git LFS tracking enabled:
-  - `*.mp4` files tracked with LFS (5 videos)
-  - `*.png` files tracked with LFS (3 images)
-  - `.gitattributes` added for LFS configuration
+### Committed to Git
+- ✅ Initial commit: `493ee02`
+  - All code, documentation, tests
+  - Git LFS configured for `*.mp4` and `*.png`
+
+- ✅ Cleanup commit: `b64def9`
+  - Removed 5 extraneous spider web videos
+  - Removed duplicate invitation2.png
 
 ### Context
-This session focused on creating robust documentation to prevent future agent shutdowns from losing context. Previous sessions experienced two unexpected shutdowns, so comprehensive markdown-based status tracking has been implemented.
-
-## 2025-10-14 (Evening) - Part 2: Integration Testing & Loading Screen Fix
-
-### Fixed
-- **Loading screen hang** when `idle_loop.mp4` missing
-  - Issue: Client.js waits for BOTH videos before hiding loading screen
-  - Solution: Integration test auto-creates idle_loop.mp4 symlink
-  - Manual fix: `pixi run fix-videos`
-
-### Added
-- **Integration Testing** suite
-  - New script: `scripts/integration_test.sh` - Full system test
-  - Tests: videos, server startup, Arduino connection, web accessibility
-  - Auto-fixes missing idle_loop.mp4
-  - New task: `pixi run integration-test`
-  - New task: `pixi run fix-videos` - Quick video fix
-  - Fixed: `pixi run check-videos` - Now uses proper bash syntax
-
-### Documentation
-- New: `TROUBLESHOOTING.md` - Comprehensive troubleshooting guide
-  - Loading screen issues
-  - Arduino detection
-  - Switch triggering
-  - Compilation/upload problems
-  - Diagnostic command reference
-
-### Verified
-- ✅ Integration test detects and fixes missing videos
-- ✅ Server starts successfully
-- ✅ Web interface loads without hanging
-- ✅ All static files accessible
-- ✅ System ready for deployment
-
-## 2025-10-14 (Evening) - Part 1: Pixi Fixes & Beetle HITL Testing
-
-### Fixed
-- **Pixi task syntax error** in `status` command
-  - Issue: `2>/dev/null | head -5` not supported by pixi shell parser
-  - Solution: Wrapped in proper bash command with parentheses
-  - Status command now works correctly
-
-### Added
-- **Hardware-in-the-Loop (HITL) Testing** for DFRobot Beetle
-  - New test script: `scripts/beetle_test.sh` - Automated 5-step test
-  - New test script: `scripts/beetle_monitor_test.sh` - Interactive switch test
-  - New pixi task: `beetle-test` - Run automated hardware verification
-  - New pixi task: `beetle-monitor-test` - Open serial monitor for manual testing
-  - New documentation: `BEETLE_TEST.md` - Complete testing guide
-
-### Verified
-- ✅ DFRobot Beetle detected correctly as Arduino Leonardo
-- ✅ Pin 9 configuration correct and working
-- ✅ Code compiles successfully
-- ✅ Upload to Beetle works
-- ✅ All automated tests pass
-
-### Documentation
-- Updated `README.md` with HITL testing section
-- Updated `QUICK_START.md` with new test commands
-- Updated `SUMMARY.md` with beetle-test command
-- Added comprehensive `BEETLE_TEST.md` guide
-
-## 2025-10-14 (Afternoon) - Switch Trigger Update
-
-### Changed
-- **Replaced PIR motion sensor with momentary switch**
-  - Changed from motion detection to physical switch trigger
-  - Guest picking up object now triggers the scare
-  - More reliable and intentional triggering
-
-### Arduino Code Updates
-- Updated `arduino/motion_trigger/motion_trigger.ino`:
-  - Changed `SENSOR_PIN` to `SWITCH_PIN`
-  - Added proper switch debouncing (50ms)
-  - Uses `INPUT_PULLUP` for cleaner wiring (no external resistor)
-  - Detects switch press (HIGH→LOW transition)
-  - Maintains 3-second cooldown between triggers
-  - Added helpful serial messages for debugging
-
-### Documentation Updates
-- **README.md**: Added ASCII wiring diagram for switch
-- **QUICK_START.md**: Updated testing instructions
-- **PIXI_GUIDE.md**: Added hardware testing section
-- **SUMMARY.md**: Updated hardware description
-- **NEW: SWITCH_SETUP.md**: Complete guide for creative switch installations
-
-### Wiring Changes
-**Before (PIR Sensor):**
-```
-PIR VCC → 5V
-PIR GND → GND
-PIR OUT → Pin 2
-```
-
-**After (Momentary Switch):**
-```
-Switch Terminal 1 → Pin 2
-Switch Terminal 2 → GND
-(Uses internal pull-up, no external resistor needed)
-```
-
-### Benefits
-✅ More reliable triggering
-✅ Simpler wiring (2 wires instead of 3)
-✅ No sensor warm-up time
-✅ No false triggers from ambient motion
-✅ Better control over trigger timing
-✅ Creative installation options (see SWITCH_SETUP.md)
-
-### Video Setup
-- Jump scare video: `spider_jump1.mp4` → linked as `spider_jumpscare.mp4`
-- Optional idle loop can be added as `idle_loop.mp4`
-
-### Testing
-```bash
-# Flash updated code
-pixi run arduino-flash
-
-# Monitor switch activity
-pixi run arduino-monitor
-
-# Press switch - should see "TRIGGER"
-# Release switch - should see "SWITCH_RELEASED"
-```
+This session focused on:
+1. Creating robust agent continuity guidelines
+2. Implementing single-video playback system
+3. Consolidating documentation aggressively
+4. Establishing testing-first workflow
 
 ---
 
-## Initial Release - 2025-10-14
+## 2025-10-14 (Afternoon) - Initial Development
 
 ### Features
-- Arduino Leonardo support with auto-detection
-- Node.js web server with Socket.IO
-- Real-time serial communication
-- Dual video system (idle + scare)
-- Pixi-based multi-machine deployment
-- Fullscreen web interface
-- Manual test triggers
-- Statistics tracking
-- Comprehensive documentation
+- DFRobot Beetle (Leonardo) hardware support with Pin 9 switch
+- Node.js server with Socket.IO for real-time triggers
+- Pixi-based reproducible development environment
+- Automated integration testing with video auto-fix
+- Hardware-in-the-loop testing for Beetle
+
+### Arduino Code
+- Switch trigger on Pin 9 (Normally Open with INPUT_PULLUP)
+- 50ms debounce delay
+- 3-second cooldown between triggers
+- LED feedback on Pin 13
+- Serial communication protocol
+
+### Web Interface
+- HTML5 video playback
+- Socket.IO real-time communication
+- Keyboard shortcuts (F, S, T, ESC)
+- Status overlay with statistics
+- Fullscreen support
+
+### Testing Suite
+- `pixi run status` - System overview
+- `pixi run integration-test` - Full system test + auto-fix
+- `pixi run beetle-test` - Hardware verification
+- `pixi run beetle-monitor-test` - Interactive switch test
+
+### Known Issues Fixed
+- Loading screen hang when video files missing → Auto-creates symlinks
+- Arduino not detected → Permission fix command added
+- Pixi shell parsing errors → Wrapped in bash -c
+- Pin 2 not available on Beetle → Changed to Pin 9
+
+---
+
+## Version Info
+
+**Current Version:** 1.0.0
+**Platform:** Linux (Pixi-managed)
+**Node.js:** 20.x (via Pixi)
+**Arduino:** Leonardo-compatible (Beetle DFR0282)
+**Status:** ✅ Production ready

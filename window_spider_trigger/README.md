@@ -1,378 +1,356 @@
-# Window Spider Trigger
+# Spider Window Scare - Beetle Trigger System
 
-Motion-activated spider jump scare for the Spider Web Tunnel (Chamber 2).
+Motion-activated spider jump scare for Halloween 2025 haunted house (Chamber 2: Spider Web Tunnel).
 
-> **🚀 Using Pixi**: This project uses [Pixi](https://pixi.sh/) for reproducible development environments. See [PIXI_GUIDE.md](PIXI_GUIDE.md) for detailed workflow.
-
-## Overview
-
-This project uses an Arduino with a momentary switch to trigger a jump scare video on a computer display. When a guest picks up an object (activating the switch), the Arduino sends a signal via serial to a JavaScript/Node.js application that plays a fullscreen spider attack video.
-
-**Multi-machine ready**: Pixi ensures identical setup on any machine!
-
-## Hardware Requirements
-
-- Arduino board (Leonardo, Uno, Nano, Mega, etc.)
-- Momentary switch (Normally Open) - triggered when guest picks up object
-- USB cable (Arduino to computer)
-- Computer/monitor for video display
-- Optional: Jumper wires (if switch has flying leads)
-
-## Wiring Diagram
-
-```
-┌─────────────────────────────────────────────────────┐
-│                  Arduino Leonardo                    │
-│                                                      │
-│                         ┌────┐                      │
-│                         │USB │  ← To Computer       │
-│                         └────┘                      │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐  │
-│  │  Pin 13 (Built-in LED) ●  (Visual Feedback) │  │
-│  │                                               │  │
-│  │  Pin 2  ●────────────────────┐               │  │
-│  │                               │               │  │
-│  │  GND    ●─────────┐           │               │  │
-│  └───────────────────┼───────────┼───────────────┘  │
-└────────────────────────┼───────────┼──────────────────┘
-                         │           │
-                         │           │
-                    ┌────┴───────────┴────┐
-                    │  Momentary Switch   │
-                    │   (Normally Open)   │
-                    │                     │
-                    │  ┌─────────────┐   │
-                    │  │   _____     │   │
-                    │  │  (     )    │   │  ← Attach to object
-                    │  │   ¯¯¯¯¯     │   │    guest picks up
-                    │  └─────────────┘   │
-                    └─────────────────────┘
-
-Connection Details:
-  • Switch Terminal 1 → Arduino Pin 2
-  • Switch Terminal 2 → Arduino GND
-
-  (No external resistor needed - uses internal pull-up)
-```
-
-**How it works:**
-1. When switch is **open** (not pressed): Pin 2 reads HIGH (pulled up internally)
-2. When switch is **closed** (pressed/object lifted): Pin 2 reads LOW (connected to GND)
-3. Arduino detects LOW→HIGH transition and sends TRIGGER
-4. Built-in LED (Pin 13) lights up when triggered
-
-**Switch Trigger Ideas:**
-- Attach to object on pedestal (lifts = trigger)
-- Hidden under fake spider (presses when touched)
-- Attached to web strand (pulls when disturbed)
-- Pressure plate under fake cocoon
-
-## Software Requirements
-
-### Arduino Side
-- `arduino-cli` (official Arduino command-line tool)
-- No IDE or PlatformIO needed!
-
-### Computer Side (Node.js)
-- Node.js v16+
-- npm packages:
-  - `serialport` - Serial communication
-  - `express` - Web server
-  - `socket.io` - Real-time communication
-
-## Quick Start (Pixi - Recommended)
+## Quick Start
 
 ```bash
-# 1. Install pixi (one-time, if not already installed)
-curl -fsSL https://pixi.sh/install.sh | bash
-
-# 2. Setup project (installs Node.js, arduino-cli, dependencies)
+# First time setup
 pixi install
 pixi run setup
 
-# 3. Flash Arduino
+# Flash Arduino Beetle
 pixi run arduino-flash
 
-# 4. Start server
-pixi run start
-
-# 5. Open http://localhost:3000
-```
-
-**Done!** 🎉 See [PIXI_GUIDE.md](PIXI_GUIDE.md) for all commands.
-
-## Alternative Installation (Manual)
-
-<details>
-<summary>Click to expand manual installation steps</summary>
-
-### 1. Install arduino-cli
-
-**Linux:**
-```bash
-curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-export PATH=$PATH:$HOME/bin
-```
-
-**Initialize:**
-```bash
-arduino-cli config init
-arduino-cli core update-index
-arduino-cli core install arduino:avr
-```
-
-### 2. Install Node.js dependencies
-
-```bash
-cd window_spider_trigger
-npm install
-```
-
-</details>
-
-## Arduino Development Workflow
-
-### Compile the sketch
-```bash
-arduino-cli compile --fqbn arduino:avr:uno arduino/motion_trigger.ino
-```
-
-### Find your Arduino port
-```bash
-arduino-cli board list
-```
-
-### Upload to Arduino
-```bash
-arduino-cli upload -p /dev/ttyUSB0 --fqbn arduino:avr:uno arduino/motion_trigger.ino
-```
-
-### Monitor serial output (debugging)
-```bash
-arduino-cli monitor -p /dev/ttyUSB0 -c baudrate=9600
-```
-
-## Usage
-
-### Pixi Workflow (Recommended)
-
-```bash
-# Flash Arduino and start server in one command
+# Start server
 pixi run deploy
 
-# Or separately:
-pixi run arduino-flash    # Upload code to Arduino
-pixi run start           # Start web server
+# Open http://localhost:3000
+```
 
-# Development mode (auto-reload)
-pixi run dev
+Press `T` to test trigger manually, or connect physical Beetle switch.
 
-# Monitor Arduino serial output
-pixi run arduino-monitor
+---
 
-# Check system status
+## Hardware
+
+### Components
+- **DFRobot Beetle** (DFR0282) - Leonardo-compatible Arduino
+- **Momentary switch** (Normally Open) - Trigger when guest lifts object
+- **USB cable** - Beetle to computer
+- **Computer/monitor** - Video display
+
+### Wiring
+
+```
+Beetle Pin 9 ──┬── Switch Terminal 1
+               │
+Beetle GND  ───┴── Switch Terminal 2
+
+(Internal pull-up resistor used - no external resistor needed)
+```
+
+**Pin Reference:**
+- Pin 9: Switch input (INPUT_PULLUP)
+- Pin 13: Built-in LED (visual feedback)
+- GND: Ground
+
+See `BEETLE_PINOUT.md` for complete pin details.
+
+---
+
+## Software
+
+### Video Behavior
+1. **Load**: Video pauses at first frame
+2. **Trigger**: Beetle switch press → video plays from start
+3. **End**: Video resets to beginning and pauses
+4. **Ready**: Waiting for next trigger
+
+### Tech Stack
+- **Arduino**: C++ sketch with switch debouncing and cooldown
+- **Node.js**: Express server with Socket.IO
+- **Web**: HTML5 video with JavaScript playback control
+- **Pixi**: Reproducible environment management
+
+---
+
+## Installation
+
+### Prerequisites
+```bash
+# Install Pixi (one-time)
+curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+### Setup
+```bash
+cd window_spider_trigger
+
+# Install all dependencies (Node.js, arduino-cli, packages)
+pixi install
+pixi run setup
+
+# Verify installation
 pixi run status
 ```
 
-See [PIXI_GUIDE.md](PIXI_GUIDE.md) for complete command reference.
+### Video Files
+Place video file in `public/videos/`:
+- `spider_jump1.mp4` - The jump scare video
 
-### Alternative Methods
+---
 
-<details>
-<summary>Using Make</summary>
+## Usage
 
-```bash
-make flash      # Flash Arduino
-npm start       # Start server
-make monitor    # Serial monitor
-```
-</details>
-
-<details>
-<summary>Manual arduino-cli</summary>
+### Daily Workflow
 
 ```bash
-arduino-cli compile --fqbn arduino:avr:leonardo arduino/motion_trigger/motion_trigger.ino
-arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:leonardo arduino/motion_trigger/motion_trigger.ino
-npm start
-```
-</details>
+# Flash Arduino (when code changes)
+pixi run arduino-flash
 
-Open browser to `http://localhost:3000`. Press `F` for fullscreen.
+# Start server (development with auto-reload)
+pixi run dev
+
+# Or start production server
+pixi run start
+
+# Full deployment (flash + start)
+pixi run deploy
+```
+
+### Testing
+
+```bash
+# System status check
+pixi run status
+
+# Integration test (full system verification)
+pixi run integration-test
+
+# Hardware test (Beetle detection and upload)
+pixi run beetle-test
+
+# Interactive switch test (manual testing)
+pixi run beetle-monitor-test
+
+# Arduino serial monitor
+pixi run arduino-monitor
+```
+
+### Web Interface
+
+Open `http://localhost:3000`
+
+**Keyboard shortcuts:**
+- `F` - Fullscreen
+- `S` - Toggle status overlay
+- `T` - Manual test trigger
+- `ESC` - Exit fullscreen
+
+---
 
 ## Configuration
 
-### Arduino Settings
-Edit `arduino/motion_trigger/motion_trigger.ino`:
-- `SWITCH_PIN`: Switch input pin (default: 2)
-- `DEBOUNCE_DELAY`: Switch debounce time (default: 50ms)
-- `COOLDOWN_DELAY`: Cooldown between triggers (default: 3000ms)
+### Environment Variables
 
-### Server Settings
-Create `.env` file (or use environment variables):
+Create `.env` (optional - auto-detection works well):
 ```bash
 PORT=3000
-SERIAL_PORT=auto          # Auto-detect Arduino (recommended)
-# SERIAL_PORT=/dev/ttyACM0  # Or specify exact port
+SERIAL_PORT=auto          # Auto-detect by vendor ID
 BAUD_RATE=9600
+ARDUINO_VENDOR_ID=2341
 ```
 
-**Auto-detection**: The server automatically finds your Arduino by vendor ID. If the device changes from `/dev/ttyACM0` to `/dev/ttyACM1`, it will still be detected!
+### Arduino Settings
 
-### Arduino Board Configuration
-Edit `arduino.config.json` for your board:
+Edit `arduino/motion_trigger/motion_trigger.ino`:
+```cpp
+const int SWITCH_PIN = 9;         // Switch input pin
+const long DEBOUNCE_DELAY = 50;   // Debounce time (ms)
+const long COOLDOWN_DELAY = 3000; // Cooldown between triggers (ms)
+```
+
+### Board Configuration
+
+Edit `arduino.config.json`:
 ```json
 {
   "board": {
-    "fqbn": "arduino:avr:leonardo",  // Change for different boards
+    "fqbn": "arduino:avr:leonardo",
     "port": "/dev/ttyACM0"
   }
 }
 ```
 
-Common FQBNs:
-- Arduino Leonardo: `arduino:avr:leonardo`
-- Arduino Uno: `arduino:avr:uno`
-- Arduino Mega: `arduino:avr:mega`
-- Arduino Nano: `arduino:avr:nano`
+---
 
-Place your video files in `public/videos/`:
-- `idle_loop.mp4` - Background loop
-- `spider_jumpscare.mp4` - Jump scare
+## Troubleshooting
 
-## File Structure
+### Loading Screen Stuck
+
+**Cause**: Missing video file
+**Fix**:
+```bash
+pixi run integration-test  # Auto-creates symlinks
+```
+
+### Arduino Not Detected
+
+**Check connection**:
+```bash
+pixi run arduino-detect
+```
+
+**Fix permissions** (Linux):
+```bash
+pixi run fix-permissions
+# Then log out and back in
+```
+
+### Port Already in Use
+
+```bash
+# Kill existing server
+pkill -f "node server.js"
+
+# Or use different port
+PORT=3001 pixi run start
+```
+
+### Switch Not Triggering
+
+1. **Check wiring**: Pin 9 and GND connected
+2. **Test Arduino**:
+   ```bash
+   pixi run beetle-monitor-test
+   # Press switch - should see "TRIGGER"
+   ```
+3. **Check cooldown**: Wait 3+ seconds between presses
+
+See `TROUBLESHOOTING.md` for complete guide.
+
+---
+
+## Common Pixi Commands
+
+| Command | Description |
+|---------|-------------|
+| `pixi run status` | System status check |
+| `pixi run deploy` | Flash Arduino + start server |
+| `pixi run arduino-flash` | Upload code to Beetle |
+| `pixi run arduino-monitor` | Serial monitor |
+| `pixi run start` | Start server |
+| `pixi run dev` | Development mode (auto-reload) |
+| `pixi run integration-test` | Full system test |
+| `pixi run beetle-test` | Hardware verification |
+| `pixi run fix-videos` | Fix missing video symlinks |
+| `pixi run fix-permissions` | Fix Arduino permissions |
+| `pixi run clean-all` | Clean build artifacts |
+
+---
+
+## Development
+
+### File Structure
 
 ```
 window_spider_trigger/
 ├── README.md              # This file
-├── package.json           # Node.js dependencies
-├── server.js              # Node.js server with serial communication
+├── TROUBLESHOOTING.md     # Problem-solving guide
+├── BEETLE_PINOUT.md       # Beetle pin reference
+├── CHANGELOG.md           # Version history
+│
 ├── arduino/
-│   └── motion_trigger.ino # Arduino sketch
-└── public/
-    ├── index.html         # Web interface
-    ├── style.css          # Styling
-    ├── client.js          # Client-side JavaScript
-    └── videos/
-        ├── idle_loop.mp4          # Background loop video
-        └── spider_jumpscare.mp4   # Jump scare video
+│   └── motion_trigger/
+│       └── motion_trigger.ino  # Arduino code
+│
+├── public/
+│   ├── index.html         # Web interface
+│   ├── client.js          # Client JavaScript
+│   ├── style.css          # Styling
+│   └── videos/
+│       └── spider_jump1.mp4
+│
+├── scripts/
+│   ├── integration_test.sh      # System integration test
+│   ├── beetle_test.sh           # Hardware test
+│   └── beetle_monitor_test.sh   # Interactive test
+│
+├── server.js              # Node.js server
+├── pixi.toml              # Pixi configuration
+├── package.json           # Node dependencies
+├── arduino.config.json    # Arduino board config
+└── .env                   # Environment variables (optional)
 ```
 
-## Troubleshooting
+### Arduino Serial Protocol
 
-### Arduino not found
-```bash
-# Check USB connection
-arduino-cli board list
+**Arduino → Computer:**
+- `STARTUP` - Arduino starting up
+- `READY` - Ready for triggers
+- `TRIGGER` - Switch pressed (cooldown OK)
+- `SWITCH_RELEASED` - Switch released
+- `COOLDOWN` - Switch pressed during cooldown
 
-# Check permissions (Linux)
-sudo usermod -a -G dialout $USER
-# Log out and back in
-```
+**Computer → Arduino (optional):**
+- `STATUS` - Request current state
+- `RESET` - Reset cooldown timer
+- `TEST` - Manual trigger
 
-### Serial port permission denied
-```bash
-sudo chmod 666 /dev/ttyUSB0
-# Or add user to dialout group (permanent fix)
-sudo usermod -a -G dialout $USER
-```
+### Adding New Features
 
-### Video won't play
-- Check video codec (H.264 MP4 works best in browsers)
-- Verify file path in `public/videos/`
-- Check browser console for errors (F12)
+1. **Modify Arduino code**: Edit `arduino/motion_trigger/motion_trigger.ino`
+2. **Compile**: `pixi run arduino-compile`
+3. **Upload**: `pixi run arduino-flash`
+4. **Test**: `pixi run beetle-monitor-test`
+5. **Document**: Update this README and CHANGELOG.md
 
-### Motion sensor too sensitive
-- Adjust potentiometers on PIR sensor
-- Increase `DEBOUNCE_DELAY` in Arduino code
-- Reduce sensor range/sensitivity
+---
 
-## Testing Without Hardware
+## Multi-Machine Deployment
 
-### Test Arduino serial output
-```bash
-# In one terminal, monitor serial
-arduino-cli monitor -p /dev/ttyUSB0 -c baudrate=9600
-
-# Wave hand in front of PIR sensor
-# Should see: "TRIGGER" messages
-```
-
-### Test Node.js without Arduino
-Edit `server.js` to simulate triggers:
-```javascript
-// Comment out serial port code
-// Add test trigger
-setInterval(() => {
-  io.emit('trigger-video');
-}, 10000); // Trigger every 10 seconds
-```
-
-## arduino-cli Quick Reference
+Pixi ensures identical environments across machines:
 
 ```bash
-# List connected boards
-arduino-cli board list
+# Machine 1 (development)
+git push
 
-# Search for libraries
-arduino-cli lib search <name>
-
-# Install library
-arduino-cli lib install <name>
-
-# List installed cores
-arduino-cli core list
-
-# Compile + Upload in one command
-arduino-cli compile --upload -p /dev/ttyUSB0 --fqbn arduino:avr:uno sketch.ino
-
-# Get board details
-arduino-cli board details -b arduino:avr:uno
-
-# Clean build files
-rm -rf build/
+# Machine 2 (production)
+git clone <repo>
+cd window_spider_trigger
+pixi install
+pixi run setup
+pixi run deploy
 ```
+
+Environment differences handled via `.env.local` (git-ignored).
+
+---
 
 ## Performance Notes
 
-- PIR sensors typically have a ~3 second warmup time on power-up
-- Cooldown period prevents multiple triggers for same person
-- Video should be pre-loaded for instant playback
-- Use H.264 codec for best browser compatibility
+- PIR sensors have ~3 second warmup (not used in this version)
+- Switch has 50ms software debounce
+- 3-second cooldown prevents multiple triggers per person
+- Videos should use H.264 codec for browser compatibility
+- Video preloads on page load for instant playback
 
-## Future Enhancements
+---
 
-- [ ] Add manual trigger button (for testing)
-- [ ] Log trigger events with timestamps
-- [ ] Multiple video variations (random selection)
-- [ ] Sound effects synchronized with video
-- [ ] Remote control via web interface
-- [ ] Battery backup for Arduino during power issues
+## License & Credits
 
-## License
+Created for Halloween 2025 Spider Haunted House
+Chamber 2: Spider Web Tunnel - Window Scare
 
-Created for Halloween 2025 Spider Haunted House project.
-
-## Hardware-in-the-Loop Testing
-
-For DFRobot Beetle users, automated hardware tests are available:
-
-```bash
-# Run automated test suite
-pixi run beetle-test
-
-# Run interactive switch test
-pixi run beetle-monitor-test
-```
-
-See `BEETLE_TEST.md` and `BEETLE_PINOUT.md` for complete Beetle-specific documentation.
-
-## Related Files
-
-See main project documentation:
-- `/PROJECT_PLAN.md` - Full haunted house design
-- `/LAYOUT_MAP.txt` - Chamber layouts and wiring
+See main project files:
+- `/PROJECT_PLAN.md` - Complete haunted house design
+- `/LAYOUT_MAP.txt` - Chamber layouts
 - `/SHOPPING_LIST.md` - Parts and materials
-- `BEETLE_TEST.md` - Hardware testing guide
-- `BEETLE_PINOUT.md` - Beetle pin reference
+
+---
+
+## Support
+
+**For issues:**
+1. Run `pixi run status` - Check system state
+2. Run `pixi run integration-test` - Auto-diagnose and fix
+3. Check `TROUBLESHOOTING.md` - Common problems
+4. Review Arduino serial: `pixi run arduino-monitor`
+
+**Quick diagnostics:**
+```bash
+pixi run status           # System overview
+pixi run beetle-test      # Hardware check
+pixi run integration-test # Full system test
+```
