@@ -1,0 +1,261 @@
+/* Spider Window Scare - Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  overflow: hidden;
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+}
+
+/* Video Container */
+#video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#idle-video {
+  display: block;
+}
+
+#scare-video {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+#scare-video.active {
+  display: block;
+}
+
+/* Status Overlay */
+#status-overlay {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.85);
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px solid #8b0000;
+  box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+  min-width: 300px;
+  backdrop-filter: blur(10px);
+  transition: opacity 0.3s ease;
+}
+
+#status-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.status-panel h2 {
+  color: #ff4444;
+  margin-bottom: 15px;
+  font-size: 20px;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+}
+
+.label {
+  font-weight: bold;
+  color: #aaa;
+}
+
+.status-value {
+  color: #fff;
+}
+
+.status-value.connected {
+  color: #44ff44;
+}
+
+.status-value.disconnected {
+  color: #ff4444;
+}
+
+.status-value.ready {
+  color: #ffaa00;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn {
+  padding: 10px 15px;
+  background: #8b0000;
+  border: none;
+  border-radius: 5px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: #cc0000;
+  box-shadow: 0 0 15px rgba(204, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* Instructions */
+.instructions {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 12px;
+  color: #aaa;
+}
+
+.instructions ul {
+  list-style: none;
+  margin-top: 8px;
+}
+
+.instructions li {
+  margin: 5px 0;
+}
+
+kbd {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  font-family: monospace;
+  color: #ffaa00;
+}
+
+/* Loading Screen */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.5s ease;
+}
+
+.loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(255, 255, 255, 0.1);
+  border-top: 5px solid #ff4444;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading p {
+  margin-top: 20px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+/* Fullscreen mode adjustments */
+body:-webkit-full-screen #status-overlay {
+  top: 10px;
+  right: 10px;
+}
+
+body:-moz-full-screen #status-overlay {
+  top: 10px;
+  right: 10px;
+}
+
+body:fullscreen #status-overlay {
+  top: 10px;
+  right: 10px;
+}
+
+/* Flash effect for scare */
+@keyframes flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+#scare-video.flash {
+  animation: flash 0.1s ease-in-out 3;
+}
+
+/* Cursor hiding after inactivity */
+body.hide-cursor {
+  cursor: none;
+}
+
+body.hide-cursor * {
+  cursor: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  #status-overlay {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+    font-size: 12px;
+  }
+
+  .status-panel h2 {
+    font-size: 16px;
+  }
+
+  .btn {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+}

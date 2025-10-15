@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Pixi
+.pixi/
+pixi.lock
+.arduino15/
+
+# Video files (too large for git)
+public/videos/*.mp4
+public/videos/*.webm
+public/videos/*.mov
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+server.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build files
+build/
+dist/
+arduino/motion_trigger/build/

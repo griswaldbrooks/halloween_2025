@@ -1,0 +1,295 @@
+# Spider Haunted House - Layout Map (ASCII)
+
+================================================================================
+                        SPIDER HAUNTED HOUSE FLOOR PLAN
+================================================================================
+
+Legend:
+  [====]  = Walls
+  -->     = Direction of travel/doorway
+  ***     = Spider webbing
+  (S)     = Bluetooth Speaker location
+  (M)     = Motion sensor
+  (P)     = Projector
+  (F)     = Fog machine
+  [PROP]  = Major prop/effect location
+
+
+                    ENTRANCE
+                       |
+                       v
+    ╔══════════════════════════════════════╗
+    ║                                      ║
+    ║         CHAMBER 1: CANDY ROOM        ║
+    ║                                      ║
+    ║   🍬  🍬      [TABLE]     🍬  🍬    ║
+    ║                                      ║
+    ║   [Bright Lights]  [Decorations]    ║
+    ║                                      ║
+    ║              (S)  ♪                  ║
+    ║   [Scent Diffuser: Vanilla/Candy]   ║
+    ║                                      ║
+    ║                                      ║
+    ╚═════════════════╦══════════════════╝
+                      ║
+                      ║ Door (disguised/inviting)
+                      v
+    ╔═════════════════════════════════════════════════════════════╗
+    ║  CHAMBER 2: SPIDER WEB TUNNEL                               ║
+    ║  *** *** *** *** *** *** *** *** *** *** *** *** ***       ║
+    ║                                                              ║
+    ║  START → (F)[Fog Machine]                                   ║
+    ║  *** *** |                                                   ║
+    ║          |  [UV Blacklights along ceiling]                  ║
+    ║  *** *** |                                                   ║
+    ║          ↓                                                   ║
+    ║  *** *** → twist    (S) ♪                                   ║
+    ║            ↓                                                 ║
+    ║  *** ***  turn → [WINDOW SCARE]                             ║
+    ║                   (M) Motion sensor                          ║
+    ║  *** ***           |   [Monitor/Spider Jump]                ║
+    ║            ↓       |                                         ║
+    ║  *** ***  twist    |                                         ║
+    ║            ↓       |                                         ║
+    ║  *** *** turn → ══════════════════════════                  ║
+    ║            |    LONG STRAIGHT SECTION                        ║
+    ║  *** ***   |    (P)[Projector overhead]                     ║
+    ║            |    [Spider crawl video on walls]               ║
+    ║  *** ***   |   ══════════════════════════                   ║
+    ║            ↓                                                 ║
+    ║  *** ***  twist                                              ║
+    ║            ↓                                                 ║
+    ║  *** *** turn → (M)[ANKLE BRUSHER]                          ║
+    ║                  [Pool noodle sweeps floor]                 ║
+    ║  *** ***         ↓                                           ║
+    ║                  |                                           ║
+    ╚══════════════════╩═══════════════════════════════════════╝
+                       |
+                       v
+    ╔══════════════════════════════════════════════════════╗
+    ║   CHAMBER 3: TRASH ROOM                              ║
+    ║                                                       ║
+    ║   [Cocooned    💀  [Skeleton    [Pile of             ║
+    ║    Body]           Parts]        Bodies]             ║
+    ║       |                                              ║
+    ║       |  (M)──[ROBOT ARM #1]                         ║
+    ║       |      [Pool noodle spider leg]                ║
+    ║       ↓                                              ║
+    ║   [Visitor path through debris]                      ║
+    ║               ↓                                      ║
+    ║   [Cocooned] [Bones]  [Cocooned]                    ║
+    ║    Body]              Body]                          ║
+    ║               ↓                                      ║
+    ║           (M)──[ROBOT ARM #2]                        ║
+    ║               [Pool noodle victim arm]               ║
+    ║               ↓                                      ║
+    ║   (S) ♪  [Scent containers hidden]                  ║
+    ║          [Sickly green lighting]                     ║
+    ║               ↓                                      ║
+    ╚═══════════════╩══════════════════════════════════╝
+                    |
+                    v
+    ╔═══════════════════════════════════════════════════╗
+    ║   CHAMBER 4: VICTIM ROOM                          ║
+    ║                                                    ║
+    ║      🕸️       🕸️       🕸️       🕸️              ║
+    ║       |         |         |         |             ║
+    ║    [Cocoon] [Cocoon] [Cocoon] [Cocoon]           ║
+    ║    *twitch* *moan*  *twitch* *moan*              ║
+    ║       💧       💧      💧       💧               ║
+    ║       |         |         |         |             ║
+    ║       v         v         v         v             ║
+    ║                                                    ║
+    ║   [Path between hanging bodies]                   ║
+    ║                                                    ║
+    ║      🕸️       🕸️                                 ║
+    ║       |         |      (S) ♪  [Hidden speaker]    ║
+    ║    [Cocoon] [Cocoon]   [Victim sounds]           ║
+    ║    *twitch* *twitch*                              ║
+    ║       💧       💧                                 ║
+    ║                                                    ║
+    ║   [Flickering lights overhead]                    ║
+    ║                                                    ║
+    ╚═══════════════╦═══════════════════════════════╝
+                    |
+                    v
+    ╔══════════════════════════════════════════════════╗
+    ║   CHAMBER 5: HATCHERY                            ║
+    ║                                                   ║
+    ║    🥚🥚🥚        🥚🥚         🥚🥚🥚           ║
+    ║   [Glowing]    [Pulsing]    [Glowing]           ║
+    ║    egg sacs    egg sacs     egg sacs            ║
+    ║      ~~~         ~~~          ~~~               ║
+    ║                                                   ║
+    ║   🥚🥚        🥚🥚🥚🥚       🥚🥚             ║
+    ║  [Pulsing]     [Glowing]    [Cracked]           ║
+    ║               [Baby spiders]                     ║
+    ║      ~~~         ~~~          🕷️🕷️             ║
+    ║                                                   ║
+    ║         [SCAVENGER HUNT CONTAINER]               ║
+    ║          [Large egg sac to reach into]           ║
+    ║                   ⬇️                            ║
+    ║              [Must reach up]                     ║
+    ║                                                   ║
+    ║    🥚🥚🥚      (S) ♪        🥚🥚🥚             ║
+    ║   [Glowing]  [Chittering]   [Pulsing]           ║
+    ║                                                   ║
+    ║   [UV Blacklights]  [Fans create sway]          ║
+    ║                                                   ║
+    ╚══════════════╦══════════════════════════════╝
+                   |
+                   v
+    ╔═══════════════════════════════════════════════════════╗
+    ║   CHAMBER 6: SPIDER'S LAIR                            ║
+    ║                                                        ║
+    ║   (M) Motion sensor at entrance triggers sequence     ║
+    ║    ↓                                                   ║
+    ║   ═══════════════════════════════════════            ║
+    ║                                                        ║
+    ║        🕷️🕷️🕷️  [Projected baby spiders]  🕷️🕷️      ║
+    ║   🕷️  on floor and walls (P)[Projector]   🕷️        ║
+    ║        🕷️🕷️🕷️                              🕷️🕷️      ║
+    ║                                                        ║
+    ║                 [Giant web backdrop]                   ║
+    ║                        🕸️                             ║
+    ║                    🕸️🕸️🕸️                           ║
+    ║                  🕸️   |   🕸️                         ║
+    ║                🕸️     |     🕸️                       ║
+    ║                        ↓                               ║
+    ║                  ╔═══════════╗                        ║
+    ║                  ║  🕷️ MAMA  ║  [GIANT SPIDER]        ║
+    ║                  ║  SPIDER   ║  [Animatronic]         ║
+    ║                  ║  👁️    👁️ ║  [Lunges when         ║
+    ║                  ║ /|  \/  |\ ║   triggered]          ║
+    ║                  ║/ |      | \║                        ║
+    ║                  ╚═══════════╝                        ║
+    ║                        ║                               ║
+    ║                        ║ [Lunge/movement]              ║
+    ║                        ↓                               ║
+    ║                   [STROBE!!] ⚡                        ║
+    ║                                                        ║
+    ║   (S) ♪ [Loud speaker] [SCREECH!!!]                   ║
+    ║                                                        ║
+    ║                                                        ║
+    ║                                                        ║
+    ║              [After scare, clear path to →]           ║
+    ║                                                        ║
+    ╚═══════════════════════════════════════════════════════╣
+                                                            ║
+                                                    EXIT → ║
+                                                            ║
+                                                    🚪 ═════╝
+
+================================================================================
+                              SENSOR MAP
+================================================================================
+
+Motion Sensors (M):
+  1. Spider Tunnel - Window scare (triggers video)
+  2. Spider Tunnel - Ankle brusher (triggers pool noodle sweep)
+  3. Trash Room - Robot arm #1 (triggers sweep)
+  4. Trash Room - Robot arm #2 (triggers sweep)
+  5. Spider's Lair - Entrance (triggers spider lunge + strobe)
+
+Bluetooth Speaker Locations (S):
+  1. Candy Room - Pleasant music
+  2. Spider Tunnel - Scuttling/spider sounds
+  3. Trash Room - Flies/dripping/groaning
+  4. Victim Room - Moaning/crying (hidden in cocoons)
+  5. Hatchery - Egg cracking/chittering
+  6. Spider's Lair - Spider breathing/screech (LOUD)
+
+Projectors (P):
+  1. Spider Tunnel - Overhead (spider crawling video on walls)
+  2. Spider's Lair - Floor/wall projection (baby spiders)
+  3. Optional: Victim Room (dripping effect)
+
+Fog Machine (F):
+  1. Primary: Spider Tunnel entrance (creates atmosphere in webs)
+  2. Optional: Spider's Lair (for final scare drama)
+
+================================================================================
+                          SCAVENGER HUNT PATH
+================================================================================
+
+Chamber 1 (Candy Room):
+  └─→ Clue/Token #1: On candy table (EASY - starts hunt)
+
+Chamber 2 (Spider Tunnel):
+  └─→ Item #2: Near window scare area (MEDIUM - must look around)
+
+Chamber 3 (Trash Room):
+  └─→ Item #3: Hidden in/on cocooned body (MEDIUM - must search)
+
+Chamber 4 (Victim Room):
+  └─→ Item #4: Behind hanging cocoon (MEDIUM - must navigate)
+
+Chamber 5 (Hatchery):
+  └─→ Item #5: Inside large egg sac container (HARD - unnerving reach)
+
+Chamber 6 (Spider's Lair):
+  └─→ Final Prize: After surviving spider attack (REWARD)
+
+================================================================================
+                          TRAFFIC FLOW NOTES
+================================================================================
+
+Estimated time per chamber:
+  - Candy Room: 1-2 minutes (can linger)
+  - Spider Tunnel: 3-5 minutes (twisting path)
+  - Trash Room: 2-3 minutes
+  - Victim Room: 2-3 minutes
+  - Hatchery: 2-3 minutes
+  - Spider's Lair: 1-2 minutes (quick scare and exit)
+
+Total experience: 12-18 minutes
+
+Group spacing: 3-5 minutes between groups
+Capacity: 4-6 people per group
+
+================================================================================
+                          POWER REQUIREMENTS
+================================================================================
+
+Candy Room:
+  └─→ 1 outlet (lights, speaker)
+
+Spider Tunnel:
+  └─→ 3-4 outlets (fog machine, projector, LED strips, monitor,
+                    ankle brusher motor, speaker)
+
+Trash Room:
+  └─→ 2-3 outlets (robot arms, lighting, speaker, scent setup)
+
+Victim Room:
+  └─→ 2-3 outlets (motors for twitching, lighting, speaker,
+                    drip effect)
+
+Hatchery:
+  └─→ 2-3 outlets (LED controllers for eggs, fans, speaker,
+                    UV lights)
+
+Spider's Lair:
+  └─→ 3-4 outlets (projector, animatronic spider, strobe,
+                    speaker, lighting)
+
+TOTAL: 13-18 outlets needed
+       Plan for 6-8 power strips
+       Use heavy-duty extension cords rated for load
+
+================================================================================
+                          EMERGENCY EXITS
+================================================================================
+
+Primary Emergency Exit: Spider's Lair (main exit)
+
+Secondary Exits (Mark clearly):
+  - Side exit in Spider Tunnel (if space allows)
+  - Side exit in Trash Room or Victim Room (mid-point escape)
+
+Emergency lighting: Battery-powered lights along exit paths
+
+Staff access: Clear paths for monitors to enter each chamber
+
+================================================================================
+

@@ -1,0 +1,13 @@
+{
+  "board": {
+    "fqbn": "arduino:avr:leonardo",
+    "name": "Arduino Leonardo",
+    "port": "/dev/ttyACM0"
+  },
+  "compile": {
+    "warnings": "default"
+  },
+  "upload": {
+    "verify": true
+  }
+}

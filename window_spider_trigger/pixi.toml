@@ -1,0 +1,114 @@
+[project]
+name = "window-spider-trigger"
+version = "1.0.0"
+description = "Motion-activated spider jump scare for Halloween haunted house"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[dependencies]
+# Core runtime
+nodejs = "20.*"
+
+[tasks]
+# === Initial Setup ===
+install-arduino-cli = "curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=.pixi/bin sh"
+
+setup-arduino = { cmd = """
+.pixi/bin/arduino-cli config init --config-file .arduino15/arduino-cli.yaml || true
+.pixi/bin/arduino-cli core update-index --config-file .arduino15/arduino-cli.yaml
+.pixi/bin/arduino-cli core install arduino:avr --config-file .arduino15/arduino-cli.yaml
+echo "✓ Arduino AVR core installed"
+""", depends-on = ["install-arduino-cli"] }
+
+install = "npm install"
+
+setup = { depends-on = ["setup-arduino", "install"] }
+
+# === Arduino Tasks ===
+arduino-detect = ".pixi/bin/arduino-cli board list"
+
+arduino-compile = """
+.pixi/bin/arduino-cli compile \
+  --fqbn arduino:avr:leonardo \
+  --config-file .arduino15/arduino-cli.yaml \
+  arduino/motion_trigger
+"""
+
+arduino-upload = ".pixi/bin/arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:leonardo --config-file .arduino15/arduino-cli.yaml arduino/motion_trigger"
+
+arduino-flash = { depends-on = ["arduino-compile", "arduino-upload"] }
+
+arduino-monitor = ".pixi/bin/arduino-cli monitor -p /dev/ttyACM0 -c baudrate=9600"
+
+arduino-clean = "rm -rf arduino/motion_trigger/build"
+
+# === Server Tasks ===
+start = { cmd = "node server.js", env = { SERIAL_PORT = "auto" } }
+
+dev = { cmd = "npx nodemon server.js", env = { SERIAL_PORT = "auto" } }
+
+# === Combined Workflows ===
+deploy = { depends-on = ["arduino-flash", "start"] }
+
+quick-test = """
+echo "🧪 Quick hardware test..."
+echo "1. Flashing Arduino..."
+pixi run arduino-flash
+echo ""
+echo "2. Testing serial connection..."
+pixi run arduino-monitor &
+MONITOR_PID=$!
+sleep 3
+echo ""
+echo "3. Wave hand in front of sensor - you should see TRIGGER messages"
+echo "   Press Ctrl+C when done"
+wait $MONITOR_PID
+"""
+
+# === Development Tasks ===
+status = { cmd = "bash -c 'echo \"=== Window Spider Trigger Status ===\" && echo \"\" && echo \"📦 Node.js:\" && node --version && echo \"\" && echo \"🔧 npm packages:\" && (npm list --depth=0 2>/dev/null | head -5) && echo \"\" && echo \"⚡ Arduino CLI:\" && .pixi/bin/arduino-cli version && echo \"\" && echo \"🔌 Connected boards:\" && .pixi/bin/arduino-cli board list'" }
+
+clean-all = { depends-on = ["arduino-clean"], cmd = "rm -rf node_modules package-lock.json" }
+
+# === Video Management ===
+check-videos = "bash -c 'echo \"Checking video files...\" && ls -lh public/videos/*.mp4 2>/dev/null || echo \"No video files found\"'"
+
+fix-videos = "bash -c 'echo \"Creating idle_loop.mp4 symlink...\" && cd public/videos && ln -sf spider_jump1.mp4 idle_loop.mp4 && echo \"✓ Done: idle_loop.mp4 -> spider_jump1.mp4\"'"
+
+# === Troubleshooting ===
+check-permissions = """
+echo "Checking serial port permissions..."
+if [ -e /dev/ttyACM0 ]; then
+  ls -la /dev/ttyACM0
+  echo ""
+  groups | grep -q dialout && echo "✓ User in dialout group" || echo "❌ User NOT in dialout group. Run: sudo usermod -a -G dialout $USER"
+else
+  echo "No /dev/ttyACM0 found. Is Arduino connected?"
+fi
+"""
+
+fix-permissions = """
+echo "Adding user to dialout group..."
+sudo usermod -a -G dialout $USER
+echo "✓ Done! You must log out and back in for this to take effect."
+"""
+
+# === Hardware-in-the-Loop Testing ===
+beetle-test = "bash scripts/beetle_test.sh"
+beetle-monitor-test = "bash scripts/beetle_monitor_test.sh"
+
+# === Integration Testing ===
+integration-test = "bash scripts/integration_test.sh"
+
+[environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+
+[feature.dev.dependencies]
+# Development tools
+python = "3.11.*"  # Useful for video processing scripts
+
+[feature.dev.tasks]
+# Development-specific tasks
+watch-logs = "tail -f server.log"
+test-serial = "python -c \"import serial.tools.list_ports; print('\\n'.join([p.device for p in serial.tools.list_ports.comports()]))\""

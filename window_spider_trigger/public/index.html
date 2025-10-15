@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spider Window Scare</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Main video container -->
+  <div id="video-container">
+    <!-- Single video: paused at start, plays on trigger, resets when done -->
+    <video id="main-video" muted playsinline>
+      <source src="videos/spider_jump1.mp4" type="video/mp4">
+      Your browser does not support video playback.
+    </video>
+  </div>
+
+  <!-- Status overlay (hidden in production mode) -->
+  <div id="status-overlay" class="hidden">
+    <div class="status-panel">
+      <h2>🕷️ Spider Window Scare</h2>
+
+      <div class="status-item">
+        <span class="label">Arduino:</span>
+        <span id="arduino-status" class="status-value">Waiting...</span>
+      </div>
+
+      <div class="status-item">
+        <span class="label">Serial:</span>
+        <span id="serial-status" class="status-value">Connecting...</span>
+      </div>
+
+      <div class="status-item">
+        <span class="label">Triggers:</span>
+        <span id="trigger-count" class="status-value">0</span>
+      </div>
+
+      <div class="status-item">
+        <span class="label">Last Trigger:</span>
+        <span id="last-trigger" class="status-value">Never</span>
+      </div>
+
+      <div class="controls">
+        <button id="test-trigger" class="btn">🎮 Test Trigger</button>
+        <button id="fullscreen-btn" class="btn">⛶ Fullscreen</button>
+        <button id="toggle-status" class="btn">👁️ Hide Status</button>
+      </div>
+
+      <div class="instructions">
+        <p><strong>Controls:</strong></p>
+        <ul>
+          <li><kbd>F</kbd> - Toggle fullscreen</li>
+          <li><kbd>S</kbd> - Toggle status overlay</li>
+          <li><kbd>T</kbd> - Test trigger</li>
+          <li><kbd>ESC</kbd> - Exit fullscreen</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading indicator -->
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading videos...</p>
+  </div>
+
+  <!-- Include Socket.IO client -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Main client script -->
+  <script src="client.js"></script>
+</body>
+</html>
