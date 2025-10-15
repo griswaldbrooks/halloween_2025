@@ -345,15 +345,29 @@ Video ended, resetting to start
 Video reset - ready for next trigger
 ```
 
-### Git Commit (23:20)
-**Status**: ⚠️ ISSUE FOUND - Need to use git-lfs
+### Git Commit (23:20 - 23:25)
+**Status**: ✅ Fixed and Committed with git-lfs
 
-Initial commit created but needs correction:
-- Commit: `7b19f65`
-- Problem: Large video/image files committed directly (not using git-lfs)
-- Need to: Reset and recommit with git-lfs for binary files
+**Actions taken:**
+1. Reset initial commit (7b19f65)
+2. Initialized git-lfs in repository
+3. Configured LFS tracking for large files:
+   - `*.mp4` - All video files
+   - `*.png` - All image files
+4. Created new commit with proper LFS tracking
 
-**Action needed**: Convert large files to git-lfs tracking
+**Final commit:**
+- Hash: `493ee02`
+- Files: 42 files (including .gitattributes)
+- LFS tracked: 8 large files (5 videos + 3 images)
+- Message: "Spider Window Scare - Single-video playback implementation"
+
+**LFS tracked files:**
+- 5 spider web videos (~1-1.3MB each)
+- 2 invitation images (2.9MB each)
+- 1 video frame screenshot (638KB)
+
+**Result:** Repository now properly uses git-lfs for all binary assets
 
 ### Testing Performed
 **Integration test run**: 2025-10-14 23:05
