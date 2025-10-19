@@ -68,40 +68,40 @@ Beetle (I2C) → PCA9685 → Servos
 
 The animatronic cycles through three states:
 
-1. **Still** (70-85% of time)
-   - Servos at rest positions (90 degrees)
-   - Body appears motionless
-   - Duration: 6-15 seconds (varies by cycle)
-
-2. **Slow Uncomfortable Movement** (10-20% of time)
-   - Movements: ±55 degrees from rest
+1. **Slow Creepy Movement** (50-70% of time) - **DEFAULT BEHAVIOR**
+   - **BIG movements:** ±70 degrees from rest
    - Arms move in **opposite directions** (one up, one down)
-   - Slow, creepy adjustments
-   - Creates "not quite dead" effect
-   - Duration: 2-4 seconds (varies by cycle)
+   - Slow, smooth, unsettling motion
+   - Very noticeable range of motion
+   - Duration: **8-18 seconds** (long, drawn-out movements)
 
-3. **Quick Jerk** (5-10% of time)
-   - **DRAMATIC** sudden movements: ±90 degrees from rest (max range)
+2. **Brief Still Periods** (20-40% of time)
+   - Servos at rest positions (90 degrees)
+   - Short pauses between movements
+   - Duration: 2-5 seconds (much reduced)
+
+3. **EXTREME Quick Jerks** (~5% of time)
+   - **Maximum range:** ±90 degrees (full servo range!)
    - Arms move in **opposite directions** for dramatic effect
-   - Fast, startling motion
+   - **Very fast, snappy** motion (5°/step at 3ms intervals)
    - Intense scare effect
    - Duration: 150-400 milliseconds
 
 ### Opposite Arm Motion
 
 Arms move in mirror directions for more unsettling effect:
-- When **left arm moves up (+55°)**, **right arm moves down (-55°)**
+- When **left arm moves up (+70°)**, **right arm moves down (-70°)**
 - When **left arm jerks left (+90°)**, **right arm jerks right (-90°)**
-- Head moves independently
+- Head moves independently with full range
 
 ### Cycle Variety
 
 5 different predefined cycles that repeat for natural unpredictability:
-- **Cycle 1**: 8s still, 3s slow, 0.2s jerk
-- **Cycle 2**: 12s still, 2.5s slow, 0.3s jerk
-- **Cycle 3**: 6s still, 4s slow, 0.25s jerk
-- **Cycle 4**: 15s still, 2s slow, 0.15s jerk
-- **Cycle 5**: 10s still, 3.5s slow, 0.4s jerk
+- **Cycle 1**: 3s still, **12s slow**, 0.25s jerk - slow dominant
+- **Cycle 2**: 2s still, **15s slow**, 0.3s jerk - very slow dominant
+- **Cycle 3**: 4s still, **10s slow**, 0.2s jerk - balanced
+- **Cycle 4**: 2.5s still, **18s slow**, 0.35s jerk - longest slow (most dramatic)
+- **Cycle 5**: 5s still, **8s slow**, 0.4s jerk - shortest slow
 
 ### Visual Feedback
 
@@ -200,8 +200,8 @@ Edit `arduino/twitching_servos/twitching_servos.ino`:
 
 **Movement ranges:**
 ```cpp
-const int SLOW_MOVEMENT_RANGE = 55;   // ±55 degrees (dramatic movements)
-const int QUICK_JERK_RANGE = 90;      // ±90 degrees (max safe range)
+const int SLOW_MOVEMENT_RANGE = 70;   // ±70 degrees (BIG slow movements, default behavior)
+const int QUICK_JERK_RANGE = 90;      // ±90 degrees (EXTREME jerks, max safe range)
 ```
 
 **Rest positions:**
@@ -213,8 +213,14 @@ const int RIGHT_ARM_REST = 90;
 
 **Movement speeds:**
 ```cpp
-const int SLOW_MOVEMENT_DELAY = 30;   // ms between updates (higher = slower)
-const int QUICK_MOVEMENT_DELAY = 5;   // ms between updates
+const int SLOW_MOVEMENT_DELAY = 40;   // ms between updates (slower, smoother)
+const int QUICK_MOVEMENT_DELAY = 3;   // ms between updates (faster, snappier)
+```
+
+**Step sizes:**
+```cpp
+// Slow movements: 1 degree per step (smooth)
+// Quick jerks: 5 degrees per step (very fast and snappy)
 ```
 
 After changes:

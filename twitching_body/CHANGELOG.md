@@ -1,5 +1,38 @@
 # Changelog
 
+## 2025-10-19 - Extreme Movement Tuning (After Dress Rehearsal)
+
+### Changed
+- **Made slow movement the dominant behavior** (after real-world testing with dressed animatronic)
+  - Slow movement now 50-70% of time (was 10-20%)
+  - Still time reduced to 20-40% (was 70-85%)
+  - Slow movements last **8-18 seconds** (was 2-4 seconds)
+  - Slow movement range increased to ±70° (was ±55°)
+
+- **Enhanced movement extremity and visibility**
+  - Slow movements are now BIG and very noticeable
+  - Quick jerks are faster and snappier (5°/step at 3ms, was 3°/step at 5ms)
+  - Slow movements smoother (1°/step at 40ms, was 1°/step at 30ms)
+
+- **New cycle timings** (slow movement is now the default state)
+  - Cycle 1: 3s still, 12s slow, 0.25s jerk
+  - Cycle 2: 2s still, 15s slow, 0.3s jerk
+  - Cycle 3: 4s still, 10s slow, 0.2s jerk
+  - Cycle 4: 2.5s still, 18s slow, 0.35s jerk (most dramatic)
+  - Cycle 5: 5s still, 8s slow, 0.4s jerk
+
+### Rationale
+Based on testing with the fully dressed animatronic:
+- Slow movements were too subtle and short - needed to be the main behavior
+- Still periods were too long - body looked dead instead of struggling
+- Quick jerks needed to be snappier for maximum scare impact
+- Longer slow movements create sustained creepy effect
+
+### Result
+Animatronic now looks actively struggling and suffering rather than mostly dead with occasional twitches. Much more effective for haunted house atmosphere.
+
+---
+
 ## 2025-10-19 - Raspberry Pi Audio Loop System
 
 ### Added

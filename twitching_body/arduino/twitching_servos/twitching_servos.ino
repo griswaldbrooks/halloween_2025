@@ -5,9 +5,9 @@
  * twitching movements for haunted house effect.
  *
  * Behavior:
- *   - Mostly still (70-85% of time)
- *   - Occasional slow uncomfortable movements (±55 degrees, 10-20% of time)
- *   - Brief DRAMATIC quick jerks for scare effect (±90 degrees, 5-10% of time)
+ *   - Mostly slow creepy movements (50-70% of time, ±70 degrees)
+ *   - Brief still periods (20-40% of time)
+ *   - EXTREME quick jerks for scare effect (±90 degrees, ~5% of time)
  *   - Varying cycle lengths for unpredictability
  *
  * Hardware:
@@ -65,8 +65,8 @@ const int LEFT_ARM_REST = 90;
 const int RIGHT_ARM_REST = 90;
 
 // Movement ranges
-const int SLOW_MOVEMENT_RANGE = 55;   // +/- 55 degrees for slow movements (was 15)
-const int QUICK_JERK_RANGE = 90;      // +/- 90 degrees for DRAMATIC jerks (was 35, max safe range)
+const int SLOW_MOVEMENT_RANGE = 70;   // +/- 70 degrees - BIG slow movements (default behavior)
+const int QUICK_JERK_RANGE = 90;      // +/- 90 degrees - EXTREME jerks (max safe range)
 
 // Behavior state
 enum BehaviorState {
@@ -88,8 +88,8 @@ int leftArmCurrent = LEFT_ARM_REST;
 int rightArmCurrent = RIGHT_ARM_REST;
 
 unsigned long lastMovementUpdate = 0;
-const int SLOW_MOVEMENT_DELAY = 30;   // ms between position updates (slow)
-const int QUICK_MOVEMENT_DELAY = 5;   // ms between position updates (fast)
+const int SLOW_MOVEMENT_DELAY = 40;   // ms between position updates (slower for smoother motion)
+const int QUICK_MOVEMENT_DELAY = 3;   // ms between position updates (faster for snappier jerks)
 
 // Cycle definitions (time in milliseconds)
 // Different cycles for variety
@@ -100,13 +100,14 @@ struct Cycle {
 };
 
 // Define 5 different behavior cycles
+// New behavior: slow movement is dominant (50-70%), less still time (20-40%)
 const int NUM_CYCLES = 5;
 const Cycle cycles[NUM_CYCLES] = {
-  {8000, 3000, 200},   // 8s still, 3s slow, 0.2s jerk
-  {12000, 2500, 300},  // 12s still, 2.5s slow, 0.3s jerk
-  {6000, 4000, 250},   // 6s still, 4s slow, 0.25s jerk
-  {15000, 2000, 150},  // 15s still, 2s slow, 0.15s jerk
-  {10000, 3500, 400}   // 10s still, 3.5s slow, 0.4s jerk
+  {3000, 12000, 250},  // 3s still, 12s slow, 0.25s jerk - slow dominant
+  {2000, 15000, 300},  // 2s still, 15s slow, 0.3s jerk - very slow dominant
+  {4000, 10000, 200},  // 4s still, 10s slow, 0.2s jerk - balanced
+  {2500, 18000, 350},  // 2.5s still, 18s slow, 0.35s jerk - longest slow
+  {5000, 8000, 400}    // 5s still, 8s slow, 0.4s jerk - shortest slow
 };
 
 int currentCycleIndex = 0;
@@ -325,11 +326,11 @@ void executeSlowMovement(unsigned long currentTime) {
 }
 
 void executeQuickJerk(unsigned long currentTime) {
-  // Fast jerky movements
+  // Fast jerky movements - EXTREME and snappy
   if (currentTime - lastMovementUpdate >= QUICK_MOVEMENT_DELAY) {
-    moveServoToward(HEAD_CHANNEL, headCurrent, headTarget, 3);  // Move 3 degrees at a time
-    moveServoToward(LEFT_ARM_CHANNEL, leftArmCurrent, leftArmTarget, 3);
-    moveServoToward(RIGHT_ARM_CHANNEL, rightArmCurrent, rightArmTarget, 3);
+    moveServoToward(HEAD_CHANNEL, headCurrent, headTarget, 5);  // Move 5 degrees at a time (faster)
+    moveServoToward(LEFT_ARM_CHANNEL, leftArmCurrent, leftArmTarget, 5);
+    moveServoToward(RIGHT_ARM_CHANNEL, rightArmCurrent, rightArmTarget, 5);
 
     lastMovementUpdate = currentTime;
   }
