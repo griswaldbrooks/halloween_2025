@@ -129,7 +129,21 @@ Recently captured victims - still alive and suffering
   - Sound-activated twitching (vibration motors triggered by audio)
 
 #### Movement & Effects
-- **Twitching**: Random intervals via timer-controlled motors
+
+**✅ COMPLETE: Twitching Body Animatronic** (`/twitching_body/`)
+- **System**: 3-servo autonomous animatronic (head, left arm, right arm)
+- **Hardware**: DFRobot Beetle + PCA9685 PWM driver + 3x HS-755MG servos + 5V 5A+ power supply
+- **Behavior**:
+  - Mostly still (70-85% of time)
+  - Slow movements ±15° with opposite arm motion (10-20% of time)
+  - Quick jerks ±35° with opposite arm motion (5-10% of time)
+  - 5 varying cycles for unpredictability
+  - Center button (Pin 9) for easy installation
+- **Control**: Standalone - no computer needed after programming
+- **Status**: Production-ready, tested with hardware
+- **Setup**: See `/twitching_body/README.md` for complete instructions
+
+**Audio Effects:**
 - **Moaning**: Hidden Bluetooth speakers inside or behind cocoons
 - **Audio**: Pre-recorded victim sounds (moaning, whimpering, muffled cries for help)
 
@@ -331,15 +345,16 @@ Final confrontation - mama spider's domain
 
 ### Electronics Needed
 - 5x Bluetooth speakers
-- 3-4x Motion sensors (PIR sensors)
 - 1x Fog machine with timer
 - 1x Projector (spider tunnel)
-- 1x Monitor/tablet (window scare)
+- **✅ 1x Monitor/tablet (window scare) - IMPLEMENTED** (`/window_spider_trigger/`)
+- **✅ 1x DFRobot Beetle (window trigger) - IMPLEMENTED**
+- **✅ 1x DFRobot Beetle (twitching body) - IMPLEMENTED**
+- **✅ 3x Servo motors (twitching body animatronic) - IMPLEMENTED** (`/twitching_body/`)
 - LED light strips (UV blacklight, colored LEDs)
 - LED lights for egg sacs (20-40 individual lights)
 - Microcontroller (Arduino/ESP32) for pulsating eggs
 - Servo motors for ankle brusher
-- Motors for cocoon twitching
 - 1x Strobe light
 - 2x Robot arms (specify model)
 - Large animatronic spider mechanism (servos or pneumatics)
