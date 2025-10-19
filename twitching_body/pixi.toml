@@ -95,7 +95,7 @@ integration-test = "bash scripts/integration_test.sh"
 
 # === Audio Testing ===
 test-audio = "mpg123 --test raspberry_pi_audio/audio/crying-ghost.mp3"
-play-audio = "mpg123 raspberry_pi_audio/audio/crying-ghost.mp3"
+play-audio = "ffplay -nodisp -autoexit raspberry_pi_audio/audio/crying-ghost.mp3"
 
 [environments]
 default = { solve-group = "default" }

@@ -277,7 +277,7 @@ pixi run arduino-flash   # Retry upload
 | `pixi run status` | System overview |
 | `pixi run integration-test` | Verify compilation |
 | `pixi run test-audio` | Test audio file validity |
-| `pixi run play-audio` | Play audio (if speakers connected) |
+| `pixi run play-audio` | Play audio with ffplay (Ctrl+C to stop) |
 
 ### Troubleshooting
 | Command | Description |
