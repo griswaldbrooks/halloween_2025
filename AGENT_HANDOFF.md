@@ -59,8 +59,8 @@ pixi run integration-test  # ✅ All 5 tests pass
 **Behavior:**
 - Autonomous (no sensors, always running)
 - Mostly still (70-85% of time)
-- Slow movements ±15° with opposite arm motion (10-20%)
-- Quick jerks ±35° with opposite arm motion (5-10%)
+- Slow movements ±55° with opposite arm motion (10-20%)
+- DRAMATIC quick jerks ±90° with opposite arm motion (5-10%)
 - 5 varying cycles for unpredictability
 - Center button for easy servo horn installation
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## 2025-10-19 - Dramatic Movement Ranges (Hardware Tuning)
+
+### Changed
+- **Increased movement ranges for dramatic effect** (after hardware testing)
+  - Slow movement: ±15° → **±55°** (3.67x increase)
+  - Quick jerk: ±35° → **±90°** (2.57x increase, max safe range)
+  - Slow movements now as large as previous quick jerks plus 20°
+  - Quick jerks now utilize full servo range for maximum scare impact
+  - Arms still move in opposite directions for dramatic effect
+
+### Technical Notes
+- ±90° is maximum safe range (0-180° servo limits with 90° rest position)
+- `constrain()` function prevents servo damage if limits exceeded
+- Tested and verified with actual HS-755MG servos
+
+---
+
 ## 2025-10-19 - Production Code COMPLETE ✅
 
 ### Major Update: Fully Working Production Code

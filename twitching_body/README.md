@@ -72,24 +72,24 @@ The animatronic cycles through three states:
    - Duration: 6-15 seconds (varies by cycle)
 
 2. **Slow Uncomfortable Movement** (10-20% of time)
-   - Movements: ±15 degrees from rest
+   - Movements: ±55 degrees from rest
    - Arms move in **opposite directions** (one up, one down)
    - Slow, creepy adjustments
    - Creates "not quite dead" effect
    - Duration: 2-4 seconds (varies by cycle)
 
 3. **Quick Jerk** (5-10% of time)
-   - Sudden movements: ±35 degrees from rest
+   - **DRAMATIC** sudden movements: ±90 degrees from rest (max range)
    - Arms move in **opposite directions** for dramatic effect
    - Fast, startling motion
-   - Scare effect
+   - Intense scare effect
    - Duration: 150-400 milliseconds
 
 ### Opposite Arm Motion
 
 Arms move in mirror directions for more unsettling effect:
-- When **left arm moves up (+15°)**, **right arm moves down (-15°)**
-- When **left arm jerks left (+30°)**, **right arm jerks right (-30°)**
+- When **left arm moves up (+55°)**, **right arm moves down (-55°)**
+- When **left arm jerks left (+90°)**, **right arm jerks right (-90°)**
 - Head moves independently
 
 ### Cycle Variety
@@ -198,8 +198,8 @@ Edit `arduino/twitching_servos/twitching_servos.ino`:
 
 **Movement ranges:**
 ```cpp
-const int SLOW_MOVEMENT_RANGE = 15;   // ±15 degrees
-const int QUICK_JERK_RANGE = 35;      // ±35 degrees
+const int SLOW_MOVEMENT_RANGE = 55;   // ±55 degrees (dramatic movements)
+const int QUICK_JERK_RANGE = 90;      // ±90 degrees (max safe range)
 ```
 
 **Rest positions:**

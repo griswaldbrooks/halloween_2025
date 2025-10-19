@@ -6,8 +6,8 @@
  *
  * Behavior:
  *   - Mostly still (70-85% of time)
- *   - Occasional slow uncomfortable movements (5-10 degrees, 10-20% of time)
- *   - Brief quick jerks for scare effect (5-10% of time)
+ *   - Occasional slow uncomfortable movements (±55 degrees, 10-20% of time)
+ *   - Brief DRAMATIC quick jerks for scare effect (±90 degrees, 5-10% of time)
  *   - Varying cycle lengths for unpredictability
  *
  * Hardware:
@@ -65,8 +65,8 @@ const int LEFT_ARM_REST = 90;
 const int RIGHT_ARM_REST = 90;
 
 // Movement ranges
-const int SLOW_MOVEMENT_RANGE = 15;   // +/- 15 degrees for slow movements (was 8)
-const int QUICK_JERK_RANGE = 35;      // +/- 35 degrees for quick jerks (was 25)
+const int SLOW_MOVEMENT_RANGE = 55;   // +/- 55 degrees for slow movements (was 15)
+const int QUICK_JERK_RANGE = 90;      // +/- 90 degrees for DRAMATIC jerks (was 35, max safe range)
 
 // Behavior state
 enum BehaviorState {

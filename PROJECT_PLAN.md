@@ -135,12 +135,12 @@ Recently captured victims - still alive and suffering
 - **Hardware**: DFRobot Beetle + PCA9685 PWM driver + 3x HS-755MG servos + 5V 5A+ power supply
 - **Behavior**:
   - Mostly still (70-85% of time)
-  - Slow movements ±15° with opposite arm motion (10-20% of time)
-  - Quick jerks ±35° with opposite arm motion (5-10% of time)
+  - Slow movements ±55° with opposite arm motion (10-20% of time)
+  - DRAMATIC quick jerks ±90° with opposite arm motion (5-10% of time)
   - 5 varying cycles for unpredictability
   - Center button (Pin 9) for easy installation
 - **Control**: Standalone - no computer needed after programming
-- **Status**: Production-ready, tested with hardware
+- **Status**: Production-ready, tested and tuned with hardware
 - **Setup**: See `/twitching_body/README.md` for complete instructions
 
 **Audio Effects:**
