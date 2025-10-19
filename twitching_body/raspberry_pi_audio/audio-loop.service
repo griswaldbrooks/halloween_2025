@@ -1,0 +1,20 @@
+[Unit]
+Description=Haunted House Audio Loop Player
+After=sound.target network.target
+Wants=sound.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/halloween_2025/twitching_body/raspberry_pi_audio
+ExecStart=/usr/bin/mpg123 --loop -1 /home/pi/halloween_2025/twitching_body/raspberry_pi_audio/audio/crying-ghost.mp3
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+# Prevent service from starting too early
+ExecStartPre=/bin/sleep 5
+
+[Install]
+WantedBy=multi-user.target

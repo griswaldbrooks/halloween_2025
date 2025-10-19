@@ -1,5 +1,36 @@
 # Changelog
 
+## 2025-10-19 - Raspberry Pi Audio Loop System
+
+### Added
+- **Raspberry Pi audio loop setup** (`raspberry_pi_audio/`)
+  - Auto-play MP3 on boot with no user interaction
+  - Systemd service for reliable continuous playback
+  - Automated setup script (`setup.sh`)
+  - Helper scripts for testing, volume control, and playlists
+  - Comprehensive documentation with troubleshooting
+  - Service file template with proper configuration
+  - Works alongside twitching body for complete victim room effect
+
+### Features
+- Infinite loop playback using mpg123
+- Starts automatically 10-30 seconds after boot
+- Systemd restart on failure for reliability
+- Volume control and audio output configuration
+- Support for single file or playlist mode
+- No login or user interaction required
+
+### Files
+- `raspberry_pi_audio/README.md` - Complete setup guide
+- `raspberry_pi_audio/setup.sh` - Automated installation script
+- `raspberry_pi_audio/audio-loop.service` - Systemd service template
+- `raspberry_pi_audio/scripts/test-audio.sh` - Audio playback testing
+- `raspberry_pi_audio/scripts/set-volume.sh` - Volume control
+- `raspberry_pi_audio/scripts/create-playlist.sh` - Playlist generator
+- `raspberry_pi_audio/audio/` - Audio files directory
+
+---
+
 ## 2025-10-19 - Dramatic Movement Ranges (Hardware Tuning)
 
 ### Changed

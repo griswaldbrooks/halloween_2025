@@ -8,6 +8,8 @@ Servo-controlled twitching body effect for Halloween 2025 haunted house (Chamber
 
 **⭐ Quick Start:** `pixi run deploy` → Upload code and watch it twitch!
 
+**🔊 Audio Loop:** See `raspberry_pi_audio/` for Raspberry Pi auto-play setup (victim moaning sounds)
+
 ---
 
 ## Quick Start
@@ -293,6 +295,30 @@ After flashing, the Beetle can run independently:
 3. **Wall Power**: Use 5V regulated wall adapter
 
 Beetle will start behavior automatically on power-up. No computer needed.
+
+---
+
+## Audio Loop System (Raspberry Pi)
+
+For continuous victim moaning/crying sounds, see the **Raspberry Pi Audio Loop** setup:
+
+**Location:** `raspberry_pi_audio/`
+
+**Features:**
+- Auto-play MP3 on boot (no login required)
+- Infinite loop playback
+- Systemd service for reliability
+- Volume control scripts
+- Playlist support
+
+**Quick Setup:**
+```bash
+cd raspberry_pi_audio
+./setup.sh
+sudo reboot
+```
+
+**Documentation:** See `raspberry_pi_audio/README.md` for complete instructions.
 
 ---
 
