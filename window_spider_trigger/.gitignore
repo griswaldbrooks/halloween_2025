@@ -7,10 +7,10 @@ package-lock.json
 pixi.lock
 .arduino15/
 
-# Video files (too large for git)
-public/videos/*.mp4
-public/videos/*.webm
-public/videos/*.mov
+# Video files are now tracked with Git LFS (see .gitattributes)
+# Keeping only large uncompressed formats excluded
+public/videos/*.avi
+public/videos/*.mkv
 
 # Environment files
 .env
