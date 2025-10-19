@@ -5,9 +5,10 @@
  * twitching movements for haunted house effect.
  *
  * Behavior:
- *   - Mostly slow creepy movements (50-70% of time, ±70 degrees)
+ *   - Mostly slow creepy movements (50-70% of time, FULL 0-180° range)
  *   - Brief still periods (20-40% of time)
- *   - EXTREME quick jerks for scare effect (±90 degrees, ~5% of time)
+ *   - EXTREME quick jerks for scare effect (FULL 0-180° range, ~5% of time)
+ *   - Difference is speed: slow is smooth/gradual, quick is fast/snappy
  *   - Varying cycle lengths for unpredictability
  *
  * Hardware:
@@ -64,9 +65,9 @@ const int HEAD_REST = 90;
 const int LEFT_ARM_REST = 90;
 const int RIGHT_ARM_REST = 90;
 
-// Movement ranges
-const int SLOW_MOVEMENT_RANGE = 70;   // +/- 70 degrees - BIG slow movements (default behavior)
-const int QUICK_JERK_RANGE = 90;      // +/- 90 degrees - EXTREME jerks (max safe range)
+// Movement ranges - BOTH use full servo range for maximum impact
+const int SLOW_MOVEMENT_RANGE = 90;   // +/- 90 degrees - FULL RANGE slow sweeps (0-180°)
+const int QUICK_JERK_RANGE = 90;      // +/- 90 degrees - FULL RANGE quick jerks (0-180°)
 
 // Behavior state
 enum BehaviorState {

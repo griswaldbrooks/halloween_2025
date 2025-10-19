@@ -1,5 +1,21 @@
 # Changelog
 
+## 2025-10-19 - Full Range Slow Movements (Final Tuning)
+
+### Changed
+- **Slow movements now use FULL servo range** (after second round of testing)
+  - Slow movement range: ±70° → **±90°** (complete 0-180° sweep)
+  - Slow and quick movements now have identical range
+  - **Difference is purely speed:** slow is smooth/gradual, quick is fast/snappy
+
+### Rationale
+After testing with the dressed animatronic, the ±70° slow movements weren't going through enough range to properly react with the physical system. Full range (0-180°) creates maximum visual impact and proper mechanical response.
+
+### Result
+Slow movements now sweep through the complete servo range, making them highly visible and dramatic. Combined with the long duration (8-18s), this creates sustained, unsettling motion.
+
+---
+
 ## 2025-10-19 - Extreme Movement Tuning (After Dress Rehearsal)
 
 ### Changed

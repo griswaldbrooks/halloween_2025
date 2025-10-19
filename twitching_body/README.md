@@ -69,10 +69,10 @@ Beetle (I2C) → PCA9685 → Servos
 The animatronic cycles through three states:
 
 1. **Slow Creepy Movement** (50-70% of time) - **DEFAULT BEHAVIOR**
-   - **BIG movements:** ±70 degrees from rest
+   - **FULL RANGE:** ±90 degrees (complete 0-180° sweep!)
    - Arms move in **opposite directions** (one up, one down)
-   - Slow, smooth, unsettling motion
-   - Very noticeable range of motion
+   - Slow, smooth, gradual motion (1°/step at 40ms)
+   - Maximum range of motion - fully visible
    - Duration: **8-18 seconds** (long, drawn-out movements)
 
 2. **Brief Still Periods** (20-40% of time)
@@ -81,18 +81,19 @@ The animatronic cycles through three states:
    - Duration: 2-5 seconds (much reduced)
 
 3. **EXTREME Quick Jerks** (~5% of time)
-   - **Maximum range:** ±90 degrees (full servo range!)
+   - **FULL RANGE:** ±90 degrees (complete 0-180° sweep!)
    - Arms move in **opposite directions** for dramatic effect
    - **Very fast, snappy** motion (5°/step at 3ms intervals)
-   - Intense scare effect
+   - Same range as slow, but MUCH faster
    - Duration: 150-400 milliseconds
 
 ### Opposite Arm Motion
 
 Arms move in mirror directions for more unsettling effect:
-- When **left arm moves up (+70°)**, **right arm moves down (-70°)**
-- When **left arm jerks left (+90°)**, **right arm jerks right (-90°)**
-- Head moves independently with full range
+- When **left arm moves up to 180°**, **right arm moves down to 0°**
+- When **left arm sweeps left (+90°)**, **right arm sweeps right (-90°)**
+- Head moves independently with full 0-180° range
+- All movements use the **complete servo range** for maximum visibility
 
 ### Cycle Variety
 
@@ -200,8 +201,9 @@ Edit `arduino/twitching_servos/twitching_servos.ino`:
 
 **Movement ranges:**
 ```cpp
-const int SLOW_MOVEMENT_RANGE = 70;   // ±70 degrees (BIG slow movements, default behavior)
-const int QUICK_JERK_RANGE = 90;      // ±90 degrees (EXTREME jerks, max safe range)
+const int SLOW_MOVEMENT_RANGE = 90;   // ±90 degrees (FULL 0-180° range)
+const int QUICK_JERK_RANGE = 90;      // ±90 degrees (FULL 0-180° range)
+// Both use full servo range - difference is speed!
 ```
 
 **Rest positions:**
