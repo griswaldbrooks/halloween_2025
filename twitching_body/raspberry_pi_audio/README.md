@@ -30,14 +30,32 @@ This setup configures a Raspberry Pi to automatically play an MP3 file (or playl
 # On your Raspberry Pi
 cd ~
 git clone <your-repo-url> halloween_2025
-cd halloween_2025/twitching_body/raspberry_pi_audio
+cd halloween_2025
+
+# IMPORTANT: Download actual LFS files (audio/video files)
+git lfs install
+git lfs pull
+
+cd twitching_body/raspberry_pi_audio
 ```
 
-### 2. Copy Your Audio File
+**Note:** This repository uses Git LFS for binary files. The `git lfs pull` command downloads the actual audio files (otherwise you'll only have small pointer files that won't play).
+
+### 2. Verify Audio File
 
 ```bash
-# Copy your MP3 to the audio directory
-# Either copy from USB drive:
+# Check that the audio file was downloaded correctly
+ls -lh audio/crying-ghost.mp3
+# Should show ~25MB, not 133 bytes
+
+# If file is only 133 bytes (LFS pointer), run:
+git lfs pull
+```
+
+### 2b. Copy Your Own Audio File (Optional)
+
+```bash
+# If you want to use a different MP3:
 cp /media/pi/USB_DRIVE/haunted_sound.mp3 audio/
 
 # Or download from another computer:
@@ -267,6 +285,20 @@ journalctl -u audio-loop.service -n 50
 ```
 
 **Common fixes:**
+
+1. **MP3 file is LFS pointer instead of actual audio:**
+   ```bash
+   # Check file size
+   ls -lh ~/halloween_2025/twitching_body/raspberry_pi_audio/audio/crying-ghost.mp3
+
+   # If only 133 bytes, it's a pointer file - download actual file:
+   cd ~/halloween_2025
+   git lfs install
+   git lfs pull
+
+   # Restart service
+   sudo systemctl restart audio-loop.service
+   ```
 
 1. **Wrong audio output (HDMI instead of headphones):**
    ```bash

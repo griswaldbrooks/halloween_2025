@@ -48,7 +48,18 @@ if [ -f "../assets/crying-ghost.mp3" ] && [ ! -f "audio/crying-ghost.mp3" ]; the
     echo "   ✓ Copied crying-ghost.mp3 from assets"
 fi
 
-if [ ! -f "audio/crying-ghost.mp3" ]; then
+# Check if audio file exists and is not an LFS pointer
+if [ -f "audio/crying-ghost.mp3" ]; then
+    FILE_SIZE=$(stat -c%s "audio/crying-ghost.mp3" 2>/dev/null || stat -f%z "audio/crying-ghost.mp3" 2>/dev/null || echo "0")
+    if [ "$FILE_SIZE" -lt 1000 ]; then
+        echo "   ⚠️  Audio file appears to be a Git LFS pointer ($FILE_SIZE bytes)"
+        echo "   Run: git lfs pull"
+        echo "   Then re-run this setup script"
+        exit 1
+    else
+        echo "   ✓ Audio file found ($(numfmt --to=iec-i --suffix=B $FILE_SIZE 2>/dev/null || echo \"$FILE_SIZE bytes\"))"
+    fi
+else
     echo "   ⚠️  No audio file found!"
     echo "   Please copy your MP3 file to: $SCRIPT_DIR/audio/crying-ghost.mp3"
     echo "   Or update audio-loop.service to point to your file"
