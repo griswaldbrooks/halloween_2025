@@ -397,7 +397,12 @@ sudo systemctl restart audio-loop.service
 ### Test Audio Playback
 
 ```bash
+# From raspberry_pi_audio directory
 ./scripts/test-audio.sh
+
+# Or using pixi (from twitching_body directory)
+pixi run test-audio    # Test file validity
+pixi run play-audio    # Play audio (press Ctrl+C to stop)
 ```
 
 ### Test Service (without rebooting)
