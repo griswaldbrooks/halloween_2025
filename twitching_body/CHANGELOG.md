@@ -1,5 +1,32 @@
 # Changelog
 
+## 2025-10-19 - VIOLENT Thrashing Quick Jerks (Final Polish!)
+
+### Changed
+- **Quick jerks now MUCH more violent and visible** (after final testing)
+  - Duration: 150-400ms → **600-1000ms** (much longer so violence is visible!)
+  - Speed: 5°/step at 3ms → **15°/step at 0ms** (MAXIMUM SPEED!)
+  - **THRASHING:** Targets now change every 100ms during the jerk
+  - Creates violent back-and-forth movement instead of single motion
+
+### How Thrashing Works
+During quick jerk state (600-1000ms):
+- Every 100ms, pick NEW random positions for all servos
+- Servos snap to new targets at maximum speed (15° steps, no delay)
+- Creates 6-10 rapid position changes during one jerk
+- Effect: Violent frustrated/panicked struggling - highly visible!
+
+### Result
+Quick jerks are now dramatic, violent, and impossible to miss. Creates intense "trying to escape" effect with rapid thrashing back and forth.
+
+**Behavior Summary:**
+- **Slow (8-18s):** Smooth pulling up/dropping down - working perfectly ✓
+- **Still (2-5s):** Brief pauses - perfect ✓
+- **Quick (0.6-1s):** VIOLENT THRASHING - now dramatic and visible! ✓
+- **Head:** Perfect throughout ✓
+
+---
+
 ## 2025-10-19 - Dramatic Arm Movements (No Small Motions!)
 
 ### Changed

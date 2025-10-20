@@ -82,13 +82,13 @@ The animatronic cycles through three states:
    - Short pauses between movements
    - Duration: 2-5 seconds (much reduced)
 
-3. **CHAOTIC Quick Jerks** (~5% of time)
-   - **Head:** Full random range (0-180°)
-   - **Arms:** Completely random positions (0-180° each)
-     - Not necessarily opposite - adds to chaotic feeling
-     - Frustrated/panicked/trying to escape effect
-   - **Very fast, snappy** motion (5°/step at 3ms intervals)
-   - Duration: 150-400 milliseconds
+3. **VIOLENT THRASHING Quick Jerks** (~5% of time)
+   - **Duration:** 600-1000ms (MUCH LONGER to be visible!)
+   - **THRASHING:** Targets change every 100ms (violent back-and-forth!)
+   - **Maximum speed:** 15°/step at 0ms delay (as fast as possible!)
+   - **Head & Arms:** Random extreme positions, changing rapidly
+   - **Effect:** Intense frustrated/panicked/violent struggling
+   - Creates multiple rapid position changes for dramatic impact
 
 ### Opposite Arm Motion
 
@@ -100,21 +100,23 @@ Arm behavior creates dramatic effect:
 - Example "dropping down": Left 0-30°, Right 150-180°
 - Creates struggling to hold himself up, then dropping
 
-**Quick Jerks:**
-- Completely random chaotic positions
-- Not necessarily opposite - adds to frustrated/escaping feeling
-- Unpredictable and startling
+**Quick Jerks (VIOLENT THRASHING):**
+- Targets change every 100ms during the jerk
+- Creates violent back-and-forth thrashing
+- 15° steps at maximum speed (0ms delay)
+- Lasts 600-1000ms so violence is visible
+- Intense frustrated/panicked/violent struggling effect
 
 **Head:** Full 0-180° range with variations throughout (perfect as-is!)
 
 ### Cycle Variety
 
 5 different predefined cycles that repeat for natural unpredictability:
-- **Cycle 1**: 3s still, **12s slow**, 0.25s jerk - slow dominant
-- **Cycle 2**: 2s still, **15s slow**, 0.3s jerk - very slow dominant
-- **Cycle 3**: 4s still, **10s slow**, 0.2s jerk - balanced
-- **Cycle 4**: 2.5s still, **18s slow**, 0.35s jerk - longest slow (most dramatic)
-- **Cycle 5**: 5s still, **8s slow**, 0.4s jerk - shortest slow
+- **Cycle 1**: 3s still, **12s slow**, **0.8s VIOLENT jerk** - long thrashing
+- **Cycle 2**: 2s still, **15s slow**, **1s VIOLENT jerk** - longest thrashing!
+- **Cycle 3**: 4s still, **10s slow**, **0.6s jerk** - shorter violence
+- **Cycle 4**: 2.5s still, **18s slow**, **0.9s VIOLENT jerk** - very long thrashing
+- **Cycle 5**: 5s still, **8s slow**, **0.7s jerk** - moderate thrashing
 
 ### Visual Feedback
 
@@ -228,13 +230,19 @@ const int RIGHT_ARM_REST = 90;
 **Movement speeds:**
 ```cpp
 const int SLOW_MOVEMENT_DELAY = 40;   // ms between updates (slower, smoother)
-const int QUICK_MOVEMENT_DELAY = 3;   // ms between updates (faster, snappier)
+const int QUICK_MOVEMENT_DELAY = 0;   // NO DELAY - maximum speed!
 ```
 
 **Step sizes:**
 ```cpp
 // Slow movements: 1 degree per step (smooth)
-// Quick jerks: 5 degrees per step (very fast and snappy)
+// Quick jerks: 15 degrees per step (VIOLENT and FAST)
+```
+
+**Thrashing behavior (quick jerks only):**
+```cpp
+// Targets change every 100ms during quick jerks
+// Creates violent back-and-forth thrashing effect
 ```
 
 After changes:

@@ -10,8 +10,10 @@
  *     - Arms: ALWAYS extreme positions (0-30° or 150-180°) - no small movements!
  *     - Effect: "Pulling up" then "dropping down" - struggling to hold himself
  *   - Brief still periods (20-40% of time)
- *   - CHAOTIC quick jerks for scare effect (~5% of time)
- *     - Random extreme positions, frustrated/escaping effect
+ *   - VIOLENT THRASHING quick jerks (~5% of time, but MUCH longer 600-1000ms)
+ *     - Rapid position changes every 100ms (violent back-and-forth)
+ *     - 15° steps at 0ms delay (MAXIMUM SPEED)
+ *     - Creates intense frustrated/panicked/violent struggling effect
  *   - Varying cycle lengths for unpredictability
  *
  * Hardware:
@@ -93,7 +95,7 @@ int rightArmCurrent = RIGHT_ARM_REST;
 
 unsigned long lastMovementUpdate = 0;
 const int SLOW_MOVEMENT_DELAY = 40;   // ms between position updates (slower for smoother motion)
-const int QUICK_MOVEMENT_DELAY = 3;   // ms between position updates (faster for snappier jerks)
+const int QUICK_MOVEMENT_DELAY = 0;   // NO DELAY - maximum speed for violent jerks!
 
 // Cycle definitions (time in milliseconds)
 // Different cycles for variety
@@ -105,13 +107,14 @@ struct Cycle {
 
 // Define 5 different behavior cycles
 // New behavior: slow movement is dominant (50-70%), less still time (20-40%)
+// Quick jerks LONGER for more visible violent thrashing
 const int NUM_CYCLES = 5;
 const Cycle cycles[NUM_CYCLES] = {
-  {3000, 12000, 250},  // 3s still, 12s slow, 0.25s jerk - slow dominant
-  {2000, 15000, 300},  // 2s still, 15s slow, 0.3s jerk - very slow dominant
-  {4000, 10000, 200},  // 4s still, 10s slow, 0.2s jerk - balanced
-  {2500, 18000, 350},  // 2.5s still, 18s slow, 0.35s jerk - longest slow
-  {5000, 8000, 400}    // 5s still, 8s slow, 0.4s jerk - shortest slow
+  {3000, 12000, 800},   // 3s still, 12s slow, 0.8s jerk - LONGER for violence
+  {2000, 15000, 1000},  // 2s still, 15s slow, 1s jerk - LONGEST jerk
+  {4000, 10000, 600},   // 4s still, 10s slow, 0.6s jerk
+  {2500, 18000, 900},   // 2.5s still, 18s slow, 0.9s jerk - very long
+  {5000, 8000, 700}     // 5s still, 8s slow, 0.7s jerk
 };
 
 int currentCycleIndex = 0;
@@ -340,11 +343,30 @@ void executeSlowMovement(unsigned long currentTime) {
 }
 
 void executeQuickJerk(unsigned long currentTime) {
-  // Fast jerky movements - EXTREME and snappy
+  // VIOLENT THRASHING - maximum speed, multiple position changes
   if (currentTime - lastMovementUpdate >= QUICK_MOVEMENT_DELAY) {
-    moveServoToward(HEAD_CHANNEL, headCurrent, headTarget, 5);  // Move 5 degrees at a time (faster)
-    moveServoToward(LEFT_ARM_CHANNEL, leftArmCurrent, leftArmTarget, 5);
-    moveServoToward(RIGHT_ARM_CHANNEL, rightArmCurrent, rightArmTarget, 5);
+    // Move MUCH faster - 15 degrees per step for violent snapping
+    moveServoToward(HEAD_CHANNEL, headCurrent, headTarget, 15);
+    moveServoToward(LEFT_ARM_CHANNEL, leftArmCurrent, leftArmTarget, 15);
+    moveServoToward(RIGHT_ARM_CHANNEL, rightArmCurrent, rightArmTarget, 15);
+
+    // THRASH: Change targets rapidly during the jerk (every ~100ms)
+    // This creates violent back-and-forth movement instead of just one motion
+    static unsigned long lastThrash = 0;
+    if (currentTime - lastThrash >= 100) {  // Change direction every 100ms
+      // Pick NEW random extreme positions - creates thrashing effect
+      headTarget = random(0, 181);
+      leftArmTarget = random(0, 181);
+      rightArmTarget = random(0, 181);
+      lastThrash = currentTime;
+
+      Serial.print(F("  THRASH! New targets: H:"));
+      Serial.print(headTarget);
+      Serial.print(F(" LA:"));
+      Serial.print(leftArmTarget);
+      Serial.print(F(" RA:"));
+      Serial.println(rightArmTarget);
+    }
 
     lastMovementUpdate = currentTime;
   }
