@@ -15,18 +15,12 @@ Servo-controlled twitching body effect for Halloween 2025 haunted house (Chamber
 ## Quick Start
 
 ```bash
-# First time setup
-pixi install
-pixi run setup
-
-# Deploy to Beetle
-pixi run deploy  # Uploads code + opens monitor
-
-# Or just flash without monitor
-pixi run arduino-flash
+pixi run deploy  # Flash code + monitor
 ```
 
-**Center Button:** Hold a wire from Pin 9 to GND during operation to center all servos at 90° (useful for installing servo horns).
+**Center Button:** Ground Pin 9 to center servos at 90° (for installing servo horns).
+
+**First Time Setup:** `pixi install && pixi run setup` (only needed once)
 
 ---
 
@@ -328,27 +322,16 @@ Beetle will start behavior automatically on power-up. No computer needed.
 
 ---
 
-## Audio Loop System (Raspberry Pi)
+## Audio System (Raspberry Pi)
 
-For continuous victim moaning/crying sounds, see the **Raspberry Pi Audio Loop** setup:
+Raspberry Pi auto-plays victim moaning sounds on loop:
 
-**Location:** `raspberry_pi_audio/`
-
-**Features:**
-- Auto-play MP3 on boot (no login required)
-- Infinite loop playback
-- Systemd service for reliability
-- Volume control scripts
-- Playlist support
-
-**Quick Setup:**
 ```bash
 cd raspberry_pi_audio
-./setup.sh
-sudo reboot
+./setup.sh && sudo reboot
 ```
 
-**Documentation:** See `raspberry_pi_audio/README.md` for complete instructions.
+See `raspberry_pi_audio/README.md` for details.
 
 ---
 

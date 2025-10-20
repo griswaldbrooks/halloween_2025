@@ -1,268 +1,169 @@
 # Agent Handoff - Twitching Body Animatronic
 
-## Status: ✅ COMPLETE - Production Ready
+## Status: ✅ COMPLETE - Production Ready & Tuned
 
-**Last Updated:** 2025-10-19 16:10
+**Last Updated:** 2025-10-19 18:30
 **Project:** Twitching Body Animatronic for Chamber 4 (Victim Room)
 
 ---
 
 ## Summary
 
-**The twitching body animatronic is fully functional and tested with hardware.**
+**Fully functional animatronic tested and tuned with dressed prop.**
 
 - 3-servo system (head, left arm, right arm)
-- Controlled via PCA9685 PWM driver over I2C
-- Autonomous operation (no sensors, no computer needed)
-- Creepy movements: still → slow twitches → quick jerks
-- Arms move in opposite directions for dramatic effect
+- PCA9685 PWM driver over I2C
+- Autonomous operation (no computer needed after programming)
+- Realistic struggling victim behavior with violent thrashing
 
 ---
 
-## Quick Start (For Next Agent/User)
+## Quick Start
 
 ```bash
 cd twitching_body
-
-# Deploy to hardware
 pixi run deploy          # Flash + monitor
-
-# Or just upload
-pixi run arduino-flash   # Upload only
-
-# Test hardware interactively
-pixi run servo-test      # Interactive testing
 ```
 
-**Center Button:** Ground Pin 9 during operation to center servos at 90° (useful for installing servo horns).
+**Center Button:** Ground Pin 9 to center servos at 90° (for servo horn installation).
 
 ---
 
-## Hardware Configuration
+## Hardware
 
-### Components
-- DFRobot Beetle (DFR0282) - Leonardo-compatible Arduino
-- PCA9685 16-channel PWM driver (I2C address 0x40)
+- DFRobot Beetle (DFR0282)
+- PCA9685 16-channel PWM driver (I2C 0x40)
 - 3x HS-755MG high-torque servos
-- 5V 5A+ power supply (external, for servos)
+- 5V 5A+ external power supply
 
-### Wiring
-```
-Beetle (I2C) → PCA9685 → Servos (CH0/CH1/CH2)
-             ↑
-      5V 5A+ Power Supply
-```
-
-**Critical:** All grounds must be connected (Beetle + PCA9685 + Power Supply).
-
-**Details:** See `WIRING.md` for complete diagrams.
+**Critical:** Common ground (Beetle + PCA9685 + Power Supply)
 
 ---
 
-## What Works
+## Final Tuned Behavior
 
-### Hardware
-- ✅ PCA9685 I2C communication (address 0x40)
-- ✅ All three servos move smoothly
-- ✅ Calibrated pulse widths (600-2400µs) prevent stalling
-- ✅ No excessive current draw (<500mA idle)
-- ✅ Center button on Pin 9
+**After extensive testing with dressed animatronic:**
 
-### Software
-- ✅ Production code uses PCA9685 (not direct Servo library)
-- ✅ Integer overflow fix applied
-- ✅ Opposite arm motion implemented
-- ✅ Memory optimized (491 bytes RAM, 19%)
-- ✅ Autonomous operation
-- ✅ 5 varying cycles for unpredictability
+1. **Slow Movements (50-70% of time, 8-18 seconds)**
+   - Head: Full 0-180° range with variations ✓
+   - Arms: ALWAYS extreme positions (0-30° or 150-180°) ✓
+   - Effect: Struggling to pull himself up, then dropping
 
-### Behavior
-- ✅ Still (70-85% of time, 6-15 seconds)
-- ✅ Slow movements (±15°, arms opposite directions)
-- ✅ Quick jerks (±35°, arms opposite directions)
-- ✅ LED feedback on Pin 13
+2. **Brief Still (20-40% of time, 2-5 seconds)**
+   - Short pauses between movements
+
+3. **VIOLENT Thrashing (5% of time, 0.6-1 second)**
+   - Targets change every 100ms (6-10 position changes)
+   - Maximum speed (15°/step, 0ms delay)
+   - Effect: Frustrated/panicked violent struggling
+
+**Key:** NO small movements - all arm motions are dramatic and visible when dressed.
 
 ---
 
-## Key Issues Resolved This Session
+## Key Tuning Sessions
 
-### 1. Pulse Width Calibration (CRITICAL FIX)
-**Problem:** Original test code had pulse widths of 150-600µs
-**Symptom:** Servos stalled, twitched, drew 2A+ when idle
-**Solution:** Calibrated to 600-2400µs through hardware testing
-**Result:** Smooth movement, normal current draw
+### Session 1: Initial Movement Ranges
+- Increased from ±15° to ±55° to ±70° to ±90°
+- Made slow movements dominant (50-70% vs 10-20%)
+- Reduced still time from 70-85% to 20-40%
 
-### 2. Integer Overflow
-**Problem:** Pulse calculation `(pulse_us * 4096) / 20000` overflowed int
-**Solution:** Cast to long: `((long)pulse_us * 4096) / 20000`
-**Result:** Correct PWM values, no negative microseconds
+### Session 2: Eliminate Small Movements
+- Fixed random() picking invisible small values
+- Arms now ALWAYS go to extremes (0-30° or 150-180°)
+- Removed mid-movement target changes for full sweeps
 
-### 3. Upload Command Syntax
-**Problem:** `arduino-cli upload` didn't accept sketch path as argument
-**Solution:** Use `cd` into sketch directory + `--input-dir .`
-**Result:** Uploads work reliably
-
-### 4. Center Button
-**Added:** Pin 9 can be grounded anytime to center servos at 90°
-**Use case:** Installing servo horns at neutral position
-**Result:** Much easier hardware assembly
-
-### 5. Opposite Arm Motion
-**Added:** Arms move in mirror directions (one up, one down)
-**Result:** More dramatic and unsettling movements
+### Session 3: Violent Thrashing
+- Increased quick jerk duration (150-400ms → 600-1000ms)
+- Added thrashing (targets change every 100ms)
+- Maximum speed (15°/step at 0ms delay)
 
 ---
 
 ## Files
 
-### Documentation (All Up-to-Date)
-- `README.md` - Complete setup guide ⭐ START HERE
-- `WIRING.md` - Detailed wiring diagrams
+**Essential:**
+- `README.md` - Complete setup guide
+- `WIRING.md` - Wiring diagrams
+- `CHANGELOG.md` - Complete tuning history
+- `arduino/twitching_servos/twitching_servos.ino` - Production code
+
+**Testing:**
 - `SERVO_TEST.md` - Interactive testing guide
-- `TROUBLESHOOTING.md` - Problem-solving
-- `CHANGELOG.md` - Complete history of changes
-- `AGENT_HANDOFF.md` - This file
+- `arduino/servo_test/servo_test.ino` - Test sketch
+- `scripts/` - Testing utilities
 
-### Code (Production Ready)
-- `arduino/twitching_servos/twitching_servos.ino` - ✅ Production code (PCA9685)
-- `arduino/servo_test/servo_test.ino` - Interactive testing tool
-
-### Scripts
-- `scripts/beetle_test.sh` - Hardware verification
-- `scripts/integration_test.sh` - System test
-- `scripts/kill_arduino.sh` - Process cleanup
-
-### Configuration
-- `pixi.toml` - All Pixi tasks (updated and working)
+**Audio:**
+- `raspberry_pi_audio/` - Victim moaning audio loop system
 
 ---
 
-## Production Code Details
+## Production Code Key Settings
 
-**File:** `arduino/twitching_servos/twitching_servos.ino`
-
-**Key Settings:**
 ```cpp
-// Calibrated pulse widths for HS-755MG
-#define SERVOMIN  600
-#define SERVOMAX  2400
-#define SERVO_FREQ 50
+// Movement ranges - both use extremes
+const int SLOW_MOVEMENT_RANGE = 90;
+const int QUICK_JERK_RANGE = 90;
 
-// Movement ranges
-const int SLOW_MOVEMENT_RANGE = 15;  // ±15 degrees
-const int QUICK_JERK_RANGE = 35;     // ±35 degrees
+// Speed
+const int SLOW_MOVEMENT_DELAY = 40;   // Smooth
+const int QUICK_MOVEMENT_DELAY = 0;   // Maximum speed
 
-// PCA9685 channels
-#define HEAD_CHANNEL 0
-#define LEFT_ARM_CHANNEL 1
-#define RIGHT_ARM_CHANNEL 2
-
-// Center button
-const int CENTER_BUTTON_PIN = 9  // Ground to center servos
+// Cycle durations (ms)
+{3000, 12000, 800},   // still, slow, violent jerk
+{2000, 15000, 1000},  // longest jerk
+{4000, 10000, 600},
+{2500, 18000, 900},
+{5000, 8000, 700}
 ```
-
-**Memory Usage:**
-- Flash: 13,198 bytes (46%)
-- RAM: 491 bytes (19%)
 
 ---
 
-## Testing
+## Deployment
 
-### Quick Test
+1. Install servos in prop body
+2. Use center button (Pin 9) to position servo horns at 90°
+3. Connect external 5V 5A+ power supply
+4. Upload: `pixi run arduino-flash`
+5. Test movements are visible when dressed
+
+---
+
+## Audio System
+
+Raspberry Pi auto-plays victim moaning sounds on loop:
+
 ```bash
-pixi run servo-test
-# In monitor: i, 0, 1, 2, a, c, p, +, -, <, >
+cd raspberry_pi_audio
+./setup.sh
+sudo reboot
 ```
 
-### Deployment
-```bash
-pixi run deploy          # Flash + monitor
-# Watch for: "STARTUP", state transitions, servo movement logs
-```
-
----
-
-## Next Steps (If Continuing Work)
-
-### For Deployment in Haunted House
-1. Install servos in prop body (cocooned victim)
-2. Use center button (Pin 9) to position servo horns
-3. Secure wiring
-4. Connect external 5V 5A+ power supply
-5. Deploy code: `pixi run arduino-flash`
-6. Test in Chamber 4
-7. Fine-tune movement ranges if needed
-
-### For Further Development (Optional)
-- Add more servo channels (PCA9685 supports up to 16)
-- Adjust movement ranges/timing in code
-- Add sound triggers
-- Integrate with room lighting
-
----
-
-## Important Notes
-
-**✅ DO:**
-- Use external 5V 5A+ power supply for servos
-- Connect all grounds together
-- Use `pixi run` commands (not system tools)
-- Test with `servo-test` before modifying production code
-
-**❌ DON'T:**
-- Change pulse width settings (600-2400µs) - these are calibrated!
-- Power servos from Beetle 5V pin (insufficient current)
-- Modify code without testing first
-- Forget common ground
+See `raspberry_pi_audio/README.md` for details.
 
 ---
 
 ## For Next Agent
 
-**If you need to modify this project:**
+**This project is COMPLETE.** All movements are tuned for maximum dramatic effect with dressed animatronic.
 
-1. **Read `README.md`** - Complete overview
-2. **Test current code:** `pixi run deploy`
-3. **Make changes** to `arduino/twitching_servos/twitching_servos.ino`
-4. **Test:** `pixi run arduino-flash`
-5. **Document changes** in `CHANGELOG.md`
+If modifications needed:
+1. Read `README.md` for full context
+2. Test with `pixi run servo-test` before changing production code
+3. Document changes in `CHANGELOG.md`
 
-**If starting a new chamber effect:**
-
-Use this project as a template:
-- Pixi-based environment
-- PCA9685 for servo control
-- Auto port detection
-- Memory optimization (F() macro)
-- Interactive testing tools
-- Comprehensive documentation
+**Movement tuning complete - DO NOT change movement ranges without physical testing!**
 
 ---
 
-## Session Summary (2025-10-19)
+## Critical Learnings
 
-**Duration:** ~3 hours
-**Status Change:** "Needs PCA9685 update" → "COMPLETE and tested"
-
-**Major Accomplishments:**
-1. ✅ Updated production code to use PCA9685
-2. ✅ Calibrated pulse widths (fixed stalling)
-3. ✅ Fixed integer overflow bug
-4. ✅ Added center button feature
-5. ✅ Implemented opposite arm motion
-6. ✅ Increased movement ranges (+7° slow, +10° jerks)
-7. ✅ Fixed upload command syntax
-8. ✅ Tested with actual hardware
-9. ✅ Updated all documentation
-10. ✅ Removed obsolete files
-
-**Project is production-ready for haunted house deployment!**
+1. **Test with dressed prop** - movements look different when dressed
+2. **No small movements** - they're invisible, always use extremes
+3. **Thrashing > single motion** - rapid position changes are more dramatic
+4. **Longer quick jerks** - need 600-1000ms to be visible
+5. **Calibrated pulse widths** - 600-2400µs prevents servo stalling
 
 ---
 
-**Questions? Check:**
-- `README.md` for setup/usage
-- `TROUBLESHOOTING.md` for common issues
-- `WIRING.md` for connection diagrams
-- `CHANGELOG.md` for complete history
+**Project Status:** ✅ Production-ready for haunted house deployment

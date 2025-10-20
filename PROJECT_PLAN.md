@@ -133,15 +133,15 @@ Recently captured victims - still alive and suffering
 **✅ COMPLETE: Twitching Body Animatronic** (`/twitching_body/`)
 - **System**: 3-servo autonomous animatronic (head, left arm, right arm)
 - **Hardware**: DFRobot Beetle + PCA9685 PWM driver + 3x HS-755MG servos + 5V 5A+ power supply
-- **Behavior**:
-  - Mostly still (70-85% of time)
-  - Slow movements ±55° with opposite arm motion (10-20% of time)
-  - DRAMATIC quick jerks ±90° with opposite arm motion (5-10% of time)
-  - 5 varying cycles for unpredictability
-  - Center button (Pin 9) for easy installation
+- **Behavior** (extensively tuned with dressed prop):
+  - Slow struggling movements (50-70%, 8-18s) - arms always extreme positions
+  - Brief still periods (20-40%, 2-5s)
+  - VIOLENT thrashing jerks (5%, 0.6-1s) - targets change every 100ms
+  - Effect: Victim struggling to escape, highly visible and dramatic
+- **Audio**: Raspberry Pi auto-plays victim moaning on loop
 - **Control**: Standalone - no computer needed after programming
-- **Status**: Production-ready, tested and tuned with hardware
-- **Setup**: See `/twitching_body/README.md` for complete instructions
+- **Status**: ✅ Production-ready, tested and fully tuned
+- **Setup**: See `/twitching_body/README.md`
 
 **Audio Effects:**
 - **Moaning**: Hidden Bluetooth speakers inside or behind cocoons

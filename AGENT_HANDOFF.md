@@ -31,59 +31,39 @@ pixi run integration-test  # ✅ All 5 tests pass
 
 ---
 
-## ✅ Completed: Twitching Body Animatronic (PRODUCTION READY)
+## ✅ Completed: Twitching Body Animatronic (TUNED & READY)
 
-**Status:** ✅ COMPLETE - Tested with hardware, ready for deployment
+**Status:** ✅ COMPLETE - Extensively tuned with dressed animatronic
 
 **Location:** `twitching_body/`
 
-**What was accomplished:**
-1. ✅ PCA9685 + HS-755MG servo integration (production code complete)
-2. ✅ Complete wiring diagrams (`WIRING.md`)
-3. ✅ Calibrated pulse widths (600-2400µs) - prevents servo stalling
-4. ✅ Integer overflow fix applied
-5. ✅ Interactive testing workflow (`pixi run servo-test`)
-6. ✅ Center button feature (Pin 9 - ground to center servos)
-7. ✅ Opposite arm motion implemented (dramatic effect)
-8. ✅ Larger movement ranges (±15° slow, ±35° jerks)
-9. ✅ Comprehensive documentation (README, TROUBLESHOOTING, SERVO_TEST)
-10. ✅ Port auto-detection and process cleanup tools
-11. ✅ Hardware tested and verified working
+**Final Tuned Behavior:**
+1. **Slow Movements (50-70%, 8-18s)** - Dramatic struggling
+   - Arms ALWAYS extreme positions (0-30° or 150-180°)
+   - Effect: Pulling himself up, then dropping
+   - No small movements (invisible when dressed)
+
+2. **Brief Still (20-40%, 2-5s)** - Short pauses
+
+3. **VIOLENT Thrashing (5%, 0.6-1s)** - Maximum drama
+   - Targets change every 100ms (6-10 rapid changes)
+   - Maximum speed (15°/step, 0ms delay)
+   - Effect: Frustrated/panicked violent struggling
 
 **Hardware:**
-- DFRobot Beetle (DFR0282)
-- PCA9685 16-channel PWM driver (I2C, address 0x40)
-- 3x HS-755MG high-torque servos (head, left arm, right arm)
-- 5V 5A+ power supply
+- DFRobot Beetle + PCA9685 + 3x HS-755MG servos + 5V 5A+ power
 
-**Behavior:**
-- Autonomous (no sensors, always running)
-- Mostly still (70-85% of time)
-- Slow movements ±55° with opposite arm motion (10-20%)
-- DRAMATIC quick jerks ±90° with opposite arm motion (5-10%)
-- 5 varying cycles for unpredictability
-- Center button for easy servo horn installation
+**Audio System:**
+- Raspberry Pi auto-plays victim moaning (60min loop)
+- See `raspberry_pi_audio/` for setup
 
-**Key files:**
-- `README.md` - Complete setup guide
-- `WIRING.md` - Detailed wiring diagrams
-- `SERVO_TEST.md` - Interactive testing guide
-- `TROUBLESHOOTING.md` - Problem-solving
-- `CHANGELOG.md` - Complete history
-- `AGENT_HANDOFF.md` - Session notes
-
-**Testing verified:**
+**Deployment:**
 ```bash
 cd twitching_body
-pixi run deploy  # ✅ All tests pass, servos work perfectly
+pixi run deploy
 ```
 
-**Ready for deployment:**
-- All servos move smoothly
-- No servo stalling or high current draw
-- Center button works
-- Opposite arm motion creates dramatic effect
-- Production code complete and tested
+**Key Achievement:** All movements tuned for maximum visibility and dramatic effect when animatronic is fully dressed. Tested through multiple iterations with physical prop.
 
 ---
 
