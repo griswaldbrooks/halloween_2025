@@ -69,31 +69,43 @@ Beetle (I2C) → PCA9685 → Servos
 The animatronic cycles through three states:
 
 1. **Slow Creepy Movement** (50-70% of time) - **DEFAULT BEHAVIOR**
-   - **FULL RANGE:** ±90 degrees (complete 0-180° sweep!)
-   - Arms move in **opposite directions** (one up, one down)
+   - **Head:** Full random range (0-180°) with variations - *working perfectly!*
+   - **Arms:** ALWAYS extreme positions - **NO SMALL MOVEMENTS!**
+     - Either "pulling up": one arm 150-180°, other 0-30°
+     - Or "dropping down": positions reversed
+     - Creates struggling/trying to hold himself effect
    - Slow, smooth, gradual motion (1°/step at 40ms)
-   - Maximum range of motion - fully visible
-   - Duration: **8-18 seconds** (long, drawn-out movements)
+   - Duration: **8-18 seconds** (long, sustained struggling)
 
 2. **Brief Still Periods** (20-40% of time)
    - Servos at rest positions (90 degrees)
    - Short pauses between movements
    - Duration: 2-5 seconds (much reduced)
 
-3. **EXTREME Quick Jerks** (~5% of time)
-   - **FULL RANGE:** ±90 degrees (complete 0-180° sweep!)
-   - Arms move in **opposite directions** for dramatic effect
+3. **CHAOTIC Quick Jerks** (~5% of time)
+   - **Head:** Full random range (0-180°)
+   - **Arms:** Completely random positions (0-180° each)
+     - Not necessarily opposite - adds to chaotic feeling
+     - Frustrated/panicked/trying to escape effect
    - **Very fast, snappy** motion (5°/step at 3ms intervals)
-   - Same range as slow, but MUCH faster
    - Duration: 150-400 milliseconds
 
 ### Opposite Arm Motion
 
-Arms move in mirror directions for more unsettling effect:
-- When **left arm moves up to 180°**, **right arm moves down to 0°**
-- When **left arm sweeps left (+90°)**, **right arm sweeps right (-90°)**
-- Head moves independently with full 0-180° range
-- All movements use the **complete servo range** for maximum visibility
+Arm behavior creates dramatic effect:
+
+**Slow Movements:**
+- Always extreme positions (no small movements!)
+- Example "pulling up": Left 150-180°, Right 0-30°
+- Example "dropping down": Left 0-30°, Right 150-180°
+- Creates struggling to hold himself up, then dropping
+
+**Quick Jerks:**
+- Completely random chaotic positions
+- Not necessarily opposite - adds to frustrated/escaping feeling
+- Unpredictable and startling
+
+**Head:** Full 0-180° range with variations throughout (perfect as-is!)
 
 ### Cycle Variety
 

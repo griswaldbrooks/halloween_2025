@@ -5,10 +5,13 @@
  * twitching movements for haunted house effect.
  *
  * Behavior:
- *   - Mostly slow creepy movements (50-70% of time, FULL 0-180° range)
+ *   - Mostly slow creepy movements (50-70% of time)
+ *     - Head: Full 0-180° range with variations
+ *     - Arms: ALWAYS extreme positions (0-30° or 150-180°) - no small movements!
+ *     - Effect: "Pulling up" then "dropping down" - struggling to hold himself
  *   - Brief still periods (20-40% of time)
- *   - EXTREME quick jerks for scare effect (FULL 0-180° range, ~5% of time)
- *   - Difference is speed: slow is smooth/gradual, quick is fast/snappy
+ *   - CHAOTIC quick jerks for scare effect (~5% of time)
+ *     - Random extreme positions, frustrated/escaping effect
  *   - Varying cycle lengths for unpredictability
  *
  * Hardware:
@@ -232,12 +235,23 @@ void startSlowMovementState() {
   currentStateDuration = cycles[currentCycleIndex].slowMovementDuration;
   lastMovementUpdate = millis();
 
-  // Set random slow movement targets
-  // Arms move in opposite directions for more interesting motion
+  // HEAD: Keep random full range (working perfectly)
   headTarget = HEAD_REST + random(-SLOW_MOVEMENT_RANGE, SLOW_MOVEMENT_RANGE + 1);
-  int armOffset = random(-SLOW_MOVEMENT_RANGE, SLOW_MOVEMENT_RANGE + 1);
-  leftArmTarget = LEFT_ARM_REST + armOffset;
-  rightArmTarget = RIGHT_ARM_REST - armOffset;  // Opposite direction
+
+  // ARMS: Always go to EXTREMES for dramatic effect (no small movements!)
+  // Pick extreme positions: either very low (0-30°) or very high (150-180°)
+  // This creates "pulling up" or "dropping down" effect
+  bool pullUp = random(0, 2);  // 0 or 1
+
+  if (pullUp) {
+    // Pulling up - arms go high (one higher than the other)
+    leftArmTarget = random(150, 181);   // 150-180° (very high)
+    rightArmTarget = random(0, 31);     // 0-30° (very low)
+  } else {
+    // Dropping down - arms go low/reversed
+    leftArmTarget = random(0, 31);      // 0-30° (very low)
+    rightArmTarget = random(150, 181);  // 150-180° (very high)
+  }
 
   digitalWrite(LED_PIN, HIGH);
 
@@ -258,12 +272,14 @@ void startQuickJerkState() {
   currentStateDuration = cycles[currentCycleIndex].quickJerkDuration;
   lastMovementUpdate = millis();
 
-  // Set random quick jerk targets
-  // Arms move in opposite directions for dramatic effect
+  // HEAD: Keep random full range (working perfectly)
   headTarget = HEAD_REST + random(-QUICK_JERK_RANGE, QUICK_JERK_RANGE + 1);
-  int armOffset = random(-QUICK_JERK_RANGE, QUICK_JERK_RANGE + 1);
-  leftArmTarget = LEFT_ARM_REST + armOffset;
-  rightArmTarget = RIGHT_ARM_REST - armOffset;  // Opposite direction
+
+  // ARMS: CHAOTIC movement - random extreme positions (frustrated/escaping)
+  // Pick completely random extreme positions for erratic, panicked effect
+  leftArmTarget = random(0, 181);   // Anywhere from 0-180° (chaotic)
+  rightArmTarget = random(0, 181);  // Anywhere from 0-180° (chaotic)
+  // Not necessarily opposite - adds to the chaotic/frustrated feeling
 
   // Blink LED rapidly during jerk
   digitalWrite(LED_PIN, HIGH);
@@ -311,16 +327,13 @@ void executeSlowMovement(unsigned long currentTime) {
     moveServoToward(LEFT_ARM_CHANNEL, leftArmCurrent, leftArmTarget, 1);
     moveServoToward(RIGHT_ARM_CHANNEL, rightArmCurrent, rightArmTarget, 1);
 
-    // Occasionally change target during slow movement (adds randomness)
+    // Occasionally change head target (head motion is perfect, keep this)
     if (random(0, 100) < 5) {  // 5% chance each update
       headTarget = HEAD_REST + random(-SLOW_MOVEMENT_RANGE, SLOW_MOVEMENT_RANGE + 1);
     }
-    if (random(0, 100) < 5) {
-      // Arms move in opposite directions
-      int armOffset = random(-SLOW_MOVEMENT_RANGE, SLOW_MOVEMENT_RANGE + 1);
-      leftArmTarget = LEFT_ARM_REST + armOffset;
-      rightArmTarget = RIGHT_ARM_REST - armOffset;
-    }
+
+    // DON'T change arm targets during slow movement - let them complete the full sweep!
+    // This ensures arms always do dramatic full-range movements
 
     lastMovementUpdate = currentTime;
   }

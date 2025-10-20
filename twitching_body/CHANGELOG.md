@@ -1,5 +1,31 @@
 # Changelog
 
+## 2025-10-19 - Dramatic Arm Movements (No Small Motions!)
+
+### Changed
+- **Arms now ALWAYS use extreme positions** (final tuning based on dressed rehearsal)
+  - Slow movements: Arms go to extremes (0-30° or 150-180°) - NO small movements!
+  - Random function was picking small values - FIXED
+  - Arms no longer change target mid-movement - complete full sweep
+  - Creates "pulling up" then "dropping down" effect
+
+- **Quick jerks now completely chaotic**
+  - Arms pick random positions (0-180°), not necessarily opposite
+  - Creates frustrated/escaping/panicked effect
+  - More unpredictable and startling
+
+- **Head unchanged** (working perfectly with full range variations)
+
+### Problem Solved
+Previously, `random(-90, 91)` could give small values like ±5°, creating tiny movements that were invisible when animatronic was dressed. Now arms ALWAYS go to extreme positions for maximum visibility and dramatic effect.
+
+### Behavior
+- **Slow:** Arms sweep between extreme positions (pulling up/dropping down)
+- **Quick:** Arms snap to random chaotic positions (frustrated struggling)
+- **Head:** Full range with variations (unchanged - perfect!)
+
+---
+
 ## 2025-10-19 - Full Range Slow Movements (Final Tuning)
 
 ### Changed
