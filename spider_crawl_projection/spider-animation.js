@@ -35,6 +35,18 @@ function resizeCanvas() {
 }
 
 // Spider class with proper kinematics
+// User's verified non-intersecting foot positions (relative to body center, bodySize=100)
+const CUSTOM_FOOT_POSITIONS = [
+    { x: 160.2, y: 100.2 },  // Leg 0
+    { x: 160.2, y: -100.2 }, // Leg 1
+    { x: 115.2, y: 130.4 },  // Leg 2
+    { x: 115.2, y: -130.4 }, // Leg 3
+    { x: -60.2, y: 130.4 },  // Leg 4
+    { x: -60.2, y: -130.4 }, // Leg 5
+    { x: -100.2, y: 100.2 }, // Leg 6
+    { x: -100.2, y: -100.2 } // Leg 7
+];
+
 class Spider {
     constructor() {
         this.reset();
@@ -79,6 +91,7 @@ class Spider {
                 elbowBias: elbowBias
             });
 
+            leg.index = i; // Track which leg this is (0-7)
             leg.group = groupA.includes(i) ? 'A' : 'B';
             leg.pairIndex = attachment.pair;
             leg.baseAngle = attachment.baseAngle;
@@ -93,25 +106,12 @@ class Spider {
     }
 
     initializeLegPositions() {
-        // User's custom foot positions (relative to body center, for bodySize=100)
-        // These positions have been verified to have ZERO intersections
-        const customFootPositionsRelative = [
-            { x: 160.2, y: 100.2 },  // Leg 0 (560.2 - 400, 500.2 - 400)
-            { x: 160.2, y: -100.2 }, // Leg 1
-            { x: 115.2, y: 130.4 },  // Leg 2
-            { x: 115.2, y: -130.4 }, // Leg 3
-            { x: -60.2, y: 130.4 },  // Leg 4
-            { x: -60.2, y: -130.4 }, // Leg 5
-            { x: -100.2, y: 100.2 }, // Leg 6
-            { x: -100.2, y: -100.2 } // Leg 7
-        ];
-
-        // Scale positions based on spider's actual body size
+        // Scale custom positions based on spider's actual body size
         const scale = this.bodySize / 100;
 
         for (let i = 0; i < this.legs.length; i++) {
             const leg = this.legs[i];
-            const relPos = customFootPositionsRelative[i];
+            const relPos = CUSTOM_FOOT_POSITIONS[i];
 
             // Scale and position relative to this spider's center
             leg.worldFootX = this.x + relPos.x * scale;
@@ -171,16 +171,17 @@ class Spider {
 
         if (isSwinging) {
             // SWING: Foot swings forward in TOP-DOWN view (X-Y plane)
-            // TOP-DOWN: We're looking from above, foot moves in 2D plane
-            const reach = (leg.upperLength + leg.lowerLength) * 0.7;
+            // Use custom foot positions (verified no intersections) as target
+            const scale = this.bodySize / 100;
+            const relPos = CUSTOM_FOOT_POSITIONS[leg.index];
 
             // Predict where body will be after the upcoming lurch phase
             const lurchDistance = this.bodySize * 0.4;
             const futureBodyX = this.x + lurchDistance;
 
-            // Calculate swing target position (where foot should land)
-            const swingTargetX = futureBodyX + leg.attachX + Math.cos(leg.baseAngle) * reach;
-            const swingTargetY = this.y + leg.attachY + Math.sin(leg.baseAngle) * reach;
+            // Calculate swing target using custom positions (prevents intersections)
+            const swingTargetX = futureBodyX + relPos.x * scale;
+            const swingTargetY = this.y + relPos.y * scale;
 
             // Store swing start position at beginning of swing
             if (this.stepProgress === 0 || !leg.swingStartX) {
