@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spider Visual Test - Single Spider Output</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: white;
+            font-family: monospace;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            background: white;
+        }
+        .info {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h2>Spider Visual Test Output</h2>
+        <p>This renders a single spider for visual comparison with spider_template1.png</p>
+        <p><strong>Instructions:</strong> Right-click canvas → "Save Image As..." → spider_output.png</p>
+    </div>
+
+    <canvas id="canvas" width="400" height="400"></canvas>
+
+    <script src="leg-kinematics.js"></script>
+    <script src="spider-model.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Clear to white
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Create a spider centered in canvas
+        class TestSpider {
+            constructor(x, y, size) {
+                this.x = x;
+                this.y = y;
+                this.bodySize = size;
+                this.body = new SpiderBody(this.bodySize);
+                this.color = '#000000';
+
+                // Create legs with same logic as spider-animation-v2.js
+                this.legs = [];
+                for (let i = 0; i < 8; i++) {
+                    const attachment = this.body.getAttachment(i);
+                    const elbowBias = 1; // Final solution from Part 3
+
+                    const leg = new Leg2D({
+                        attachX: attachment.x,
+                        attachY: attachment.y,
+                        upperLength: this.body.legUpperLength,
+                        lowerLength: this.body.legLowerLength,
+                        side: attachment.side,
+                        baseAngle: attachment.baseAngle,
+                        elbowBias: elbowBias
+                    });
+
+                    this.legs.push(leg);
+                }
+
+                this.initializeLegPositions();
+            }
+
+            initializeLegPositions() {
+                // Same as spider-animation-v2.js
+                for (const leg of this.legs) {
+                    const reach = (leg.upperLength + leg.lowerLength) * 0.7;
+                    leg.worldFootX = this.x + leg.attachX + Math.cos(leg.baseAngle) * reach;
+                    leg.worldFootY = this.y + leg.attachY + Math.sin(leg.baseAngle) * reach;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                ctx.strokeStyle = this.color;
+                ctx.fillStyle = this.color;
+                ctx.lineWidth = this.bodySize * 0.1;
+                ctx.lineCap = 'round';
+
+                // Draw legs
+                for (const leg of this.legs) {
+                    this.drawLeg(leg);
+                }
+
+                // Draw cephalothorax
+                ctx.beginPath();
+                ctx.ellipse(
+                    this.body.cephalothorax.center, 0,
+                    this.body.cephalothorax.length / 2,
+                    this.body.cephalothorax.width / 2,
+                    0, 0, Math.PI * 2
+                );
+                ctx.fill();
+
+                // Draw abdomen
+                ctx.beginPath();
+                ctx.ellipse(
+                    this.body.abdomen.center, 0,
+                    this.body.abdomen.length / 2,
+                    this.body.abdomen.width / 2,
+                    0, 0, Math.PI * 2
+                );
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            drawLeg(leg) {
+                // Target position for foot (in world space)
+                const targetX = leg.worldFootX - this.x;
+                const targetY = leg.worldFootY - this.y;
+
+                // Use inverse kinematics to calculate joint angles
+                leg.setFootPosition(targetX, targetY);
+
+                // Use forward kinematics to get actual positions
+                const positions = leg.forwardKinematics();
+
+                // Draw upper segment
+                ctx.beginPath();
+                ctx.moveTo(leg.attachX, leg.attachY);
+                ctx.lineTo(positions.knee.x, positions.knee.y);
+                ctx.stroke();
+
+                // Draw lower segment
+                ctx.beginPath();
+                ctx.moveTo(positions.knee.x, positions.knee.y);
+                ctx.lineTo(positions.foot.x, positions.foot.y);
+                ctx.stroke();
+            }
+
+            drawAnnotations() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                ctx.font = '9px monospace';
+                ctx.fillStyle = '#FF0000';
+                ctx.strokeStyle = '#FF0000';
+
+                for (let i = 0; i < this.legs.length; i++) {
+                    const leg = this.legs[i];
+                    const attachment = this.body.getAttachment(i);
+
+                    // Calculate positions
+                    const targetX = leg.worldFootX - this.x;
+                    const targetY = leg.worldFootY - this.y;
+                    leg.setFootPosition(targetX, targetY);
+                    const positions = leg.forwardKinematics();
+
+                    // Calculate offset direction to push text away from spider
+                    const footAngle = Math.atan2(positions.foot.y, positions.foot.x);
+                    const offsetDist = 15;
+                    const textOffsetX = Math.cos(footAngle) * offsetDist;
+                    const textOffsetY = Math.sin(footAngle) * offsetDist;
+
+                    // Leg number (larger, at foot)
+                    ctx.font = 'bold 12px monospace';
+                    ctx.fillText(`L${i}`, positions.foot.x + textOffsetX, positions.foot.y + textOffsetY);
+
+                    // Foot position
+                    ctx.font = '8px monospace';
+                    const footX = (this.x + positions.foot.x).toFixed(0);
+                    const footY = (this.y + positions.foot.y).toFixed(0);
+                    ctx.fillText(`F:${footX},${footY}`, positions.foot.x + textOffsetX, positions.foot.y + textOffsetY + 10);
+
+                    // Knee position (offset away from center)
+                    const kneeAngle = Math.atan2(positions.knee.y, positions.knee.x);
+                    const kneeOffsetX = Math.cos(kneeAngle) * 12;
+                    const kneeOffsetY = Math.sin(kneeAngle) * 12;
+                    const kneeX = (this.x + positions.knee.x).toFixed(0);
+                    const kneeY = (this.y + positions.knee.y).toFixed(0);
+                    ctx.fillText(`K:${kneeX},${kneeY}`, positions.knee.x + kneeOffsetX, positions.knee.y + kneeOffsetY);
+
+                    // Base angle (near attachment, positioned based on side)
+                    const angleDeg = (attachment.baseAngle * 180 / Math.PI).toFixed(0);
+                    const angleOffsetX = attachment.side > 0 ? -25 : 25; // Left side vs right side
+                    const angleOffsetY = attachment.pair * 3; // Vertical spacing by pair
+                    ctx.fillText(`${angleDeg}deg`, leg.attachX + angleOffsetX, leg.attachY + angleOffsetY);
+
+                    // Draw small circles at joints
+                    ctx.beginPath();
+                    ctx.arc(positions.foot.x, positions.foot.y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(positions.knee.x, positions.knee.y, 2, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(leg.attachX, leg.attachY, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Create and draw spider centered
+        const spider = new TestSpider(200, 200, 100);
+        spider.draw();
+        spider.drawAnnotations();
+
+        console.log('Spider drawn at (200, 200) with size 100');
+        console.log('Leg numbering: L0-L7');
+        console.log('Red text shows:');
+        console.log('  - Leg number (L#)');
+        console.log('  - Base angle in degrees');
+        console.log('  - Foot position F:(x,y)');
+        console.log('  - Knee position K:(x,y)');
+        console.log('Right-click canvas and "Save Image As..." to save as spider_output.png');
+    </script>
+</body>
+</html>

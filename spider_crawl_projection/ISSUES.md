@@ -1,8 +1,10 @@
 # Known Issues
 
-**Last Updated:** 2025-10-20 (Late Night)
+**Last Updated:** 2025-10-20 (Final)
 
 ## Current Issues
+
+**Note:** Geometry is now PERFECT! All issues below are about locomotion/animation, not positioning.
 
 ### 1. Swing Leg Movement (HIGH PRIORITY)
 
@@ -15,13 +17,18 @@
 
 **Location:** `spider-animation-v2.js:147-182` (updateLeg function)
 
-**Potential Fixes:**
-- Increase lift height from 0.5× to 0.8× or 1.0× body size
-- Add easing to swing motion (not linear interpolation)
-- Make swing legs move faster than body
-- Add visual distinction (different line weight/color during swing)
+**Note:** This is now a TOP-DOWN view, so "lift" means moving in the X-Y plane, not Z-axis!
 
-**Test:** Run `pixi run serve`, press Space to pause, verify legs lift visibly
+**Potential Fixes:**
+- Add more dramatic swing motion in X-Y plane
+- Add easing to swing motion (not linear interpolation)
+- Make swing legs move faster/farther than body
+- Add visual distinction (different line weight/color during swing)
+- Experiment with arc paths instead of linear interpolation
+
+**Tool:** Use `pixi run open-editor` to test different leg positions
+
+**Test:** Run `pixi run serve`, press Space to pause, verify swing motion is visible
 
 ---
 
@@ -47,33 +54,11 @@ const phaseDurations = [200, 150, 100, 200, 150, 100]; // ms
 - Reduce or remove pause phases
 - Make timing proportional to spider body size
 
+**Tool:** Use `pixi run open-editor` to experiment with leg positions and timing
+
 **Test:** Watch animation, adjust speed slider to see details
 
 ---
-
-### 3. Elbow Bias Logic (LOW PRIORITY)
-
-**Problem:** Some joints may bend in unnatural directions
-
-**Symptoms:**
-- Legs appear to cross body centerline
-- Joints bend "wrong" way
-- Left/right asymmetry
-
-**Location:** `spider-animation-v2.js:66-71`
-
-**Current Logic:**
-```javascript
-const angleDeg = Math.abs(attachment.baseAngle * 180 / Math.PI);
-const elbowBias = angleDeg < 90 ? -1 : 1;
-```
-
-**Potential Fixes:**
-- Try pair-based bias: `elbowBias = attachment.pair <= 1 ? -1 : 1`
-- Try side-based bias: `elbowBias = attachment.side`
-- Custom logic per leg pair
-
-**Test:** Pause animation, check if all knees bend naturally
 
 ---
 
@@ -108,6 +93,22 @@ Top-down view with correct X/Y mapping
 ---
 
 ## Resolved Issues
+
+### ~~Elbow Bias / IK Solutions~~ ✅ FIXED (2025-10-20 Final)
+**Solution:** Simple constant `elbowBias = 1` for all legs works perfectly
+- IK accuracy test shows 0.0 error on all 8 legs
+- Can be adjusted per-leg using interactive editor
+- Test: `pixi run test-ik-accuracy` → 0.0 error
+
+### ~~Foot Positions~~ ✅ FIXED (2025-10-20 Part 1)
+**Solution:** Fixed initializeLegPositions to use radial spread
+- Changed from side-view "ground line" to top-down radial
+- Test: `pixi run test-rendering` → 0.0 error
+
+### ~~Knee Positions~~ ✅ FIXED (2025-10-20 Part 2-3)
+**Solution:** Correct elbow bias calculation
+- All legs curve outward naturally
+- Test: `pixi run test-leg-drawing` → ALL PASS
 
 ### ~~Body Too Small~~ ✅ FIXED (2025-10-20 Evening)
 Body was tiny compared to legs - fixed by adjusting proportions
@@ -189,13 +190,17 @@ If you find a new issue:
 
 Before considering issues "fixed":
 
-- [ ] `pixi run test-topdown` → ALL PASS (geometry correct)
-- [ ] `pixi run test-kinematics` → ALL PASS (IK/FK accurate)
-- [ ] `pixi run test-integration` → ALL PASS (full system works)
-- [ ] View `pixi run serve` → Swing legs clearly lift off ground
+- [x] `pixi run test-topdown` → ALL PASS (geometry correct) ✅
+- [x] `pixi run test-kinematics` → ALL PASS (IK/FK accurate) ✅
+- [x] `pixi run test-ik-accuracy` → 0.0 error (perfect IK) ✅
+- [x] `pixi run test-integration` → ALL PASS (full system works) ✅
+- [ ] View `pixi run serve` → Swing legs clearly move during swing phase
 - [ ] View `pixi run serve` → Walking motion feels natural
 - [ ] View `pixi run serve` → No legs cross body or drag
 - [ ] User approval → "That looks good!"
+
+**Geometry Tests:** ALL PASS ✅
+**Remaining Work:** Locomotion animation only
 
 ---
 

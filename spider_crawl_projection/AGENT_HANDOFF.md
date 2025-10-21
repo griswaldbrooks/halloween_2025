@@ -1,7 +1,7 @@
 # Agent Handoff - Spider Crawl Projection
 
-**Last Updated:** 2025-10-20 (Late Night)
-**Status:** ✅ Geometry Complete | ⚠️ Locomotion Needs Refinement
+**Last Updated:** 2025-10-20 (Final)
+**Status:** ✅ Geometry PERFECT! Interactive editor created! | ⚠️ Locomotion Needs Refinement
 **Project:** Halloween 2025 - Chamber 2 (Spider Web Tunnel)
 
 ---
@@ -10,30 +10,92 @@
 
 **What's Done:**
 - ✅ Spider geometry matches reference template perfectly
-- ✅ IK/FK system working correctly
-- ✅ All core tests passing
+- ✅ IK/FK system working with 0.0 error on all 8 legs
+- ✅ All geometry tests passing
+- ✅ **Interactive editor created** - drag feet, flip knees, export JSON
+- ✅ Visual test tools for debugging
 
 **What Needs Work:**
 - ⚠️ Swing leg movement (legs don't lift/move convincingly enough)
 - ⚠️ Gait timing and feel (may need parameter tweaking)
 
 **Start Here:**
-1. Run `pixi run test-topdown` - verify geometry still matches
-2. Run `pixi run serve` - view animation in browser
-3. Read "Swing Phase Movement" section below for priority fix
+1. Run `pixi run open-editor` - **Try the interactive editor first!**
+2. Run `pixi run test-ik-accuracy` - Verify IK still perfect (0.0 error)
+3. Run `pixi run serve` then `pixi run open` - View animation
+4. Read "Swing Phase Movement" section below for priority fix
 
 ---
 
 ## Quick Start
 
 ```bash
-pixi install            # First time setup
-pixi run serve          # Start server → http://localhost:8080
-pixi run open           # Auto-open browser
-pixi run test-topdown   # Verify geometry matches reference
+pixi install              # First time setup
+pixi run serve            # Start server → http://localhost:8080
+pixi run open-editor      # Interactive leg editor (RECOMMENDED!)
+pixi run open             # Main animation
+pixi run open-visual-test # Single spider with annotations
+pixi run test             # Run all tests
 ```
 
 **Browser Controls:** H (toggle UI) | F (fullscreen) | R (reset) | Space (pause)
+
+### Interactive Editor (`spider-editor.html`)
+- **Drag red circles** to move leg feet
+- **Select legs** with L0-L7 buttons
+- **Flip Knee checkbox** - toggle between IK solutions
+- **Export Config** - get JSON of current configuration
+- Perfect for experimenting with leg positions!
+
+---
+
+## Tools Available
+
+### 1. Interactive Editor (`spider-editor.html`)
+**File:** `spider-editor.html`
+**Command:** `pixi run open-editor`
+
+**Purpose:** Visual leg position editor with real-time IK
+
+**Features:**
+- Click and drag feet to any position
+- IK automatically adjusts knee positions
+- Flip knee checkbox to toggle IK solutions (elbowBias)
+- JSON export of complete configuration
+- Visual feedback (green=selected, blue=dragging)
+
+**Use Case:** Perfect for:
+- Testing different leg configurations
+- Understanding IK behavior
+- Exporting configurations to apply to code
+- Debugging leg positioning issues
+
+### 2. Visual Test (`test-visual-output.html`)
+**File:** `test-visual-output.html`
+**Command:** `pixi run open-visual-test`
+
+**Purpose:** Single spider with detailed annotations
+
+**Features:**
+- Shows one static spider
+- Red text labels with leg numbers (L0-L7)
+- Displays angles, foot positions, knee positions
+- Right-click to save as image
+- Clean white background for comparison
+
+**Use Case:** Perfect for:
+- Comparing against reference template
+- Documenting current state
+- Sharing screenshots with precise data
+
+### 3. Test Suite
+**Command:** `pixi run test`
+
+**Key Tests:**
+- `test-ik-accuracy.js` - **CRITICAL** - Verifies IK places feet correctly (must show 0.0 error)
+- `test-topdown-shape.js` - Validates geometry matches reference template
+- `test-rendering.js` - Tests foot positions spread radially
+- `test-leg-drawing.js` - Tests knee positions curve outward
 
 ---
 

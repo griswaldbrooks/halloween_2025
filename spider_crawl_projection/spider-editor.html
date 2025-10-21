@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spider Leg Editor - Interactive</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: monospace;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        canvas {
+            border: 2px solid #333;
+            background: white;
+            cursor: crosshair;
+            display: block;
+            margin: 20px auto;
+        }
+        .controls {
+            background: white;
+            padding: 15px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .info {
+            background: #e8f4f8;
+            padding: 10px;
+            border: 1px solid #b3d9e6;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .selected {
+            background: #4CAF50;
+            color: white;
+        }
+        #output {
+            background: #2b2b2b;
+            color: #0f0;
+            padding: 10px;
+            font-size: 11px;
+            overflow-x: auto;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕷️ Spider Leg Editor</h1>
+
+        <div class="info">
+            <strong>Instructions:</strong>
+            <ul>
+                <li><strong>Click and drag</strong> any foot (red circles) to move it</li>
+                <li><strong>Click leg number</strong> buttons to select/deselect</li>
+                <li>IK automatically adjusts knee position</li>
+                <li>Green = selected leg, Blue = dragging</li>
+            </ul>
+        </div>
+
+        <div class="controls">
+            <strong>Select Leg:</strong>
+            <button id="leg0" onclick="selectLeg(0)">L0</button>
+            <button id="leg1" onclick="selectLeg(1)">L1</button>
+            <button id="leg2" onclick="selectLeg(2)">L2</button>
+            <button id="leg3" onclick="selectLeg(3)">L3</button>
+            <button id="leg4" onclick="selectLeg(4)">L4</button>
+            <button id="leg5" onclick="selectLeg(5)">L5</button>
+            <button id="leg6" onclick="selectLeg(6)">L6</button>
+            <button id="leg7" onclick="selectLeg(7)">L7</button>
+            <button onclick="selectLeg(null)">Clear Selection</button>
+            <br>
+            <button onclick="resetSpider()">Reset to Default</button>
+            <button onclick="exportConfig()">Export Config</button>
+        </div>
+
+        <canvas id="canvas" width="800" height="800"></canvas>
+
+        <div class="controls">
+            <strong>Selected Leg Info:</strong>
+            <div id="legInfo">No leg selected</div>
+            <div id="legControls" style="margin-top: 10px; display: none;">
+                <label>
+                    <input type="checkbox" id="flipKnee" onchange="toggleKnee()">
+                    Flip Knee (alternate IK solution)
+                </label>
+            </div>
+        </div>
+
+        <div class="controls">
+            <strong>Export Configuration (JSON):</strong>
+            <pre id="output">Click "Export Config" to see JSON configuration...</pre>
+        </div>
+    </div>
+
+    <script src="leg-kinematics.js"></script>
+    <script src="spider-model.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let spider = null;
+        let selectedLeg = null;
+        let draggingLeg = null;
+        let dragOffset = { x: 0, y: 0 };
+
+        class EditableSpider {
+            constructor(x, y, size) {
+                this.x = x;
+                this.y = y;
+                this.bodySize = size;
+                this.body = new SpiderBody(this.bodySize);
+                this.color = '#000000';
+
+                // Create legs with customizable elbow bias
+                this.legs = [];
+                this.legElbowBias = []; // Track elbow bias per leg
+                for (let i = 0; i < 8; i++) {
+                    const attachment = this.body.getAttachment(i);
+                    const elbowBias = 1; // Default
+
+                    const leg = new Leg2D({
+                        attachX: attachment.x,
+                        attachY: attachment.y,
+                        upperLength: this.body.legUpperLength,
+                        lowerLength: this.body.legLowerLength,
+                        side: attachment.side,
+                        baseAngle: attachment.baseAngle,
+                        elbowBias: elbowBias
+                    });
+
+                    leg.index = i;
+                    this.legs.push(leg);
+                    this.legElbowBias[i] = elbowBias;
+                }
+
+                this.initializeLegPositions();
+            }
+
+            initializeLegPositions() {
+                for (const leg of this.legs) {
+                    const reach = (leg.upperLength + leg.lowerLength) * 0.7;
+                    const attachment = this.body.getAttachment(leg.index);
+                    leg.worldFootX = this.x + attachment.x + Math.cos(attachment.baseAngle) * reach;
+                    leg.worldFootY = this.y + attachment.y + Math.sin(attachment.baseAngle) * reach;
+                }
+            }
+
+            setFootPosition(legIndex, worldX, worldY) {
+                const leg = this.legs[legIndex];
+                leg.worldFootX = worldX;
+                leg.worldFootY = worldY;
+            }
+
+            getFootPosition(legIndex) {
+                const leg = this.legs[legIndex];
+                return { x: leg.worldFootX, y: leg.worldFootY };
+            }
+
+            setElbowBias(legIndex, bias) {
+                this.legs[legIndex].elbowBias = bias;
+                this.legElbowBias[legIndex] = bias;
+            }
+
+            getElbowBias(legIndex) {
+                return this.legElbowBias[legIndex];
+            }
+
+            draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                // Draw legs
+                for (let i = 0; i < this.legs.length; i++) {
+                    const leg = this.legs[i];
+                    const isSelected = selectedLeg === i;
+                    const isDragging = draggingLeg === i;
+
+                    this.drawLeg(leg, isSelected, isDragging);
+                }
+
+                // Draw body
+                ctx.strokeStyle = '#000';
+                ctx.fillStyle = '#000';
+                ctx.lineWidth = this.bodySize * 0.1;
+
+                // Cephalothorax
+                ctx.beginPath();
+                ctx.ellipse(
+                    this.body.cephalothorax.center, 0,
+                    this.body.cephalothorax.length / 2,
+                    this.body.cephalothorax.width / 2,
+                    0, 0, Math.PI * 2
+                );
+                ctx.fill();
+
+                // Abdomen
+                ctx.beginPath();
+                ctx.ellipse(
+                    this.body.abdomen.center, 0,
+                    this.body.abdomen.length / 2,
+                    this.body.abdomen.width / 2,
+                    0, 0, Math.PI * 2
+                );
+                ctx.fill();
+
+                ctx.restore();
+
+                // Draw annotations
+                this.drawAnnotations();
+            }
+
+            drawLeg(leg, isSelected, isDragging) {
+                const targetX = leg.worldFootX - this.x;
+                const targetY = leg.worldFootY - this.y;
+
+                leg.setFootPosition(targetX, targetY);
+                const positions = leg.forwardKinematics();
+
+                // Color based on state
+                let color = '#000';
+                if (isDragging) color = '#0066FF';
+                else if (isSelected) color = '#00AA00';
+
+                ctx.strokeStyle = color;
+                ctx.lineWidth = isSelected ? 3 : 2;
+
+                // Upper segment
+                ctx.beginPath();
+                ctx.moveTo(leg.attachX, leg.attachY);
+                ctx.lineTo(positions.knee.x, positions.knee.y);
+                ctx.stroke();
+
+                // Lower segment
+                ctx.beginPath();
+                ctx.moveTo(positions.knee.x, positions.knee.y);
+                ctx.lineTo(positions.foot.x, positions.foot.y);
+                ctx.stroke();
+
+                // Joints
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(positions.knee.x, positions.knee.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Foot (larger, clickable)
+                ctx.fillStyle = isDragging ? '#0066FF' : '#FF0000';
+                ctx.beginPath();
+                ctx.arc(positions.foot.x, positions.foot.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            drawAnnotations() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.font = '11px monospace';
+
+                for (let i = 0; i < this.legs.length; i++) {
+                    const leg = this.legs[i];
+                    const attachment = this.body.getAttachment(i);
+
+                    const targetX = leg.worldFootX - this.x;
+                    const targetY = leg.worldFootY - this.y;
+                    leg.setFootPosition(targetX, targetY);
+                    const positions = leg.forwardKinematics();
+
+                    const isSelected = selectedLeg === i;
+                    ctx.fillStyle = isSelected ? '#00AA00' : '#666';
+
+                    // Leg number near foot
+                    const angle = Math.atan2(positions.foot.y, positions.foot.x);
+                    const offset = 15;
+                    const textX = positions.foot.x + Math.cos(angle) * offset;
+                    const textY = positions.foot.y + Math.sin(angle) * offset;
+
+                    ctx.font = isSelected ? 'bold 14px monospace' : '11px monospace';
+                    ctx.fillText(`L${i}`, textX, textY);
+                }
+
+                ctx.restore();
+            }
+
+            getLegAtPosition(worldX, worldY) {
+                const localX = worldX - this.x;
+                const localY = worldY - this.y;
+
+                for (let i = 0; i < this.legs.length; i++) {
+                    const leg = this.legs[i];
+                    const targetX = leg.worldFootX - this.x;
+                    const targetY = leg.worldFootY - this.y;
+
+                    leg.setFootPosition(targetX, targetY);
+                    const positions = leg.forwardKinematics();
+
+                    const dx = positions.foot.x - localX;
+                    const dy = positions.foot.y - localY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 10) return i;
+                }
+                return null;
+            }
+        }
+
+        function resetSpider() {
+            spider = new EditableSpider(400, 400, 100);
+            selectedLeg = null;
+            updateLegInfo();
+            spider.draw();
+        }
+
+        function selectLeg(index) {
+            selectedLeg = index;
+            updateButtons();
+            updateLegInfo();
+            spider.draw();
+        }
+
+        function updateButtons() {
+            for (let i = 0; i < 8; i++) {
+                const btn = document.getElementById(`leg${i}`);
+                btn.className = selectedLeg === i ? 'selected' : '';
+            }
+        }
+
+        function updateLegInfo() {
+            const info = document.getElementById('legInfo');
+            const controls = document.getElementById('legControls');
+
+            if (selectedLeg === null) {
+                info.innerHTML = 'No leg selected';
+                controls.style.display = 'none';
+                return;
+            }
+
+            const leg = spider.legs[selectedLeg];
+            const attachment = spider.body.getAttachment(selectedLeg);
+            const targetX = leg.worldFootX - spider.x;
+            const targetY = leg.worldFootY - spider.y;
+            leg.setFootPosition(targetX, targetY);
+            const positions = leg.forwardKinematics();
+
+            const angleDeg = (attachment.baseAngle * 180 / Math.PI).toFixed(1);
+            const elbowBias = spider.getElbowBias(selectedLeg);
+
+            info.innerHTML = `
+                <strong>Leg ${selectedLeg}</strong><br>
+                Base Angle: ${angleDeg}°<br>
+                Foot: (${leg.worldFootX.toFixed(1)}, ${leg.worldFootY.toFixed(1)})<br>
+                Knee: (${(spider.x + positions.knee.x).toFixed(1)}, ${(spider.y + positions.knee.y).toFixed(1)})<br>
+                Attachment: (${(spider.x + leg.attachX).toFixed(1)}, ${(spider.y + leg.attachY).toFixed(1)})<br>
+                Elbow Bias: ${elbowBias}
+            `;
+
+            // Show flip knee control
+            controls.style.display = 'block';
+            document.getElementById('flipKnee').checked = (elbowBias === -1);
+        }
+
+        function toggleKnee() {
+            if (selectedLeg === null) return;
+
+            const currentBias = spider.getElbowBias(selectedLeg);
+            const newBias = currentBias === 1 ? -1 : 1;
+            spider.setElbowBias(selectedLeg, newBias);
+
+            updateLegInfo();
+            spider.draw();
+        }
+
+        function exportConfig() {
+            const output = document.getElementById('output');
+
+            const config = {
+                spider: {
+                    center: { x: spider.x, y: spider.y },
+                    bodySize: spider.bodySize
+                },
+                legs: []
+            };
+
+            for (let i = 0; i < spider.legs.length; i++) {
+                const leg = spider.legs[i];
+                const attachment = spider.body.getAttachment(i);
+                const targetX = leg.worldFootX - spider.x;
+                const targetY = leg.worldFootY - spider.y;
+                leg.setFootPosition(targetX, targetY);
+                const positions = leg.forwardKinematics();
+
+                config.legs.push({
+                    index: i,
+                    baseAngle: attachment.baseAngle,
+                    baseAngleDeg: parseFloat((attachment.baseAngle * 180 / Math.PI).toFixed(1)),
+                    elbowBias: spider.getElbowBias(i),
+                    foot: {
+                        x: parseFloat(leg.worldFootX.toFixed(1)),
+                        y: parseFloat(leg.worldFootY.toFixed(1))
+                    },
+                    knee: {
+                        x: parseFloat((spider.x + positions.knee.x).toFixed(1)),
+                        y: parseFloat((spider.y + positions.knee.y).toFixed(1))
+                    }
+                });
+            }
+
+            output.textContent = JSON.stringify(config, null, 2);
+        }
+
+        // Mouse handling
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const legIndex = spider.getLegAtPosition(x, y);
+            if (legIndex !== null) {
+                draggingLeg = legIndex;
+                selectedLeg = legIndex;
+                const foot = spider.getFootPosition(legIndex);
+                dragOffset.x = foot.x - x;
+                dragOffset.y = foot.y - y;
+                updateButtons();
+                updateLegInfo();
+                spider.draw();
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (draggingLeg === null) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            spider.setFootPosition(draggingLeg, x + dragOffset.x, y + dragOffset.y);
+            updateLegInfo();
+            spider.draw();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            draggingLeg = null;
+            spider.draw();
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            draggingLeg = null;
+            spider.draw();
+        });
+
+        // Initialize
+        resetSpider();
+        console.log('Spider Editor Ready!');
+        console.log('Click and drag red circles to move leg feet');
+    </script>
+</body>
+</html>

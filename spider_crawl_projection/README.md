@@ -2,17 +2,19 @@
 
 Black spiders walking left-to-right with proper inverse kinematics and alternating tetrapod gait.
 
-**Status:** ✅ Geometry FIXED - legs curve correctly! | ⚠️ Locomotion needs refinement
+**Status:** ✅ Geometry PERFECT! Interactive editor created! | ⚠️ Locomotion needs refinement
 
 ## Quick Start
 
 ```bash
-pixi install        # First time setup
-pixi run serve      # Start server → http://localhost:8080
-pixi run open       # Auto-open browser
+pixi install              # First time setup
+pixi run serve            # Start server → http://localhost:8080
+pixi run open             # Main animation
+pixi run open-editor      # Interactive leg editor (recommended!)
+pixi run open-visual-test # Single spider with annotations
 ```
 
-**Controls:** H (toggle UI) | F (fullscreen) | R (reset) | Space (pause)
+**Animation Controls:** H (toggle UI) | F (fullscreen) | R (reset) | Space (pause)
 
 ## Architecture
 
@@ -21,7 +23,9 @@ pixi run open       # Auto-open browser
 - `leg-kinematics.js` - IK/FK for 2-segment legs with elbow bias
 - `spider-model.js` - Body anatomy model (top-down view)
 - `spider-animation-v2.js` - Animation + gait controller
-- `index.html` - Main page with controls
+- `index.html` - Main animation page with controls
+- `spider-editor.html` - **Interactive leg editor** (drag feet, flip knees, export JSON)
+- `test-visual-output.html` - Single spider with position annotations
 
 ### Reference
 
@@ -112,11 +116,17 @@ All dependencies managed by `pixi.toml` - no system installs needed!
    - No more "ground line" collapse
    - All feet positions correct (0.0 unit difference)
 
-6. **🎉 ELBOW BIAS (2025-10-20 Part 3 - FINAL)** - IK now perfect!
+6. **🎉 ELBOW BIAS (2025-10-20 Part 3)** - IK now perfect!
    - Simple solution: `elbowBias = 1` for all legs
    - IK places feet with 0.0 error (all 8 legs!)
    - Legs point in correct directions
    - All geometry tests pass perfectly
+
+7. **🎉 INTERACTIVE EDITOR (2025-10-20 Part 4)** - Full control!
+   - Created `spider-editor.html` - drag feet, flip knees
+   - JSON export for easy configuration sharing
+   - Real-time IK visualization
+   - Per-leg elbow bias control
 
 ### ⚠️ Still Needs Work
 
@@ -140,9 +150,9 @@ All dependencies managed by `pixi.toml` - no system installs needed!
 
 ### Start Here
 1. **Read `AGENT_HANDOFF.md`** - Complete system documentation
-2. **Run `pixi run test-topdown`** - Verify geometry still matches reference
-3. **Run `pixi run serve`** - View animation in browser
-4. **Read `ISSUES.md`** - Current problems to fix
+2. **Run `pixi run open-editor`** - Try the interactive editor!
+3. **Run `pixi run test`** - Verify all tests pass
+4. **Read `ISSUES.md`** - Current problems to fix (locomotion)
 
 ### Key Insights
 
@@ -154,10 +164,11 @@ All dependencies managed by `pixi.toml` - no system installs needed!
 ### Common Commands
 
 ```bash
-pixi run status          # Show all available commands
-pixi run serve           # Start development server
-pixi run test            # Run all tests
-pixi run test-topdown    # Verify geometry matches reference
+pixi run status           # Show all available commands
+pixi run serve            # Start development server
+pixi run open-editor      # Open interactive leg editor
+pixi run test             # Run all tests
+pixi run test-ik-accuracy # Verify IK is perfect (0.0 error)
 ```
 
 ### Debugging
