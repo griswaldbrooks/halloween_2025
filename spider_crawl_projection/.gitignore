@@ -1,0 +1,24 @@
+# Pixi environment
+.pixi/
+pixi.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Recordings (if you make test recordings)
+*.mp4
+*.webm
+*.mov
+recordings/

@@ -1,0 +1,56 @@
+[project]
+name = "spider-crawl-projection"
+version = "0.1.0"
+description = "Spider crawling animation for haunted house projection"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = ">=3.11"
+nodejs = ">=20"
+
+[tasks]
+serve = "python -m http.server 8080"
+dev = "python -m http.server 8080"
+open = "xdg-open http://localhost:8080"
+start = { depends-on = ["serve"] }
+
+# Test tasks
+test-kinematics = "node test-kinematics.js"
+test-model = "node test-model.js"
+test-geometry = "node test-spider-geometry.js"
+test-visual = "node test-visual-geometry.js"
+test-angles = "node test-leg-angles.js"
+test-integration = "node test-integration.js"
+test-reference = "node test-reference-shape.js"
+test-topdown = "node test-topdown-shape.js"
+test-rendering = "node test-rendering.js"
+test-leg-drawing = "node test-leg-drawing.js"
+test-visual-check = "node test-visual-check.js"
+test-ik-accuracy = "node test-ik-accuracy.js"
+test = "bash run-all-tests.sh"
+test-all = { depends-on = ["test"] }
+
+[tasks.status]
+cmd = """
+echo "=== Spider Crawl Projection ==="
+echo ""
+echo "Python: $(python --version)"
+echo "Node.js: $(node --version)"
+echo "Server: http.server (built-in)"
+echo ""
+echo "Commands:"
+echo "  pixi run serve  - Start local server on port 8080"
+echo "  pixi run open   - Open in browser"
+echo "  pixi run test   - Run all geometry tests"
+echo ""
+echo "Individual tests:"
+echo "  pixi run test-kinematics   - IK/FK tests"
+echo "  pixi run test-model        - Body model tests"
+echo "  pixi run test-topdown      - Top-down geometry vs reference"
+echo "  pixi run test-rendering    - Actual rendering output test"
+echo "  pixi run test-geometry     - Geometry validation"
+echo "  pixi run test-visual       - Visual regression tests"
+echo "  pixi run test-angles       - Leg angle tests"
+echo "  pixi run test-integration  - Integration tests"
+"""

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider Crawl - Haunted House Projection</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #FFF;
+            overflow: hidden;
+            font-family: monospace;
+        }
+
+        canvas {
+            display: block;
+            cursor: none;
+        }
+
+        #controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 15px;
+            border: 1px solid #0f0;
+            font-size: 12px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        #controls.hidden {
+            display: none;
+        }
+
+        #controls h3 {
+            margin: 0 0 10px 0;
+            color: #0f0;
+        }
+
+        #controls button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 5px 10px;
+            margin: 5px 5px 5px 0;
+            cursor: pointer;
+            font-family: monospace;
+        }
+
+        #controls button:hover {
+            background: #0f0;
+            color: #000;
+        }
+
+        #controls input[type="range"] {
+            width: 100%;
+        }
+
+        #controls label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .stat {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <div id="controls">
+        <h3>🕷️ Spider Crawl Controls</h3>
+
+        <button onclick="toggleControls()">Hide Controls (H)</button>
+        <button onclick="toggleFullscreen()">Fullscreen (F)</button>
+        <button onclick="resetSpiders()">Reset Spiders (R)</button>
+
+        <label>
+            Spider Count: <span id="spiderCountLabel">5</span>
+            <input type="range" id="spiderCount" min="1" max="20" value="5" oninput="updateSpiderCount(this.value)">
+        </label>
+
+        <label>
+            Spider Speed: <span id="speedLabel">1.0x</span>
+            <input type="range" id="speed" min="0.1" max="3.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+        </label>
+
+        <label>
+            Spider Size: <span id="sizeLabel">1.0x</span>
+            <input type="range" id="size" min="0.5" max="3.0" step="0.1" value="1.0" oninput="updateSize(this.value)">
+        </label>
+
+
+        <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #0f0;">
+            <div class="stat">FPS: <span id="fps">0</span></div>
+            <div class="stat">Active Spiders: <span id="activeSpiders">0</span></div>
+        </div>
+
+        <div style="margin-top: 15px; font-size: 10px; opacity: 0.7;">
+            <strong>Keyboard Shortcuts:</strong><br>
+            H - Toggle controls<br>
+            F - Fullscreen<br>
+            R - Reset spiders<br>
+            Space - Pause/Resume
+        </div>
+    </div>
+
+    <!-- <script src="spider-animation.js"></script> -->
+    <script src="spider-animation-v2.js"></script>
+</body>
+</html>
