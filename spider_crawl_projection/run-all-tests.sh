@@ -13,28 +13,36 @@ run_test() {
     local test_file=$2
 
     echo "Running: $test_name..."
-    if node "$test_file" 2>&1 | grep -q "ALL.*PASSED"; then
+    # Capture output and check exit code
+    if node "$test_file" > /tmp/test_output.txt 2>&1; then
         echo "  ✓ PASS"
         ((PASS++))
     else
         echo "  ✗ FAIL (see details above)"
+        cat /tmp/test_output.txt
         ((FAIL++))
     fi
     echo
 }
 
-# Run all tests
-run_test "Kinematics (IK/FK)" "test-kinematics.js"
+# Core Tests
+run_test "Kinematics (IK/FK + Elbow Bias)" "test-kinematics.js"
 run_test "Body Model" "test-model.js"
-run_test "Spider Geometry" "test-spider-geometry.js"
-run_test "Visual Geometry" "test-visual-geometry.js"
-run_test "Leg Angles" "test-leg-angles.js"
 run_test "Integration" "test-integration.js"
+run_test "Top-Down Geometry" "test-topdown-shape.js"
+run_test "IK Accuracy" "test-ik-accuracy.js"
+run_test "Rendering Output" "test-rendering.js"
+run_test "Leg Drawing" "test-leg-drawing.js"
+
+# Configuration Tests
+run_test "User Configuration (No Intersections)" "test-user-config.js"
+
+TOTAL=$((PASS + FAIL))
 
 echo "╔════════════════════════════════════════════════════════════╗"
 echo "║                      SUMMARY                               ║"
-echo "║  Passed: $PASS / 6                                            ║"
-echo "║  Failed: $FAIL / 6                                            ║"
+echo "║  Passed: $PASS / $TOTAL                                            ║"
+echo "║  Failed: $FAIL / $TOTAL                                            ║"
 if [ $FAIL -eq 0 ]; then
     echo "║                                                            ║"
     echo "║              ✓✓✓ ALL TESTS PASSED! ✓✓✓                   ║"

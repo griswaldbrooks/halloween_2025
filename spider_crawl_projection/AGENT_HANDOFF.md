@@ -149,7 +149,7 @@ pixi run test             # Run all tests
 
 **1. Swing Phase Leg Movement (PRIORITY)**
 - **Problem:** Legs during swing don't lift/move convincingly
-- **Location:** `spider-animation-v2.js:147-182` (updateLeg function)
+- **Location:** `spider-animation.js:147-182` (updateLeg function)
 - **Needed:** Legs must clearly lift and move ahead of body
 - **Current issues:**
   - May not lift high enough (invisible ground clearance)
@@ -186,7 +186,7 @@ pixi run test             # Run all tests
 - `elbowBias`: Which IK solution to use (+1 or -1)
 - ✅ **100% tested, working correctly - don't modify**
 
-**`spider-animation-v2.js`** - Animation engine
+**`spider-animation.js`** - Animation engine
 - `Spider` class: Full spider with 8 legs + gait controller
 - `update()`: Gait state machine (6-phase cycle)
 - `updateLeg()`: Move individual leg **← NEEDS WORK**
@@ -242,7 +242,7 @@ Phase 5: Pause (100ms)
 → Repeat
 ```
 
-**Code Location:** `spider-animation-v2.js:96-140`
+**Code Location:** `spider-animation.js:96-140`
 
 ### Swing vs Stance
 
@@ -288,7 +288,7 @@ this.legLowerLength = size * 0.75;
 
 ### ✅ SAFE TO TUNE
 
-**Gait Timing:** `spider-animation-v2.js:103`
+**Gait Timing:** `spider-animation.js:103`
 ```javascript
 const phaseDurations = [200, 150, 100, 200, 150, 100]; // ms
 // [0] Group A swing
@@ -299,25 +299,25 @@ const phaseDurations = [200, 150, 100, 200, 150, 100]; // ms
 // [5] Pause
 ```
 
-**Lurch Distance:** `spider-animation-v2.js:122`
+**Lurch Distance:** `spider-animation.js:122`
 ```javascript
 const lurchDistance = this.bodySize * 0.4;  // How far body moves per lurch
 ```
 
-**Swing Lift Height:** `spider-animation-v2.js:173`
+**Swing Lift Height:** `spider-animation.js:173`
 ```javascript
 const liftHeight = Math.sin(this.stepProgress * Math.PI) * this.bodySize * 0.5;
 // Try increasing 0.5 → 0.8 for more visible lift
 ```
 
-**Elbow Bias:** `spider-animation-v2.js:66-71`
+**Elbow Bias:** `spider-animation.js:66-71`
 ```javascript
 const angleDeg = Math.abs(attachment.baseAngle * 180 / Math.PI);
 const elbowBias = angleDeg < 90 ? -1 : 1;
 // May need pair-based instead: elbowBias = attachment.pair <= 1 ? -1 : 1
 ```
 
-**Ground Level:** `spider-animation-v2.js:96`
+**Ground Level:** `spider-animation.js:96`
 ```javascript
 const groundLevel = this.y + this.bodySize * 1.0;
 // Where feet touch ground in stance
@@ -329,7 +329,7 @@ const groundLevel = this.y + this.bodySize * 1.0;
 
 **Problem:** Legs don't lift/move convincingly during swing
 
-**Current Code:** `spider-animation-v2.js:147-182`
+**Current Code:** `spider-animation.js:147-182`
 
 ```javascript
 updateLeg(leg) {
@@ -474,7 +474,7 @@ System is working - refine, don't replace.
 
 **Goal:** Legs clearly lift and move during swing
 
-**File:** `spider-animation-v2.js:147-182`
+**File:** `spider-animation.js:147-182`
 
 **Tasks:**
 - [ ] Increase lift height (try 0.8× or 1.0× body size)
@@ -488,7 +488,7 @@ System is working - refine, don't replace.
 
 **Goal:** Walking feels natural and spider-like
 
-**File:** `spider-animation-v2.js:103`
+**File:** `spider-animation.js:103`
 
 **Tasks:**
 - [ ] Experiment with phase durations
@@ -502,7 +502,7 @@ System is working - refine, don't replace.
 
 **Goal:** All joints bend naturally
 
-**File:** `spider-animation-v2.js:66-71`
+**File:** `spider-animation.js:66-71`
 
 **Tasks:**
 - [ ] Review current angle-based logic

@@ -1,0 +1,131 @@
+{
+  "description": "Custom spider configuration from interactive editor - VERIFIED NO INTERSECTIONS",
+  "configuredDate": "2025-10-21",
+  "intersectionTest": "PASSED - Zero intersections detected (pixi run test-user-config)",
+  "spider": {
+    "center": {
+      "x": 400,
+      "y": 400
+    },
+    "bodySize": 100
+  },
+  "legs": [
+    {
+      "index": 0,
+      "baseAngle": 0.7853981633974483,
+      "baseAngleDeg": 45,
+      "elbowBias": -1,
+      "foot": {
+        "x": 560.2,
+        "y": 500.2
+      },
+      "knee": {
+        "x": 486.7,
+        "y": 485.5
+      }
+    },
+    {
+      "index": 1,
+      "baseAngle": -0.7853981633974483,
+      "baseAngleDeg": -45,
+      "elbowBias": 1,
+      "foot": {
+        "x": 560.2,
+        "y": 299.8
+      },
+      "knee": {
+        "x": 486.7,
+        "y": 314.5
+      }
+    },
+    {
+      "index": 2,
+      "baseAngle": 1.3089969389957472,
+      "baseAngleDeg": 75,
+      "elbowBias": -1,
+      "foot": {
+        "x": 515.2,
+        "y": 530.4
+      },
+      "knee": {
+        "x": 450.8,
+        "y": 491.9
+      }
+    },
+    {
+      "index": 3,
+      "baseAngle": -1.3089969389957472,
+      "baseAngleDeg": -75,
+      "elbowBias": 1,
+      "foot": {
+        "x": 515.2,
+        "y": 269.6
+      },
+      "knee": {
+        "x": 450.8,
+        "y": 308.1
+      }
+    },
+    {
+      "index": 4,
+      "baseAngle": 1.832595714594046,
+      "baseAngleDeg": 105,
+      "elbowBias": 1,
+      "foot": {
+        "x": 339.8,
+        "y": 530.4
+      },
+      "knee": {
+        "x": 403.4,
+        "y": 490.7
+      }
+    },
+    {
+      "index": 5,
+      "baseAngle": -1.832595714594046,
+      "baseAngleDeg": -105,
+      "elbowBias": -1,
+      "foot": {
+        "x": 339.8,
+        "y": 269.6
+      },
+      "knee": {
+        "x": 403.4,
+        "y": 309.3
+      }
+    },
+    {
+      "index": 6,
+      "baseAngle": 2.356194490192345,
+      "baseAngleDeg": 135,
+      "elbowBias": 1,
+      "foot": {
+        "x": 299.8,
+        "y": 500.2
+      },
+      "knee": {
+        "x": 373.3,
+        "y": 485.5
+      }
+    },
+    {
+      "index": 7,
+      "baseAngle": -2.356194490192345,
+      "baseAngleDeg": -135,
+      "elbowBias": -1,
+      "foot": {
+        "x": 299.8,
+        "y": 299.8
+      },
+      "knee": {
+        "x": 373.3,
+        "y": 314.5
+      }
+    }
+  ],
+  "elbowBiasPattern": {
+    "description": "Elbow bias pattern applied in spider-animation.js",
+    "pattern": [-1, 1, -1, 1, 1, -1, 1, -1],
+    "notes": "User-configured pattern from interactive editor for optimal leg appearance"
+  }
+}

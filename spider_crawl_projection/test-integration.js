@@ -9,7 +9,7 @@ console.log("╚═════════════════════�
 function testCompleteSpiderCreation() {
     console.log("=== TEST 1: COMPLETE SPIDER CREATION (AS IN ANIMATION) ===\n");
 
-    // Simulate spider creation from spider-animation-v2.js
+    // Simulate spider creation from spider-animation.js
     const bodySize = 12; // Mid-range value
     const body = new SpiderBody(bodySize);
 

@@ -1,23 +1,27 @@
 # Known Issues
 
-**Last Updated:** 2025-10-20 (Final)
+**Last Updated:** 2025-10-21
 
-## Current Issues
+## Current Status
 
-**Note:** Geometry is now PERFECT! All issues below are about locomotion/animation, not positioning.
+**Geometry:** ✅ PERFECT - All tests pass, zero intersections
+**Configuration:** ✅ VERIFIED - User config has no leg overlaps
+**IK System:** ✅ WORKING - Elbow bias flip tested and verified
 
-### 1. Swing Leg Movement (HIGH PRIORITY)
+## Remaining Issues
 
-**Problem:** Legs during swing phase don't lift or move convincingly enough
+### 1. Swing Leg Movement (Animation)
+
+**Problem:** Legs during swing phase may not lift or move convincingly enough
 
 **Symptoms:**
 - Legs may appear to drag instead of lifting cleanly off ground
-- Ground clearance may not be visible
+- Ground clearance may not be visible in top-down view
 - Swing motion may look robotic/linear
 
-**Location:** `spider-animation-v2.js:147-182` (updateLeg function)
+**Location:** `spider-animation.js:147-182` (updateLeg function)
 
-**Note:** This is now a TOP-DOWN view, so "lift" means moving in the X-Y plane, not Z-axis!
+**Note:** This is a TOP-DOWN view, so "lift" means moving in the X-Y plane, not Z-axis!
 
 **Potential Fixes:**
 - Add more dramatic swing motion in X-Y plane
@@ -41,7 +45,7 @@
 - Pauses between steps feel too long
 - Speed doesn't match what user expects for spider
 
-**Location:** `spider-animation-v2.js:103`
+**Location:** `spider-animation.js:103`
 
 **Current Values:**
 ```javascript

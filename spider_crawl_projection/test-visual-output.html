@@ -48,7 +48,7 @@
                 this.body = new SpiderBody(this.bodySize);
                 this.color = '#000000';
 
-                // Create legs with same logic as spider-animation-v2.js
+                // Create legs with same logic as spider-animation.js
                 this.legs = [];
                 for (let i = 0; i < 8; i++) {
                     const attachment = this.body.getAttachment(i);
@@ -71,7 +71,7 @@
             }
 
             initializeLegPositions() {
-                // Same as spider-animation-v2.js
+                // Same as spider-animation.js
                 for (const leg of this.legs) {
                     const reach = (leg.upperLength + leg.lowerLength) * 0.7;
                     leg.worldFootX = this.x + leg.attachX + Math.cos(leg.baseAngle) * reach;

@@ -1,15 +1,15 @@
 // Test ACTUAL RENDERED spider leg positions (not just model)
-// This tests what spider-animation-v2.js actually draws
+// This tests what spider-animation.js actually draws
 
 const { SpiderBody } = require('./spider-model.js');
 const { Leg2D } = require('./leg-kinematics.js');
 
 console.log("\n╔════════════════════════════════════════════════════════════╗");
 console.log("║   SPIDER RENDERING TEST                                    ║");
-console.log("║   Tests what spider-animation-v2.js actually renders       ║");
+console.log("║   Tests what spider-animation.js actually renders       ║");
 console.log("╚════════════════════════════════════════════════════════════╝\n");
 
-// Simulate how spider-animation-v2.js creates a spider
+// Simulate how spider-animation.js creates a spider
 class TestSpider {
     constructor() {
         this.x = 100;
@@ -17,7 +17,7 @@ class TestSpider {
         this.bodySize = 100;
         this.body = new SpiderBody(this.bodySize);
 
-        // Create 8 legs using same logic as spider-animation-v2.js
+        // Create 8 legs using same logic as spider-animation.js
         this.legs = [];
         const groupA = [1, 2, 5, 6];
 
@@ -48,7 +48,7 @@ class TestSpider {
         this.initializeLegPositions();
     }
 
-    // FIXED CODE from spider-animation-v2.js
+    // FIXED CODE from spider-animation.js
     initializeLegPositions() {
         // TOP-DOWN VIEW: Legs spread radially from body center
         // Coordinate system: X = forward/back, Y = left/right

@@ -1,5 +1,139 @@
 # Changelog
 
+## 2025-10-21 - IK Flip Bug Fix + Intersection Detection + Perfect Config ✅
+
+### Fixed Critical IK Elbow Bias Bug
+**Problem:** Flipping the IK solution (elbowBias) was changing the coxa/shoulder angle but NOT the femur/knee angle, causing the foot to move to a completely wrong position instead of staying in place.
+
+**Root Cause:** In `leg-kinematics.js`, only the coxa angle was being flipped:
+```javascript
+this.coxaAngle = targetAngle - (upperAngleOffset * this.elbowBias);
+this.femurAngle = Math.PI - kneeAngle;  // ❌ Not flipping!
+```
+
+**Fix:** Both joint angles must flip for the alternate IK solution:
+```javascript
+this.coxaAngle = targetAngle - (upperAngleOffset * this.elbowBias);
+this.femurAngle = this.elbowBias * (Math.PI - kneeAngle);  // ✅ Flips sign!
+```
+
+**Files Changed:**
+- `leg-kinematics.js:91` - Added elbowBias multiplier to femur angle
+- `test-kinematics.js:117-184` - Added `testElbowBiasFlip()` comprehensive test suite
+
+**Test Results:**
+- Before fix: Foot moved 150 pixels when flipping (378.3 vs 528.2)
+- After fix: Foot stays exactly in place (position error: 0.000000)
+- All 5 test cases pass ✓
+
+**What the Test Verifies:**
+1. Foot position stays identical when flipping (error < 0.01)
+2. Coxa/shoulder angle changes significantly
+3. Femur/knee angle changes AND flips sign (-82.82° ↔ 82.82°)
+
+### Enhanced Editor with Joint Labels
+**Added to `spider-editor.html`:**
+- Graphical labels on canvas showing joint positions with coordinates
+- Info panel now shows both:
+  - "Actual Rendered Positions (from FK)" - what's drawn
+  - "Target Foot Position (stored)" - what you set
+- Updated checkbox label to clarify: "Flip IK Solution (changes coxa/shoulder angle to reach same foot position)"
+- Joint circles made more visible (attachment: 4px, knee: 5px, foot: 6px)
+
+**Labels Display:**
+- Attachment (coxa/shoulder): Green text with white outline
+- Femur/Knee: Green text with white outline
+- Foot: Green text with white outline
+- All show (x, y) coordinates directly on canvas
+
+### Applied Custom Spider Configuration
+**Created `spider-config.json`:**
+- Documents the custom spider setup from interactive editor
+- Elbow bias pattern: `[-1, 1, -1, 1, 1, -1, 1, -1]`
+- Legs bend outward in alternating pattern for natural appearance
+
+**Updated `spider-animation.js:69`:**
+```javascript
+// Old: const elbowBias = 1;  // All legs same
+// New: const elbowBiasPattern = [-1, 1, -1, 1, 1, -1, 1, -1];
+//      const elbowBias = elbowBiasPattern[i];
+```
+
+**Pattern Explanation:**
+- Leg 0 (R1, 45°): -1 - knee bends outward right
+- Leg 1 (L1, -45°): 1 - knee bends outward left
+- Leg 2 (R2, 75°): -1 - knee bends outward right
+- Leg 3 (L2, -75°): 1 - knee bends outward left
+- Leg 4 (R3, 105°): 1 - knee bends inward right
+- Leg 5 (L3, -105°): -1 - knee bends inward left
+- Leg 6 (R4, 135°): 1 - knee bends inward right
+- Leg 7 (L4, -135°): -1 - knee bends inward left
+
+Result: More natural spider leg appearance with knees bending realistically!
+
+**Files Changed:**
+- `spider-animation.js:63-80` - Applied custom elbow bias pattern
+- `spider-config.json` - Created configuration documentation
+
+### Intersection Detection System
+**Created comprehensive leg intersection testing:**
+
+**Files Created:**
+- `test-leg-intersections.js` - Generic intersection test using default positions
+- `test-user-config.js` - Test user's exact configuration
+- `optimize-foot-positions.js` - Try different reach values to find non-intersecting configs
+- `optimize-individual-legs.js` - Fine-tune individual leg positions
+- `FIX-INTERSECTIONS.md` - Manual guide for fixing intersections
+
+**Algorithm:**
+- Line segment intersection detection using cross products
+- Tests all 28 pairs of leg segments (8 legs × 2 segments each)
+- Accounts for shared attachment points (adjacent legs)
+- Reports which specific legs cross
+
+**Test Results:**
+```bash
+pixi run test-intersections     # Tests with calculated positions
+pixi run test-user-config       # ✓ ZERO INTERSECTIONS!
+```
+
+### Verified User Configuration
+**User's custom foot positions have ZERO leg intersections! 🎉**
+
+Updated `spider-animation.js` to use exact user configuration:
+- Stores foot positions relative to spider center
+- Scales based on spider body size (for different sized spiders in animation)
+- Preserves elbow bias pattern: `[-1, 1, -1, 1, 1, -1, 1, -1]`
+
+Updated `spider-editor.html` to load user's configuration:
+- Loads custom elbow bias pattern
+- Loads exact foot positions from config
+- Allows fine-tuning while preserving working configuration
+
+**Foot Positions (relative to center, bodySize=100):**
+```javascript
+[
+  { x: 160.2, y: 100.2 },   // Leg 0
+  { x: 160.2, y: -100.2 },  // Leg 1
+  { x: 115.2, y: 130.4 },   // Leg 2
+  { x: 115.2, y: -130.4 },  // Leg 3
+  { x: -60.2, y: 130.4 },   // Leg 4
+  { x: -60.2, y: -130.4 },  // Leg 5
+  { x: -100.2, y: 100.2 },  // Leg 6
+  { x: -100.2, y: -100.2 }  // Leg 7
+]
+```
+
+### Testing
+```bash
+pixi run test-kinematics   # ✓ All elbow bias flip tests pass
+pixi run test-user-config  # ✓ ZERO intersections!
+pixi run open              # View animation with verified config
+pixi run open-editor       # Interactive editor with user's config loaded
+```
+
+---
+
 ## 2025-10-20 (Part 4 - FINAL) - Interactive Editor Created
 
 ### Created Spider Leg Editor for Visual Experimentation ✅
@@ -113,7 +247,7 @@ Leg | Target Foot   | Actual Foot   | Error Dist
 ```
 
 **Files Modified:**
-- `spider-animation-v2.js` - Simplified to `elbowBias = 1` (lines 66-68)
+- `spider-animation.js` - Simplified to `elbowBias = 1` (lines 66-68)
 - `test-ik-accuracy.js` - New test to catch IK errors
 - `test-visual-check.js` - New diagnostic tool
 - `test-leg-drawing.js` - Updated to match final solution
@@ -165,7 +299,7 @@ const elbowBias = isForwardPointing ? -attachment.side : attachment.side;
 - ✅ Natural arc from body centerline
 
 **Files Modified:**
-- `spider-animation-v2.js` - Fixed elbowBias calculation (lines 66-73)
+- `spider-animation.js` - Fixed elbowBias calculation (lines 66-73)
 - `test-leg-drawing.js` - New test for visual leg geometry
 - `pixi.toml` - Added `test-leg-drawing` task
 
@@ -195,12 +329,12 @@ const elbowBias = isForwardPointing ? -attachment.side : attachment.side;
 
 **Fixes Applied:**
 
-1. **`spider-animation-v2.js` - `initializeLegPositions()` (lines 96-113)**
+1. **`spider-animation.js` - `initializeLegPositions()` (lines 96-113)**
    - BEFORE: `leg.worldFootY = groundLevel` (same for all legs)
    - AFTER: `leg.worldFootY = this.y + leg.attachY + Math.sin(leg.baseAngle) * reach`
    - Result: Legs now spread radially with different Y values
 
-2. **`spider-animation-v2.js` - `updateLeg()` (lines 165-186)**
+2. **`spider-animation.js` - `updateLeg()` (lines 165-186)**
    - BEFORE: Applied "lift height" by subtracting from Y (side-view up/down)
    - AFTER: Smooth X-Y plane interpolation for swing phase
    - Result: Feet move in 2D plane, not fake 3D lift
@@ -224,7 +358,7 @@ const elbowBias = isForwardPointing ? -attachment.side : attachment.side;
 - `pixi.toml` - Updated status command to show new test
 
 **Files Modified:**
-- `spider-animation-v2.js` - Fixed rendering logic for top-down view
+- `spider-animation.js` - Fixed rendering logic for top-down view
 - `test-rendering.js` - New test to catch rendering bugs
 - `README.md` - Updated docs with pixi warnings
 - `pixi.toml` - Added new test task
@@ -302,7 +436,7 @@ const elbowBias = isForwardPointing ? -attachment.side : attachment.side;
 
 **Files Modified:**
 - `leg-kinematics.js` - Added `elbowBias` parameter and IK solution selection
-- `spider-animation-v2.js` - Enhanced swing phase with lift and future position prediction
+- `spider-animation.js` - Enhanced swing phase with lift and future position prediction
 - `pixi.toml` - Added nodejs dependency and test tasks
 
 **Algorithm Improvements:**
@@ -422,7 +556,7 @@ Created comprehensive unit tests (6 test files, 20+ test cases):
 
 - `leg-kinematics.js` - IK/FK engine (100% tested)
 - `spider-model.js` - Body anatomy model
-- `spider-animation-v2.js` - Refactored animation
+- `spider-animation.js` - Refactored animation
 - `test-kinematics.js` - Unit tests for kinematics
 - `test-model.js` - Unit tests for body model
 - `AGENT_HANDOFF.md` - Complete documentation

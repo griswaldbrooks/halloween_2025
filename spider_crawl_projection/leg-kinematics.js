@@ -69,9 +69,6 @@ class Leg2D {
         const clampedCos = Math.max(-1, Math.min(1, cosKneeAngle));
         const kneeAngle = Math.acos(clampedCos);
 
-        // Femur angle is supplement of knee angle
-        this.femurAngle = Math.PI - kneeAngle;
-
         // Angle from attachment to target
         const targetAngle = Math.atan2(dy, dx);
 
@@ -84,11 +81,14 @@ class Leg2D {
         const clampedUpperCos = Math.max(-1, Math.min(1, cosUpperAngle));
         const upperAngleOffset = Math.acos(clampedUpperCos);
 
-        // Coxa angle combines target direction and offset
-        // FIXED: Use elbowBias to determine which IK solution (elbow up vs down)
-        // elbowBias = 1: subtract offset (elbow bends one way)
-        // elbowBias = -1: add offset (elbow bends opposite way)
+        // Use elbowBias to determine which IK solution (elbow up vs down)
+        // elbowBias = 1: subtract offset, positive femur angle (elbow bends one way)
+        // elbowBias = -1: add offset, negative femur angle (elbow bends opposite way)
         this.coxaAngle = targetAngle - (upperAngleOffset * this.elbowBias);
+
+        // FIXED: Femur angle must also flip to maintain the same foot position
+        // Both angles need to change for the alternate IK solution
+        this.femurAngle = this.elbowBias * (Math.PI - kneeAngle);
 
         return true;
     }

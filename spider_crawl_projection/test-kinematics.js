@@ -114,6 +114,75 @@ function testIKFKRoundTrip() {
     console.log(`\n${allPassed ? '✓✓✓ ALL ROUND TRIPS PASSED ✓✓✓' : '✗✗✗ SOME ROUND TRIPS FAILED ✗✗✗'}`);
 }
 
+function testElbowBiasFlip() {
+    console.log("\n=== ELBOW BIAS FLIP TEST ===");
+    console.log("Verify that flipping elbow bias keeps foot at same position");
+
+    const leg = new Leg2D({
+        attachX: 0,
+        attachY: 0,
+        upperLength: 10,
+        lowerLength: 10,
+        elbowBias: 1
+    });
+
+    const targets = [
+        { x: 15, y: 0, name: "Forward" },
+        { x: 10, y: 10, name: "Up-right diagonal" },
+        { x: 0, y: 14, name: "Straight up" },
+        { x: -10, y: 5, name: "Back-up" },
+        { x: 12, y: -8, name: "Forward-down" }
+    ];
+
+    let allPassed = true;
+
+    for (const target of targets) {
+        console.log(`\n${target.name}: Target (${target.x}, ${target.y})`);
+
+        // Test with elbowBias = 1
+        leg.elbowBias = 1;
+        const success1 = leg.setFootPosition(target.x, target.y);
+        const pos1 = leg.getFootPosition();
+        const coxa1 = leg.coxaAngle;
+        const femur1 = leg.femurAngle;
+
+        console.log(`  elbowBias = 1:`);
+        console.log(`    Coxa: ${(coxa1 * 180 / Math.PI).toFixed(2)}°, Femur: ${(femur1 * 180 / Math.PI).toFixed(2)}°`);
+        console.log(`    Foot: (${pos1.x.toFixed(3)}, ${pos1.y.toFixed(3)})`);
+
+        // Test with elbowBias = -1
+        leg.elbowBias = -1;
+        const success2 = leg.setFootPosition(target.x, target.y);
+        const pos2 = leg.getFootPosition();
+        const coxa2 = leg.coxaAngle;
+        const femur2 = leg.femurAngle;
+
+        console.log(`  elbowBias = -1:`);
+        console.log(`    Coxa: ${(coxa2 * 180 / Math.PI).toFixed(2)}°, Femur: ${(femur2 * 180 / Math.PI).toFixed(2)}°`);
+        console.log(`    Foot: (${pos2.x.toFixed(3)}, ${pos2.y.toFixed(3)})`);
+
+        // Verify foot position is the same
+        const posError = Math.sqrt(
+            Math.pow(pos2.x - pos1.x, 2) +
+            Math.pow(pos2.y - pos1.y, 2)
+        );
+
+        // Verify both angles changed
+        const coxaChanged = Math.abs(coxa2 - coxa1) > 0.01;
+        const femurChanged = Math.abs(femur2 - femur1) > 0.01;
+
+        const passed = success1 && success2 && posError < 0.01 && coxaChanged && femurChanged;
+        allPassed = allPassed && passed;
+
+        console.log(`  Position error: ${posError.toFixed(6)}`);
+        console.log(`  Coxa changed: ${coxaChanged ? 'YES ✓' : 'NO ✗'}`);
+        console.log(`  Femur changed: ${femurChanged ? 'YES ✓' : 'NO ✗'}`);
+        console.log(`  ${passed ? '✓ PASS' : '✗ FAIL'}`);
+    }
+
+    console.log(`\n${allPassed ? '✓✓✓ ALL ELBOW BIAS FLIP TESTS PASSED ✓✓✓' : '✗✗✗ SOME ELBOW BIAS FLIP TESTS FAILED ✗✗✗'}`);
+}
+
 function runAllTests() {
     console.log("\n╔════════════════════════════════════════════╗");
     console.log("║   LEG KINEMATICS TEST SUITE               ║");
@@ -122,6 +191,7 @@ function runAllTests() {
     testForwardKinematics();
     testInverseKinematics();
     testIKFKRoundTrip();
+    testElbowBiasFlip();
 
     console.log("\n=== KINEMATICS TESTS COMPLETE ===\n");
 }

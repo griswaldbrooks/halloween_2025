@@ -26,7 +26,7 @@ function testLegGeometry() {
     for (let i = 0; i < 8; i++) {
         const attachment = body.getAttachment(i);
 
-        // Create leg with same logic as spider-animation-v2.js (FINAL FIX)
+        // Create leg with same logic as spider-animation.js (FINAL FIX)
         const elbowBias = 1; // All legs use bias = 1!
 
         const leg = new Leg2D({
@@ -48,7 +48,7 @@ function testLegGeometry() {
         const targetX = worldFootX - spiderX;
         const targetY = worldFootY - spiderY;
 
-        // IK calculation (what spider-animation-v2.js does)
+        // IK calculation (what spider-animation.js does)
         leg.setFootPosition(targetX, targetY);
 
         // Get actual drawn positions
@@ -95,7 +95,7 @@ function testElbowBiasLogic() {
     for (let i = 0; i < 8; i++) {
         const attachment = body.getAttachment(i);
 
-        // Current logic from spider-animation-v2.js
+        // Current logic from spider-animation.js
         const angleDeg = Math.abs(attachment.baseAngle * 180 / Math.PI);
         const currentBias = angleDeg < 90 ? -1 : 1;
 

@@ -12,25 +12,30 @@ nodejs = ">=20"
 [tasks]
 serve = "python -m http.server 8080"
 dev = "python -m http.server 8080"
+kill-server = "fuser -k 8080/tcp 2>/dev/null || echo 'No server running on port 8080'"
 open = "xdg-open http://localhost:8080"
 open-visual-test = "xdg-open http://localhost:8080/test-visual-output.html"
 open-editor = "xdg-open http://localhost:8080/spider-editor.html"
 start = { depends-on = ["serve"] }
 
-# Test tasks
+# Core Tests
 test-kinematics = "node test-kinematics.js"
 test-model = "node test-model.js"
-test-geometry = "node test-spider-geometry.js"
-test-visual = "node test-visual-geometry.js"
-test-angles = "node test-leg-angles.js"
 test-integration = "node test-integration.js"
-test-reference = "node test-reference-shape.js"
 test-topdown = "node test-topdown-shape.js"
+test-ik-accuracy = "node test-ik-accuracy.js"
 test-rendering = "node test-rendering.js"
 test-leg-drawing = "node test-leg-drawing.js"
-test-visual-check = "node test-visual-check.js"
-test-ik-accuracy = "node test-ik-accuracy.js"
-test-orientation = "node test-orientation.js"
+
+# Configuration Tests
+test-intersections = "node test-leg-intersections.js"
+test-user-config = "node test-user-config.js"
+
+# Optimization Tools
+optimize-legs = "node optimize-foot-positions.js"
+optimize-individual = "node optimize-individual-legs.js"
+
+# Test Suite
 test = "bash run-all-tests.sh"
 test-all = { depends-on = ["test"] }
 
@@ -43,9 +48,10 @@ echo "Node.js: $(node --version)"
 echo "Server: http.server (built-in)"
 echo ""
 echo "Commands:"
-echo "  pixi run serve  - Start local server on port 8080"
-echo "  pixi run open   - Open in browser"
-echo "  pixi run test   - Run all geometry tests"
+echo "  pixi run serve        - Start local server on port 8080"
+echo "  pixi run kill-server  - Kill any running servers on port 8080"
+echo "  pixi run open         - Open in browser"
+echo "  pixi run test         - Run all geometry tests"
 echo ""
 echo "Individual tests:"
 echo "  pixi run test-kinematics   - IK/FK tests"

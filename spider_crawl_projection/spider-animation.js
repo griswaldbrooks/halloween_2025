@@ -64,8 +64,10 @@ class Spider {
             const attachment = this.body.getAttachment(i);
 
             // TOP-DOWN VIEW: Elbow bias determines which IK solution (knee position)
-            // Through exhaustive testing: ALL legs need bias = 1 for correct IK!
-            const elbowBias = 1;
+            // Custom configuration from interactive editor for natural spider leg bending
+            // Pattern configured by user for optimal leg appearance
+            const elbowBiasPattern = [-1, 1, -1, 1, 1, -1, 1, -1];
+            const elbowBias = elbowBiasPattern[i];
 
             const leg = new Leg2D({
                 attachX: attachment.x,
@@ -91,21 +93,29 @@ class Spider {
     }
 
     initializeLegPositions() {
-        // TOP-DOWN VIEW: Legs spread radially from body center
-        // Coordinate system: X = forward/back, Y = left/right
-        // Feet extend outward along each leg's baseAngle direction
+        // User's custom foot positions (relative to body center, for bodySize=100)
+        // These positions have been verified to have ZERO intersections
+        const customFootPositionsRelative = [
+            { x: 160.2, y: 100.2 },  // Leg 0 (560.2 - 400, 500.2 - 400)
+            { x: 160.2, y: -100.2 }, // Leg 1
+            { x: 115.2, y: 130.4 },  // Leg 2
+            { x: 115.2, y: -130.4 }, // Leg 3
+            { x: -60.2, y: 130.4 },  // Leg 4
+            { x: -60.2, y: -130.4 }, // Leg 5
+            { x: -100.2, y: 100.2 }, // Leg 6
+            { x: -100.2, y: -100.2 } // Leg 7
+        ];
 
-        for (const leg of this.legs) {
-            // Calculate how far out the foot should extend
-            const reach = (leg.upperLength + leg.lowerLength) * 0.7;
+        // Scale positions based on spider's actual body size
+        const scale = this.bodySize / 100;
 
-            // Foot position extends along leg's base angle (radial spread)
-            // X component: forward/backward movement along baseAngle
-            leg.worldFootX = this.x + leg.attachX + Math.cos(leg.baseAngle) * reach;
+        for (let i = 0; i < this.legs.length; i++) {
+            const leg = this.legs[i];
+            const relPos = customFootPositionsRelative[i];
 
-            // Y component: left/right movement along baseAngle
-            // This is KEY: different legs must have different Y values to spread radially
-            leg.worldFootY = this.y + leg.attachY + Math.sin(leg.baseAngle) * reach;
+            // Scale and position relative to this spider's center
+            leg.worldFootX = this.x + relPos.x * scale;
+            leg.worldFootY = this.y + relPos.y * scale;
         }
     }
 

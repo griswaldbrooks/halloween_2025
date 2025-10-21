@@ -22,7 +22,7 @@ pixi run open-visual-test # Single spider with annotations
 
 - `leg-kinematics.js` - IK/FK for 2-segment legs with elbow bias
 - `spider-model.js` - Body anatomy model (top-down view)
-- `spider-animation-v2.js` - Animation + gait controller
+- `spider-animation.js` - Animation + gait controller
 - `index.html` - Main animation page with controls
 - `spider-editor.html` - **Interactive leg editor** (drag feet, flip knees, export JSON)
 - `test-visual-output.html` - Single spider with position annotations
