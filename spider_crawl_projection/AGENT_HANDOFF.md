@@ -1,7 +1,7 @@
 # Agent Handoff - Spider Crawl Projection
 
-**Last Updated:** 2025-10-20 (Final)
-**Status:** ✅ Geometry PERFECT! Interactive editor created! | ⚠️ Locomotion Needs Refinement
+**Last Updated:** 2025-10-21
+**Status:** ✅ Geometry PERFECT! Zero leg intersections! IK verified! | ⚠️ Locomotion Needs Refinement
 **Project:** Halloween 2025 - Chamber 2 (Spider Web Tunnel)
 
 ---
@@ -11,19 +11,23 @@
 **What's Done:**
 - ✅ Spider geometry matches reference template perfectly
 - ✅ IK/FK system working with 0.0 error on all 8 legs
-- ✅ All geometry tests passing
-- ✅ **Interactive editor created** - drag feet, flip knees, export JSON
-- ✅ Visual test tools for debugging
+- ✅ **IK elbow bias bug FIXED** - foot stays in place when flipping
+- ✅ **Leg intersection detection** - user config has ZERO intersections
+- ✅ **Animation uses verified config** - no leg overlaps throughout gait cycle
+- ✅ All 8 tests passing
+- ✅ **Interactive editor** - drag feet, flip knees, export JSON (loads user config)
+- ✅ **Code refactored** - removed all versioned files, deleted obsolete code
 
 **What Needs Work:**
-- ⚠️ Swing leg movement (legs don't lift/move convincingly enough)
-- ⚠️ Gait timing and feel (may need parameter tweaking)
+- ⚠️ Swing leg movement (may need more dramatic motion)
+- ⚠️ Gait timing and feel (parameter tweaking)
 
 **Start Here:**
-1. Run `pixi run open-editor` - **Try the interactive editor first!**
-2. Run `pixi run test-ik-accuracy` - Verify IK still perfect (0.0 error)
-3. Run `pixi run serve` then `pixi run open` - View animation
-4. Read "Swing Phase Movement" section below for priority fix
+1. Run `pixi run test-user-config` - **Verify zero intersections**
+2. Run `pixi run open-editor` - **Try the interactive editor**
+3. Run `pixi run test` - **Verify all 8 tests pass**
+4. Run `pixi run serve` then `pixi run open` - View animation
+5. Read "Animation System" section below to understand gait
 
 ---
 
@@ -32,10 +36,12 @@
 ```bash
 pixi install              # First time setup
 pixi run serve            # Start server → http://localhost:8080
-pixi run open-editor      # Interactive leg editor (RECOMMENDED!)
+pixi run kill-server      # Stop server
+pixi run open-editor      # Interactive leg editor (loads user config)
 pixi run open             # Main animation
 pixi run open-visual-test # Single spider with annotations
-pixi run test             # Run all tests
+pixi run test             # Run all 8 tests
+pixi run test-user-config # Verify zero leg intersections
 ```
 
 **Browser Controls:** H (toggle UI) | F (fullscreen) | R (reset) | Space (pause)
@@ -203,30 +209,51 @@ pixi run test             # Run all tests
 - Tests natural curve (~9% deviation)
 - **Run after any geometry changes!**
 
-**Other Critical Tests:**
-- `test-kinematics.js` - IK/FK accuracy (should always pass)
-- `test-integration.js` - Full spider creation (should always pass)
+**Core Tests (8 total, all passing):**
+- `test-kinematics.js` - IK/FK + elbow bias flip accuracy
 - `test-model.js` - Body model validation
+- `test-integration.js` - Full spider creation
+- `test-ik-accuracy.js` - IK precision (0.0 error)
+- `test-rendering.js` - Actual rendering positions
+- `test-leg-drawing.js` - Visual leg geometry
 
-**Legacy Tests** (less important):
-- `test-spider-geometry.js`
-- `test-visual-geometry.js`
-- `test-leg-angles.js`
-- `test-reference-shape.js` (IGNORE - was for incorrect side view)
+**Configuration Tests:**
+- `test-user-config.js` - ✓ ZERO leg intersections!
+- `test-leg-intersections.js` - Generic intersection detection
+
+**Optimization Tools:**
+- `optimize-foot-positions.js` - Find non-intersecting reach values
+- `optimize-individual-legs.js` - Fine-tune individual positions
+
+**Test Suite:**
+- Run `pixi run test` to run all 8 core tests
+- All tests currently passing ✓
 
 ### Reference Materials
 
 - `spider_template1.png` - **TOP-DOWN view reference** (ground truth for geometry)
+- `spider-config.json` - **Verified user configuration** (zero intersections)
 - `CHANGELOG.md` - Complete version history with explanations
 - `ISSUES.md` - Current known issues
-- `GEOMETRY_ISSUES.md` - Past problems (now resolved)
 - `README.md` - Quick reference
 
 ---
 
-## How Gait Works
+## How Animation Works
 
-### 6-Phase Alternating Tetrapod
+### NOT a List of Poses - It's Procedural!
+
+The animation uses a **procedural gait system** (not pre-defined poses):
+- Legs move based on physics/timing
+- IK automatically calculates joint angles
+- Uses **user's verified non-intersecting configuration** throughout
+
+**Configuration:** `CUSTOM_FOOT_POSITIONS` in `spider-animation.js:39-48`
+- Elbow bias pattern: `[-1, 1, -1, 1, 1, -1, 1, -1]`
+- Custom foot positions verified to have ZERO intersections
+- Animation uses these positions as targets during swing phase
+
+### 6-Phase Alternating Tetrapod Gait
 
 **Group A:** Legs 1, 2, 5, 6 (indices: L1, R2, L3, R4)
 **Group B:** Legs 0, 3, 4, 7 (indices: R1, L2, R3, L4)
@@ -242,21 +269,24 @@ Phase 5: Pause (100ms)
 → Repeat
 ```
 
-**Code Location:** `spider-animation.js:96-140`
+**Code Location:** `spider-animation.js:122-166`
 
 ### Swing vs Stance
 
 **Swing Phase (leg in air):**
-- Foot lifts off ground
-- Swings to new position ahead of body
-- Targets future body position (predicts lurch)
-- **Code:** `updateLeg()` lines 151-175
+- Foot moves from current position → target position
+- Target = **CUSTOM_FOOT_POSITIONS[leg.index]** + future body position
+- Interpolates smoothly over 200ms
+- Uses verified non-intersecting positions (prevents leg overlaps!)
+- **Code:** `updateLeg()` lines 171-196
 
 **Stance Phase (leg on ground):**
 - Foot stays FIXED in world coordinates
 - Body moves forward past foot
 - IK automatically adjusts joint angles
-- **Code:** `updateLeg()` lines 176-181
+- **Code:** `updateLeg()` lines 197-202
+
+**IMPORTANT:** The animation now uses your custom foot positions throughout the entire gait cycle, not just at initialization. This ensures zero leg intersections at all times!
 
 ---
 

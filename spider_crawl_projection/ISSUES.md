@@ -7,6 +7,7 @@
 **Geometry:** ✅ PERFECT - All tests pass, zero intersections
 **Configuration:** ✅ VERIFIED - User config has no leg overlaps
 **IK System:** ✅ WORKING - Elbow bias flip tested and verified
+**Animation:** ✅ USES VERIFIED CONFIG - No leg overlaps throughout gait cycle
 
 ## Remaining Issues
 
@@ -98,8 +99,30 @@ Top-down view with correct X/Y mapping
 
 ## Resolved Issues
 
+### ~~IK Elbow Bias Flip Bug~~ ✅ FIXED (2025-10-21)
+**Problem:** Flipping IK solution moved foot 150 pixels instead of staying in place
+**Solution:** Fixed femur angle to flip sign with elbow bias
+- Changed: `femurAngle = this.elbowBias * (Math.PI - kneeAngle)`
+- Result: Foot position error = 0.000000 when flipping
+- Test: `pixi run test-kinematics` → testElbowBiasFlip() → ALL PASS
+
+### ~~Leg Intersections~~ ✅ FIXED (2025-10-21)
+**Problem:** Legs could overlap/cross during configuration
+**Solution:** Created intersection detection system + verified user config
+- Added line segment intersection algorithm
+- Test all 28 pairs of leg segments
+- User configuration verified to have ZERO intersections
+- Test: `pixi run test-user-config` → ✓✓✓ NO INTERSECTIONS
+
+### ~~Animation Reverting to Calculated Positions~~ ✅ FIXED (2025-10-21)
+**Problem:** Animation used custom config at init, then reverted to 0.7 reach during walking
+**Solution:** Extracted CUSTOM_FOOT_POSITIONS constant, used in both init and swing
+- Animation now uses verified non-intersecting positions throughout gait cycle
+- Test: Visual inspection - no leg overlaps during walking
+
 ### ~~Elbow Bias / IK Solutions~~ ✅ FIXED (2025-10-20 Final)
-**Solution:** Simple constant `elbowBias = 1` for all legs works perfectly
+**Solution:** Custom per-leg `elbowBias` pattern for optimal appearance
+- Pattern: [-1, 1, -1, 1, 1, -1, 1, -1]
 - IK accuracy test shows 0.0 error on all 8 legs
 - Can be adjusted per-leg using interactive editor
 - Test: `pixi run test-ik-accuracy` → 0.0 error

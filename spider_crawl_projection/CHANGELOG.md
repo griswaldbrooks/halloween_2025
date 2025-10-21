@@ -1,6 +1,50 @@
 # Changelog
 
-## 2025-10-21 - IK Flip Bug Fix + Intersection Detection + Perfect Config ✅
+## 2025-10-21 (Part 2) - Animation Fix + Documentation Update ✅
+
+### Fixed Animation to Use Custom Configuration
+**Problem:** Animation was reverting to calculated 0.7 reach positions during swing phase, ignoring user's verified non-intersecting configuration. Legs would overlap during walking even though static config had zero intersections.
+
+**Solution:**
+- Extracted `CUSTOM_FOOT_POSITIONS` as global constant (spider-animation.js:39-48)
+- Updated swing phase to use custom positions as targets (spider-animation.js:171-183)
+- Added `leg.index` tracking for proper position lookup (spider-animation.js:94)
+- Eliminated code duplication between init and update
+
+**Result:** Animation now maintains verified non-intersecting leg positions throughout entire walking cycle.
+
+### Documentation Overhaul for Next Agent
+**Updated all markdown files for agent continuity:**
+
+**README.md:**
+- Updated status and quick start
+- Added animation system explanation (procedural gait, not poses)
+- Listed all 8 passing tests
+- Added file summary
+- Removed obsolete references
+
+**AGENT_HANDOFF.md:**
+- Updated last modified date and status
+- Added animation system explanation
+- Updated code locations
+- Added emphasis on zero intersections throughout gait
+- Added `kill-server` command
+
+**CHANGELOG.md:**
+- This entry!
+
+**Files Changed:**
+- spider-animation.js:39-48 - Define CUSTOM_FOOT_POSITIONS constant
+- spider-animation.js:94 - Add leg.index for position lookup
+- spider-animation.js:107-119 - Use constant in init
+- spider-animation.js:171-183 - Use constant in swing phase
+- README.md - Complete overhaul
+- AGENT_HANDOFF.md - Updated with animation system
+- CHANGELOG.md - Added this entry
+
+---
+
+## 2025-10-21 (Part 1) - IK Flip Bug Fix + Intersection Detection + Perfect Config ✅
 
 ### Fixed Critical IK Elbow Bias Bug
 **Problem:** Flipping the IK solution (elbowBias) was changing the coxa/shoulder angle but NOT the femur/knee angle, causing the foot to move to a completely wrong position instead of staying in place.
