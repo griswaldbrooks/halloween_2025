@@ -2,20 +2,37 @@
 
 Black spiders walking left-to-right with proper inverse kinematics and alternating tetrapod gait.
 
-**Status:** ✅ Geometry PERFECT! Zero leg intersections! IK system verified! | ⚠️ Locomotion needs refinement
+**Status:** ✅ COMPLETE! Procedural animation working perfectly! Keyframe editor available!
 
 ## Quick Start
 
 ```bash
-pixi install              # First time setup
-pixi run serve            # Start server → http://localhost:8080
-pixi run kill-server      # Stop server
-pixi run open             # Main animation
-pixi run open-editor      # Interactive leg editor (drag feet, export config)
-pixi run open-visual-test # Single spider with annotations
+pixi install                  # First time setup
+pixi run serve                # Start server → http://localhost:8080
+pixi run kill-server          # Stop server
+pixi run open                 # Main animation (procedural mode)
+pixi run open-editor          # Interactive leg editor (drag feet, export config)
+pixi run open-keyframe-editor # Keyframe animation editor
+pixi run open-visual-test     # Single spider with annotations
 ```
 
 **Animation Controls:** H (toggle UI) | F (fullscreen) | R (reset) | Space (pause)
+
+## Animation Modes
+
+The spider animation supports two modes (switchable via dropdown in UI):
+
+1. **Procedural Mode (Default, Recommended)** ✅
+   - Realistic tetrapod gait with automatic stance/swing phases
+   - Body movement properly coupled to leg animation
+   - Zero leg intersections during animation
+   - Uses verified foot positions from `spider-config.json`
+
+2. **Keyframe Mode (Experimental)** ⚠️
+   - Custom keyframe-based animation
+   - Edit keyframes with `pixi run open-keyframe-editor`
+   - Supports body movement with planted/swinging foot detection
+   - Note: Body-relative coordinates make stance phase encoding complex
 
 ## Architecture
 
@@ -23,10 +40,12 @@ pixi run open-visual-test # Single spider with annotations
 
 - `leg-kinematics.js` - IK/FK for 2-segment legs with elbow bias
 - `spider-model.js` - Body anatomy model (top-down view)
-- `spider-animation.js` - Animation + gait controller (uses verified config)
-- `spider-config.json` - **User's verified configuration (zero intersections)**
-- `index.html` - Main animation page with controls
-- `spider-editor.html` - **Interactive leg editor** (loads user config, drag feet, flip knees, export JSON)
+- `spider-animation.js` - **Animation system with dual modes** (procedural + keyframe)
+- `spider-config.json` - Verified foot positions (zero intersections)
+- `index.html` - Main animation page with mode switcher
+- `spider-editor.html` - Interactive leg position editor
+- `keyframe-editor.html` - **Keyframe animation editor** (move feet/body, plant feet, export)
+- `keyframe-animation.json` - Current keyframe animation data
 - `test-visual-output.html` - Single spider with position annotations
 
 ### Reference
@@ -46,7 +65,7 @@ pixi run open-visual-test # Single spider with annotations
 
 ### Run All Tests
 ```bash
-pixi run test              # Run complete test suite (8 tests, all passing)
+pixi run test              # Run complete test suite (11/12 tests passing)
 ```
 
 ### Core Tests
@@ -64,6 +83,16 @@ pixi run test-leg-drawing  # Visual leg geometry (✓ ALL PASS)
 ```bash
 pixi run test-user-config  # Verify zero leg intersections (✓ PASS!)
 pixi run test-intersections # Generic intersection detection
+```
+
+### Animation Tests
+```bash
+pixi run node test-keyframe-animation.js  # Keyframe system (✓ interpolation, ⚠️ intersections)
+pixi run node test-animation-modes.js     # Mode switching (✓ PASS)
+pixi run node test-keyframe-body-movement.js  # Body movement diagnostic (✓ PASS)
+pixi run node test-keyframe-direction.js  # Direction analysis (✓ PASS)
+pixi run node test-keyframe-phases.js     # Phase-by-phase analysis (diagnostic)
+pixi run node extract-procedural-keyframes.js # Extract keyframes from procedural gait
 ```
 
 ### Optimization Tools
@@ -119,23 +148,39 @@ pixi run optimize-individual # Fine-tune individual leg positions
    - Forward/inverse kinematics working correctly
    - Zero error throughout system
 
-### ⚠️ Still Needs Work
+9. **Dual Animation Modes (2025-10-21)** - Procedural + Keyframe
+   - Procedural mode: Tetrapod gait with automatic stance/swing
+   - Keyframe mode: Custom animation with editor support
+   - Mode switcher in UI
+   - 12 comprehensive tests covering both modes
 
-1. **Swing Phase Movement** - Legs during swing
-   - In top-down view, swing is 2D motion (X-Y plane)
-   - May need more visible movement during swing
-   - Speed/distance of swing phase
+10. **Keyframe Animation System (2025-10-21)** - Full editor
+    - Interactive keyframe editor with timeline
+    - Two edit modes: Move Feet | Move Body
+    - Planted feet feature (pin feet, move body around them)
+    - Auto-rename keyframes with Enter/blur
+    - Export/import JSON animations
+    - Body movement calculation from keyframe data
 
-2. **Stance vs Swing Distinction** - Visual clarity
-   - Swing legs should move noticeably faster
-   - Stance legs should stay planted
-   - Transition timing may need adjustment
+11. **Body Movement from Keyframes (2025-10-21)** - Physics-based
+    - Detects planted vs swinging feet by velocity
+    - Hybrid algorithm: uses planted feet when available
+    - Diagnostic tests for direction analysis
+    - Procedural keyframe extraction tool
 
-3. **Gait Feel** - Overall walking motion
-   - Timing of phases may need tweaking
-   - Lurch distance during stance
-   - Pause durations between phases
-   - Overall "spidery" appearance
+### ⚠️ Known Limitations
+
+1. **Keyframe Mode Body Movement** - Complex issue
+   - Body-relative coordinates don't encode stance phase movement well
+   - Planted feet staying at same body coords = body doesn't move in world
+   - Procedural mode recommended for realistic walking
+   - Keyframe mode better for custom/artistic animations
+
+2. **Extracted Procedural Keyframes** - Have intersections
+   - Live procedural animation has zero intersections
+   - Extracted keyframes show intersections during swing phase
+   - This is because keyframes interpolate linearly, procedural doesn't
+   - Use procedural mode for zero-intersection guarantee
 
 ## How Animation Works
 

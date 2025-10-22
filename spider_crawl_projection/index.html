@@ -94,6 +94,13 @@
             <input type="range" id="size" min="0.5" max="3.0" step="0.1" value="1.0" oninput="updateSize(this.value)">
         </label>
 
+        <label style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #0f0; display: block;">
+            Animation Mode:
+            <select id="animationMode" onchange="updateAnimationMode(this.value)" style="width: 100%; padding: 5px; margin-top: 5px; background: #000; color: #0f0; border: 1px solid #0f0; font-family: monospace;">
+                <option value="procedural" selected>Procedural (Tetrapod Gait)</option>
+                <option value="keyframe">Keyframe (Experimental)</option>
+            </select>
+        </label>
 
         <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #0f0;">
             <div class="stat">FPS: <span id="fps">0</span></div>
@@ -105,7 +112,11 @@
             H - Toggle controls<br>
             F - Fullscreen<br>
             R - Reset spiders<br>
-            Space - Pause/Resume
+            Space - Pause/Resume<br>
+            <br>
+            <strong>Animation Modes:</strong><br>
+            Keyframe - Uses your custom animation<br>
+            Procedural - Uses tetrapod gait algorithm
         </div>
     </div>
 

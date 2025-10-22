@@ -37,6 +37,12 @@ run_test "Leg Drawing" "test-leg-drawing.js"
 # Configuration Tests
 run_test "User Configuration (No Intersections)" "test-user-config.js"
 
+# Animation Tests
+run_test "Keyframe Animation System" "test-keyframe-animation.js"
+run_test "Animation Mode Switching" "test-animation-modes.js"
+run_test "Keyframe Body Movement" "test-keyframe-body-movement.js"
+run_test "Keyframe Direction Analysis" "test-keyframe-direction.js"
+
 TOTAL=$((PASS + FAIL))
 
 echo "╔════════════════════════════════════════════════════════════╗"

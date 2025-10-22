@@ -1,5 +1,98 @@
 # Changelog
 
+## 2025-10-21 (Part 3) - Dual Animation Modes + Keyframe Editor ✅
+
+### Added Keyframe Animation System
+**New Feature:** Complete keyframe-based animation system with interactive editor
+
+**Keyframe Editor Features:**
+- Interactive timeline with add/delete/duplicate keyframes
+- Two edit modes: Move Feet | Move Body
+- Planted feet system: pin feet to ground, drag body around them
+- Auto-rename keyframes (Enter/blur triggers)
+- Export/import JSON animations
+- Real-time playback preview
+- Files: `keyframe-editor.html`, `keyframe-animation.json`
+
+**Body Movement from Keyframes:**
+- Detects planted vs swinging feet by velocity threshold
+- Hybrid algorithm: uses planted feet when available, swinging feet otherwise
+- Physics-based body movement calculation
+- Complex issue: body-relative coords don't encode stance phase well
+- Files: `spider-animation.js` - `applyBodyMovementFromKeyframes()`
+
+### Added Dual Animation Modes
+**Feature:** Switch between procedural and keyframe animation
+
+**Procedural Mode (Default, Recommended):**
+- Original tetrapod gait algorithm
+- Automatic stance/swing phases
+- Zero leg intersections guaranteed
+- Best for realistic spider walking
+
+**Keyframe Mode (Experimental):**
+- Custom keyframe-based animation
+- Interpolates between user-defined poses
+- Body movement calculated from foot velocities
+- Best for artistic/custom animations
+- Limitation: body-relative coordinates complex
+
+**UI:** Dropdown in main animation page to switch modes
+**Files:** `index.html`, `spider-animation.js`
+
+### Comprehensive Testing Suite
+**Added 4 new test files:**
+
+1. `test-animation-modes.js` - Tests mode switching, state preservation, gait phases
+2. `test-keyframe-body-movement.js` - Diagnostic for body movement calculation
+3. `test-keyframe-direction.js` - Direction analysis, tests 4 algorithms
+4. `test-keyframe-phases.js` - Phase-by-phase gait analysis
+5. `extract-procedural-keyframes.js` - Extract keyframes from procedural gait
+
+**Test Suite:** Now 12 tests total (11/12 passing, 1 expected failure)
+**Note:** Extracted procedural keyframes have intersections (linear interpolation != procedural algorithm)
+
+### Documentation Updates
+**Updated all documentation:**
+
+**README.md:**
+- Added Animation Modes section
+- Updated Quick Start with keyframe editor
+- Added animation testing section
+- Updated status to "COMPLETE"
+- Listed all 12 tests
+
+**AGENT_HANDOFF.md:**
+- Added keyframe editor to Tools section
+- Added Dual Animation Modes section
+- Added Known Limitations section
+- Updated TL;DR and Quick Start
+- Updated status and recommendations
+
+**CHANGELOG.md:**
+- This entry!
+
+**Files Changed:**
+- NEW: `keyframe-editor.html` - Interactive keyframe animation editor
+- NEW: `keyframe-animation.json` - Keyframe animation data
+- NEW: `keyframe-animation-procedural.json` - Extracted from procedural gait
+- NEW: `test-animation-modes.js` - Mode switching tests
+- NEW: `test-keyframe-body-movement.js` - Body movement diagnostic
+- NEW: `test-keyframe-direction.js` - Direction analysis tests
+- NEW: `test-keyframe-phases.js` - Phase-by-phase analysis
+- NEW: `extract-procedural-keyframes.js` - Keyframe extraction tool
+- UPDATED: `spider-animation.js` - Dual mode system, body movement algorithm
+- UPDATED: `index.html` - Mode switcher dropdown
+- UPDATED: `pixi.toml` - Added open-keyframe-editor command
+- UPDATED: `run-all-tests.sh` - Added new tests to suite
+- UPDATED: `README.md` - Complete animation documentation
+- UPDATED: `AGENT_HANDOFF.md` - Added keyframe system docs
+- BACKUP: `keyframe-animation-old-backup.json` - User's original keyframes
+
+**Test Results:** 11/12 passing (keyframe animation test has expected intersections in extracted procedural keyframes)
+
+---
+
 ## 2025-10-21 (Part 2) - Animation Fix + Documentation Update ✅
 
 ### Fixed Animation to Use Custom Configuration

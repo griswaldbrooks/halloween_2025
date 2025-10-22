@@ -16,6 +16,7 @@ kill-server = "fuser -k 8080/tcp 2>/dev/null || echo 'No server running on port 
 open = "xdg-open http://localhost:8080"
 open-visual-test = "xdg-open http://localhost:8080/test-visual-output.html"
 open-editor = "xdg-open http://localhost:8080/spider-editor.html"
+open-keyframe-editor = "xdg-open http://localhost:8080/keyframe-editor.html"
 start = { depends-on = ["serve"] }
 
 # Core Tests
@@ -30,6 +31,7 @@ test-leg-drawing = "node test-leg-drawing.js"
 # Configuration Tests
 test-intersections = "node test-leg-intersections.js"
 test-user-config = "node test-user-config.js"
+test-keyframes = "node test-keyframe-animation.js"
 
 # Optimization Tools
 optimize-legs = "node optimize-foot-positions.js"

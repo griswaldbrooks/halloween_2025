@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider Keyframe Animation Editor</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: monospace;
+            background: #f0f0f0;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .canvas-panel {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .controls-panel {
+            width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        canvas {
+            border: 2px solid #333;
+            display: block;
+            background: white;
+            cursor: crosshair;
+        }
+
+        .timeline {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .timeline-bar {
+            width: 100%;
+            height: 60px;
+            background: #ddd;
+            border-radius: 4px;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .keyframe-marker {
+            position: absolute;
+            width: 12px;
+            height: 100%;
+            background: #4CAF50;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        .keyframe-marker:hover {
+            background: #45a049;
+        }
+
+        .keyframe-marker.selected {
+            background: #2196F3;
+        }
+
+        .playhead {
+            position: absolute;
+            width: 3px;
+            height: 100%;
+            background: red;
+            pointer-events: none;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button.secondary {
+            background: #666;
+        }
+
+        button.secondary:hover {
+            background: #555;
+        }
+
+        button.danger {
+            background: #f44336;
+        }
+
+        button.danger:hover {
+            background: #da190b;
+        }
+
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        h3 {
+            margin-top: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px 0;
+            color: #666;
+            font-size: 12px;
+        }
+
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .leg-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+
+        .leg-button {
+            padding: 8px;
+            background: #eee;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            text-align: center;
+            font-family: monospace;
+            font-size: 11px;
+        }
+
+        .leg-button.selected {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        #exportOutput {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .info-text {
+            font-size: 11px;
+            color: #666;
+            margin: 10px 0;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .mode-button {
+            flex: 1;
+            padding: 10px;
+            background: #eee;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            text-align: center;
+            font-family: monospace;
+            font-size: 12px;
+            border-radius: 4px;
+        }
+
+        .mode-button.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .planted-indicator {
+            position: absolute;
+            font-size: 18px;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🕷️ Spider Keyframe Animation Editor</h1>
+
+    <div class="container">
+        <div class="canvas-panel">
+            <canvas id="canvas" width="800" height="800"></canvas>
+
+            <div class="timeline">
+                <h3>Animation Timeline</h3>
+                <div class="info-text">Click timeline to add keyframes. Drag markers to adjust timing.</div>
+                <div class="timeline-bar" id="timelineBar">
+                    <div class="playhead" id="playhead"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 5px;">
+                    <button onclick="playAnimation()">▶ Play</button>
+                    <button onclick="pauseAnimation()">⏸ Pause</button>
+                    <button onclick="resetAnimation()">⏹ Stop</button>
+                    <label style="display: inline;">
+                        Speed: <input type="range" id="speedSlider" min="0.1" max="2" step="0.1" value="1"
+                                      oninput="updateSpeed(this.value)" style="width: 100px;">
+                        <span id="speedLabel">1.0x</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="section">
+                <h2>Edit Mode</h2>
+                <div class="mode-toggle">
+                    <div class="mode-button active" id="modeFeet" onclick="setEditMode('feet')">
+                        Move Feet
+                    </div>
+                    <div class="mode-button" id="modeBody" onclick="setEditMode('body')">
+                        Move Body
+                    </div>
+                </div>
+                <div id="modeInstructions" class="info-text">
+                    <strong>Move Feet Mode:</strong> Drag individual leg feet to reposition them
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Current Keyframe</h2>
+                <div id="keyframeInfo">No keyframe selected</div>
+                <label>Keyframe Name:
+                    <input type="text" id="keyframeName" placeholder="e.g., Contact Right"
+                           onkeypress="if(event.key==='Enter') updateKeyframeMeta()"
+                           onblur="updateKeyframeMeta()">
+                </label>
+                <label>Time (ms):
+                    <input type="number" id="keyframeTime" min="0" max="2000" step="50"
+                           onkeypress="if(event.key==='Enter') updateKeyframeMeta()"
+                           onchange="updateKeyframeMeta()">
+                </label>
+                <button onclick="updateKeyframeMeta()">Update</button>
+                <button class="danger" onclick="deleteKeyframe()">Delete Keyframe</button>
+            </div>
+
+            <div class="section" id="legSelectionSection">
+                <h2>Leg Selection</h2>
+                <div class="leg-buttons" id="legButtons"></div>
+                <div id="selectedLegInfo" class="info-text">Click a leg to select</div>
+                <label>
+                    <input type="checkbox" id="flipKnee" onchange="toggleKnee()">
+                    Flip IK Solution (changes coxa/shoulder angle)
+                </label>
+            </div>
+
+            <div class="section" id="plantedFeetSection" style="display: none;">
+                <h2>Planted Feet (Stay Fixed)</h2>
+                <div class="info-text">Check legs that should stay planted when body moves</div>
+                <div class="leg-buttons" id="plantedButtons"></div>
+            </div>
+
+            <div class="section">
+                <h2>Actions</h2>
+                <button onclick="addKeyframe()">+ Add Keyframe</button>
+                <button onclick="duplicateKeyframe()">📋 Duplicate Current</button>
+                <button class="secondary" onclick="resetCurrentKeyframeToDefault()">Reset Current Frame</button>
+                <button class="danger" onclick="loadDefaultPose()">Reset ALL (New Animation)</button>
+            </div>
+
+            <div class="section">
+                <h2>Export Animation</h2>
+                <button onclick="exportAnimation()">Export JSON</button>
+                <textarea id="exportOutput" readonly></textarea>
+                <button class="secondary" onclick="copyToClipboard()">📋 Copy to Clipboard</button>
+            </div>
+
+            <div class="section">
+                <h2>Import Animation</h2>
+                <input type="file" id="fileInput" accept=".json">
+                <button class="secondary" onclick="importAnimation()">Load JSON File</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="leg-kinematics.js"></script>
+    <script src="spider-model.js"></script>
+    <script>
+        // Animation state
+        let animation = {
+            name: "Spider Walk Cycle",
+            bodySize: 100,
+            duration: 1000,
+            loop: true,
+            elbowBiasPattern: [-1, 1, -1, 1, 1, -1, 1, -1],
+            keyframes: []
+        };
+
+        let selectedKeyframe = null;
+        let selectedLeg = null;
+        let draggingFoot = false;
+        let playing = false;
+        let playbackTime = 0;
+        let playbackSpeed = 1.0;
+        let lastFrameTime = Date.now();
+
+        // Edit mode state
+        let editMode = 'feet'; // 'feet' or 'body'
+        let plantedLegs = new Set(); // Set of leg indices that are planted
+        let draggingBody = false;
+        let dragStartBodyX = 0;
+        let dragStartBodyY = 0;
+        let dragStartMouseX = 0;
+        let dragStartMouseY = 0;
+        let dragStartFootPositions = []; // Store relative positions for non-planted legs
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Spider for visualization
+        const spider = {
+            x: 400,
+            y: 400,
+            bodySize: 100,
+            body: new SpiderBody(100),
+            legs: []
+        };
+
+        // Initialize spider legs
+        function initializeSpider() {
+            spider.legs = [];
+            for (let i = 0; i < 8; i++) {
+                const attachment = spider.body.getAttachment(i);
+                const leg = new Leg2D({
+                    attachX: attachment.x,
+                    attachY: attachment.y,
+                    upperLength: spider.body.legUpperLength,
+                    lowerLength: spider.body.legLowerLength,
+                    side: attachment.side,
+                    baseAngle: attachment.baseAngle,
+                    elbowBias: animation.elbowBiasPattern[i]
+                });
+                leg.index = i;
+                leg.worldFootX = 400;
+                leg.worldFootY = 400;
+                spider.legs.push(leg);
+            }
+        }
+
+        // Default leg positions
+        const DEFAULT_LEG_POSITIONS = [
+            { x: 160.2, y: 100.2 },
+            { x: 160.2, y: -100.2 },
+            { x: 115.2, y: 130.4 },
+            { x: 115.2, y: -130.4 },
+            { x: -60.2, y: 130.4 },
+            { x: -60.2, y: -130.4 },
+            { x: -100.2, y: 100.2 },
+            { x: -100.2, y: -100.2 }
+        ];
+
+        // Reset current keyframe to default pose
+        function resetCurrentKeyframeToDefault() {
+            if (selectedKeyframe === null) {
+                alert("No keyframe selected");
+                return;
+            }
+
+            // Apply default positions to spider legs
+            for (let i = 0; i < 8; i++) {
+                spider.legs[i].worldFootX = spider.x + DEFAULT_LEG_POSITIONS[i].x;
+                spider.legs[i].worldFootY = spider.y + DEFAULT_LEG_POSITIONS[i].y;
+            }
+
+            // Save to current keyframe
+            saveCurrentKeyframe();
+            draw();
+        }
+
+        // Initialize with a default keyframe (resets entire animation)
+        function loadDefaultPose() {
+            if (!confirm("This will delete all keyframes and create a new animation. Continue?")) {
+                return;
+            }
+
+            animation.keyframes = [{
+                time: 0,
+                name: "Default Pose",
+                legs: JSON.parse(JSON.stringify(DEFAULT_LEG_POSITIONS))
+            }];
+            selectedKeyframe = 0;
+            applyKeyframeToPose(0);
+            renderTimeline();
+            draw();
+        }
+
+        // Apply keyframe data to spider pose
+        function applyKeyframeToPose(keyframeIndex) {
+            if (keyframeIndex < 0 || keyframeIndex >= animation.keyframes.length) return;
+
+            const keyframe = animation.keyframes[keyframeIndex];
+            for (let i = 0; i < 8; i++) {
+                const legPos = keyframe.legs[i];
+                spider.legs[i].worldFootX = spider.x + legPos.x;
+                spider.legs[i].worldFootY = spider.y + legPos.y;
+            }
+            updateKeyframeInfo();
+        }
+
+        // Get current pose as keyframe data
+        function getCurrentPose() {
+            return spider.legs.map(leg => ({
+                x: parseFloat((leg.worldFootX - spider.x).toFixed(1)),
+                y: parseFloat((leg.worldFootY - spider.y).toFixed(1))
+            }));
+        }
+
+        // Add new keyframe
+        function addKeyframe() {
+            // Save current keyframe first
+            saveCurrentKeyframe();
+
+            const newTime = animation.keyframes.length > 0
+                ? animation.keyframes[animation.keyframes.length - 1].time + 200
+                : 0;
+
+            animation.keyframes.push({
+                time: newTime,
+                name: `Keyframe ${animation.keyframes.length + 1}`,
+                legs: getCurrentPose()
+            });
+
+            selectedKeyframe = animation.keyframes.length - 1;
+            renderTimeline();
+            updateKeyframeInfo();
+        }
+
+        // Duplicate current keyframe
+        function duplicateKeyframe() {
+            if (selectedKeyframe === null) return;
+
+            // Save current keyframe first
+            saveCurrentKeyframe();
+
+            const source = animation.keyframes[selectedKeyframe];
+            const newKeyframe = {
+                time: source.time + 200,
+                name: source.name + " (copy)",
+                legs: JSON.parse(JSON.stringify(source.legs))
+            };
+
+            animation.keyframes.push(newKeyframe);
+            animation.keyframes.sort((a, b) => a.time - b.time);
+            selectedKeyframe = animation.keyframes.indexOf(newKeyframe);
+
+            renderTimeline();
+            applyKeyframeToPose(selectedKeyframe);
+        }
+
+        // Delete current keyframe
+        function deleteKeyframe() {
+            if (selectedKeyframe === null || animation.keyframes.length <= 1) {
+                alert("Cannot delete the last keyframe");
+                return;
+            }
+
+            animation.keyframes.splice(selectedKeyframe, 1);
+            selectedKeyframe = Math.min(selectedKeyframe, animation.keyframes.length - 1);
+
+            renderTimeline();
+            applyKeyframeToPose(selectedKeyframe);
+        }
+
+        // Update keyframe metadata
+        function updateKeyframeMeta() {
+            if (selectedKeyframe === null) return;
+
+            const name = document.getElementById('keyframeName').value;
+            const time = parseInt(document.getElementById('keyframeTime').value);
+
+            const currentKeyframe = animation.keyframes[selectedKeyframe];
+            currentKeyframe.name = name;
+            currentKeyframe.time = time;
+
+            // Save current pose
+            saveCurrentKeyframe();
+
+            // Re-sort and find the keyframe's new position
+            animation.keyframes.sort((a, b) => a.time - b.time);
+            selectedKeyframe = animation.keyframes.indexOf(currentKeyframe);
+
+            renderTimeline();
+            updateKeyframeInfo();
+        }
+
+        // Update keyframe info display
+        function updateKeyframeInfo() {
+            const info = document.getElementById('keyframeInfo');
+            const nameInput = document.getElementById('keyframeName');
+            const timeInput = document.getElementById('keyframeTime');
+
+            if (selectedKeyframe === null) {
+                info.textContent = "No keyframe selected";
+                nameInput.value = "";
+                timeInput.value = "";
+                return;
+            }
+
+            const kf = animation.keyframes[selectedKeyframe];
+            info.textContent = `Keyframe ${selectedKeyframe + 1} of ${animation.keyframes.length}`;
+            nameInput.value = kf.name;
+            timeInput.value = kf.time;
+        }
+
+        // Render timeline
+        function renderTimeline() {
+            const timelineBar = document.getElementById('timelineBar');
+            const maxTime = Math.max(...animation.keyframes.map(kf => kf.time), 1000);
+
+            // Clear existing markers
+            timelineBar.querySelectorAll('.keyframe-marker').forEach(el => el.remove());
+
+            // Add markers for each keyframe
+            animation.keyframes.forEach((kf, index) => {
+                const marker = document.createElement('div');
+                marker.className = 'keyframe-marker' + (index === selectedKeyframe ? ' selected' : '');
+                marker.style.left = `${(kf.time / maxTime) * 100}%`;
+                marker.title = `${kf.name} (${kf.time}ms)`;
+                marker.onclick = () => selectKeyframe(index);
+                timelineBar.appendChild(marker);
+            });
+        }
+
+        // Save current keyframe pose
+        function saveCurrentKeyframe() {
+            if (selectedKeyframe !== null && selectedKeyframe < animation.keyframes.length) {
+                animation.keyframes[selectedKeyframe].legs = getCurrentPose();
+            }
+        }
+
+        // Select keyframe
+        function selectKeyframe(index) {
+            // Save current keyframe before switching
+            saveCurrentKeyframe();
+
+            selectedKeyframe = index;
+            applyKeyframeToPose(index);
+            renderTimeline();
+            draw();
+        }
+
+        // Animation playback
+        function playAnimation() {
+            playing = true;
+            lastFrameTime = Date.now();
+            animationLoop();
+        }
+
+        function pauseAnimation() {
+            playing = false;
+        }
+
+        function resetAnimation() {
+            playing = false;
+            playbackTime = 0;
+            updatePlayhead();
+        }
+
+        function updateSpeed(value) {
+            playbackSpeed = parseFloat(value);
+            document.getElementById('speedLabel').textContent = value + 'x';
+        }
+
+        function animationLoop() {
+            if (!playing) return;
+
+            const now = Date.now();
+            const dt = (now - lastFrameTime) * playbackSpeed;
+            lastFrameTime = now;
+
+            playbackTime += dt;
+
+            const maxTime = Math.max(...animation.keyframes.map(kf => kf.time), 1000);
+            if (playbackTime > maxTime) {
+                if (animation.loop) {
+                    playbackTime = 0;
+                } else {
+                    playing = false;
+                    playbackTime = maxTime;
+                }
+            }
+
+            interpolateAtTime(playbackTime);
+            updatePlayhead();
+            draw();
+
+            requestAnimationFrame(animationLoop);
+        }
+
+        function updatePlayhead() {
+            const playhead = document.getElementById('playhead');
+            const maxTime = Math.max(...animation.keyframes.map(kf => kf.time), 1000);
+            playhead.style.left = `${(playbackTime / maxTime) * 100}%`;
+        }
+
+        // Interpolate pose at specific time
+        function interpolateAtTime(time) {
+            if (animation.keyframes.length === 0) return;
+            if (animation.keyframes.length === 1) {
+                applyKeyframeToPose(0);
+                return;
+            }
+
+            // Find surrounding keyframes
+            let beforeKf = animation.keyframes[0];
+            let afterKf = animation.keyframes[animation.keyframes.length - 1];
+
+            for (let i = 0; i < animation.keyframes.length - 1; i++) {
+                if (animation.keyframes[i].time <= time && animation.keyframes[i + 1].time >= time) {
+                    beforeKf = animation.keyframes[i];
+                    afterKf = animation.keyframes[i + 1];
+                    break;
+                }
+            }
+
+            // Calculate interpolation factor
+            const duration = afterKf.time - beforeKf.time;
+            const elapsed = time - beforeKf.time;
+            const t = duration > 0 ? elapsed / duration : 0;
+
+            // Interpolate each leg
+            for (let i = 0; i < 8; i++) {
+                const before = beforeKf.legs[i];
+                const after = afterKf.legs[i];
+
+                const interpX = before.x + (after.x - before.x) * t;
+                const interpY = before.y + (after.y - before.y) * t;
+
+                spider.legs[i].worldFootX = spider.x + interpX;
+                spider.legs[i].worldFootY = spider.y + interpY;
+            }
+        }
+
+        // Drawing
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(spider.x, spider.y);
+
+            // Draw body
+            ctx.fillStyle = '#333';
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+
+            // Abdomen
+            ctx.beginPath();
+            ctx.ellipse(
+                spider.body.abdomen.center, 0,
+                spider.body.abdomen.length / 2,
+                spider.body.abdomen.width / 2,
+                0, 0, Math.PI * 2
+            );
+            ctx.fill();
+            ctx.stroke();
+
+            // Cephalothorax
+            ctx.beginPath();
+            ctx.ellipse(
+                spider.body.cephalothorax.center, 0,
+                spider.body.cephalothorax.length / 2,
+                spider.body.cephalothorax.width / 2,
+                0, 0, Math.PI * 2
+            );
+            ctx.fill();
+            ctx.stroke();
+
+            // Draw legs
+            spider.legs.forEach((leg, i) => {
+                const isSelected = selectedLeg === i;
+                drawLeg(leg, isSelected, false);
+            });
+
+            ctx.restore();
+        }
+
+        function drawLeg(leg, isSelected, isDragging) {
+            const targetX = leg.worldFootX - spider.x;
+            const targetY = leg.worldFootY - spider.y;
+
+            leg.setFootPosition(targetX, targetY);
+            const positions = leg.forwardKinematics();
+
+            const color = isDragging ? '#0066FF' : (isSelected ? '#00AA00' : '#000');
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = isSelected ? 3 : 2;
+
+            // Upper segment
+            ctx.beginPath();
+            ctx.moveTo(leg.attachX, leg.attachY);
+            ctx.lineTo(positions.knee.x, positions.knee.y);
+            ctx.stroke();
+
+            // Lower segment
+            ctx.beginPath();
+            ctx.moveTo(positions.knee.x, positions.knee.y);
+            ctx.lineTo(positions.foot.x, positions.foot.y);
+            ctx.stroke();
+
+            // Joints
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(leg.attachX, leg.attachY, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(positions.knee.x, positions.knee.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Foot
+            ctx.fillStyle = isDragging ? '#0066FF' : '#FF0000';
+            ctx.beginPath();
+            ctx.arc(positions.foot.x, positions.foot.y, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Planted indicator
+            if (editMode === 'body' && plantedLegs.has(leg.index)) {
+                ctx.save();
+                ctx.font = 'bold 16px monospace';
+                ctx.fillStyle = '#FFD700'; // Gold color for planted
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.strokeText('📍', positions.foot.x - 8, positions.foot.y - 8);
+                ctx.fillText('📍', positions.foot.x - 8, positions.foot.y - 8);
+                ctx.restore();
+            }
+
+            // Labels if selected
+            if (isSelected) {
+                ctx.save();
+                ctx.font = 'bold 11px monospace';
+                ctx.fillStyle = '#00AA00';
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 3;
+
+                const footText = `Leg ${leg.index}`;
+                ctx.strokeText(footText, positions.foot.x + 8, positions.foot.y + 15);
+                ctx.fillText(footText, positions.foot.x + 8, positions.foot.y + 15);
+
+                ctx.restore();
+            }
+        }
+
+        // Edit mode switching
+        function setEditMode(mode) {
+            editMode = mode;
+
+            // Update UI
+            document.getElementById('modeFeet').classList.toggle('active', mode === 'feet');
+            document.getElementById('modeBody').classList.toggle('active', mode === 'body');
+
+            document.getElementById('legSelectionSection').style.display = mode === 'feet' ? 'block' : 'none';
+            document.getElementById('plantedFeetSection').style.display = mode === 'body' ? 'block' : 'none';
+
+            const instructions = document.getElementById('modeInstructions');
+            if (mode === 'feet') {
+                instructions.innerHTML = '<strong>Move Feet Mode:</strong> Drag individual leg feet to reposition them';
+            } else {
+                instructions.innerHTML = '<strong>Move Body Mode:</strong> Drag spider body. Planted feet stay fixed, others move with body.';
+            }
+
+            draw();
+        }
+
+        function togglePlanted(legIndex) {
+            if (plantedLegs.has(legIndex)) {
+                plantedLegs.delete(legIndex);
+            } else {
+                plantedLegs.add(legIndex);
+            }
+            updatePlantedButtons();
+            draw();
+        }
+
+        // Mouse interaction
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (editMode === 'feet') {
+                // Check if clicking on a foot
+                for (let i = 0; i < spider.legs.length; i++) {
+                    const leg = spider.legs[i];
+                    const dx = leg.worldFootX - mouseX;
+                    const dy = leg.worldFootY - mouseY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 10) {
+                        selectedLeg = i;
+                        draggingFoot = true;
+                        updateLegButtons();
+                        draw();
+                        return;
+                    }
+                }
+            } else {
+                // Body mode - check if clicking on body
+                const dx = mouseX - spider.x;
+                const dy = mouseY - spider.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < spider.bodySize) {
+                    draggingBody = true;
+                    dragStartBodyX = spider.x;
+                    dragStartBodyY = spider.y;
+                    dragStartMouseX = mouseX;
+                    dragStartMouseY = mouseY;
+
+                    // Store relative positions for non-planted legs
+                    dragStartFootPositions = spider.legs.map((leg, i) => {
+                        if (plantedLegs.has(i)) {
+                            return null; // Planted legs stay fixed in world space
+                        } else {
+                            return {
+                                x: leg.worldFootX - spider.x,
+                                y: leg.worldFootY - spider.y
+                            };
+                        }
+                    });
+                    return;
+                }
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            if (draggingFoot && selectedLeg !== null) {
+                spider.legs[selectedLeg].worldFootX = mouseX;
+                spider.legs[selectedLeg].worldFootY = mouseY;
+                draw();
+            } else if (draggingBody) {
+                const deltaX = mouseX - dragStartMouseX;
+                const deltaY = mouseY - dragStartMouseY;
+
+                spider.x = dragStartBodyX + deltaX;
+                spider.y = dragStartBodyY + deltaY;
+
+                // Update leg positions
+                spider.legs.forEach((leg, i) => {
+                    if (plantedLegs.has(i)) {
+                        // Planted legs: keep world position fixed (don't move)
+                        // worldFootX/Y stays the same
+                    } else {
+                        // Non-planted legs: maintain relative position to body
+                        leg.worldFootX = spider.x + dragStartFootPositions[i].x;
+                        leg.worldFootY = spider.y + dragStartFootPositions[i].y;
+                    }
+                });
+
+                draw();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            if (draggingFoot) {
+                draggingFoot = false;
+                saveCurrentKeyframe();
+                draw();
+            } else if (draggingBody) {
+                draggingBody = false;
+                saveCurrentKeyframe();
+                draw();
+            }
+        });
+
+        // Leg selection buttons
+        function createLegButtons() {
+            const container = document.getElementById('legButtons');
+            for (let i = 0; i < 8; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'leg-button';
+                btn.textContent = `L${i}`;
+                btn.onclick = () => {
+                    selectedLeg = i;
+                    updateLegButtons();
+                    draw();
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function updateLegButtons() {
+            const buttons = document.querySelectorAll('.leg-button');
+            buttons.forEach((btn, i) => {
+                btn.className = 'leg-button' + (i === selectedLeg ? ' selected' : '');
+            });
+
+            const info = document.getElementById('selectedLegInfo');
+            if (selectedLeg !== null) {
+                const leg = spider.legs[selectedLeg];
+                const pos = leg.forwardKinematics();
+                info.textContent = `Leg ${selectedLeg}: Foot (${(leg.worldFootX - spider.x).toFixed(1)}, ${(leg.worldFootY - spider.y).toFixed(1)})`;
+
+                const elbowBias = animation.elbowBiasPattern[selectedLeg];
+                document.getElementById('flipKnee').checked = (elbowBias === -1);
+            } else {
+                info.textContent = 'Click a leg to select';
+            }
+        }
+
+        function toggleKnee() {
+            if (selectedLeg === null) return;
+
+            const checked = document.getElementById('flipKnee').checked;
+            animation.elbowBiasPattern[selectedLeg] = checked ? -1 : 1;
+            spider.legs[selectedLeg].elbowBias = animation.elbowBiasPattern[selectedLeg];
+
+            // Auto-save after changing elbow bias
+            saveCurrentKeyframe();
+            draw();
+        }
+
+        // Export/Import
+        function exportAnimation() {
+            // Save current keyframe before exporting
+            saveCurrentKeyframe();
+
+            const output = document.getElementById('exportOutput');
+            output.value = JSON.stringify(animation, null, 2);
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('exportOutput');
+            output.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard!');
+        }
+
+        function importAnimation() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    animation = JSON.parse(e.target.result);
+                    selectedKeyframe = 0;
+                    initializeSpider();
+                    if (animation.keyframes.length > 0) {
+                        applyKeyframeToPose(0);
+                    }
+                    renderTimeline();
+                    draw();
+                    alert('Animation loaded successfully!');
+                } catch (err) {
+                    alert('Error loading file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Planted feet buttons
+        function createPlantedButtons() {
+            const container = document.getElementById('plantedButtons');
+            for (let i = 0; i < 8; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'leg-button';
+                btn.textContent = `L${i}`;
+                btn.onclick = () => togglePlanted(i);
+                container.appendChild(btn);
+            }
+        }
+
+        function updatePlantedButtons() {
+            const buttons = document.querySelectorAll('#plantedButtons .leg-button');
+            buttons.forEach((btn, i) => {
+                btn.className = 'leg-button' + (plantedLegs.has(i) ? ' selected' : '');
+            });
+        }
+
+        // Initialize
+        initializeSpider();
+        createLegButtons();
+        createPlantedButtons();
+        loadDefaultPose();
+        draw();
+    </script>
+</body>
+</html>
