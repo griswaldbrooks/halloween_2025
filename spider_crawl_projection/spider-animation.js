@@ -16,7 +16,7 @@ let config = {
     spiderSpeed: 1.0,
     spiderSize: 1.0,
     paused: false,
-    animationMode: 'procedural' // 'keyframe' or 'procedural' - default to procedural (works better)
+    animationMode: 'procedural' // 'keyframe', 'procedural', or 'hopping'
 };
 
 // Animation state
@@ -85,6 +85,16 @@ class Spider {
         this.gaitTimer = 0;           // Procedural phase timer
         this.stepProgress = 0;        // Procedural step progress (0-1)
 
+        // Hopping state
+        this.hopPhase = Math.floor(Math.random() * 5); // Start at random phase
+        this.hopTimer = Math.random() * 200;           // Random offset in phase
+        this.hopProgress = 0;
+        this.hopStartX = 0;
+        this.hopTargetX = 0;
+        this.crawlCyclesRemaining = Math.floor(Math.random() * 13) + 1; // 1-13 crawl cycles between hops
+        this.crawlPhase = 0;
+        this.crawlTimer = 0;
+
         // Create 8 legs using body model
         this.legs = [];
         const groupA = [1, 2, 5, 6]; // L1, R2, L3, R4
@@ -144,6 +154,8 @@ class Spider {
 
         if (config.animationMode === 'keyframe') {
             this.updateKeyframe(dt, speedMultiplier);
+        } else if (config.animationMode === 'hopping') {
+            this.updateHopping(dt, speedMultiplier);
         } else {
             this.updateProcedural(dt, speedMultiplier);
         }
@@ -412,8 +424,202 @@ class Spider {
         }
     }
 
+    updateHopping(dt, speedMultiplier) {
+        // Hopping gait with crawling in between
+        // Phase 4 is now "crawl mode" - spider crawls for 1-13 cycles before next hop
+        const hopPhaseDurations = [100, 200, 60, 200]; // Crouch, Takeoff (longer!), Flight, Landing (longer!)
+        const crawlPhaseDurations = [200, 150, 100, 200, 150, 100]; // Same as procedural gait
+
+        if (this.hopPhase === 4) {
+            // CRAWL MODE: Use procedural gait
+            this.crawlTimer += dt * speedMultiplier;
+
+            if (this.crawlTimer >= crawlPhaseDurations[this.crawlPhase]) {
+                this.crawlTimer = 0;
+                this.crawlPhase = (this.crawlPhase + 1) % 6;
+
+                // Completed one crawl cycle?
+                if (this.crawlPhase === 0) {
+                    this.crawlCyclesRemaining--;
+                    if (this.crawlCyclesRemaining <= 0) {
+                        // Done crawling, prepare to hop again
+                        this.hopPhase = 0;
+                        this.hopTimer = 0;
+                        this.crawlCyclesRemaining = Math.floor(Math.random() * 13) + 1; // New random count
+                    }
+                }
+            }
+
+            const stepProgress = this.crawlTimer / crawlPhaseDurations[this.crawlPhase];
+
+            // Update legs using procedural crawl
+            for (const leg of this.legs) {
+                this.updateLegProceduralForHopping(leg, this.crawlPhase, stepProgress);
+            }
+
+            // Body movement during crawl lurch phases
+            if (this.crawlPhase === 1 || this.crawlPhase === 4) {
+                const lurchDistance = this.bodySize * 0.4;
+                const lurchDelta = (lurchDistance / crawlPhaseDurations[this.crawlPhase]) * dt * speedMultiplier;
+                this.x += lurchDelta;
+                this.y += this.vy * speedMultiplier;
+            }
+
+        } else {
+            // HOP MODE: Phases 0-3
+            this.hopTimer += dt * speedMultiplier;
+
+            if (this.hopTimer >= hopPhaseDurations[this.hopPhase]) {
+                this.hopTimer = 0;
+                this.hopPhase = (this.hopPhase + 1) % 4;
+                this.hopProgress = 0;
+
+                // Initialize hop distance at start of takeoff
+                if (this.hopPhase === 1) {
+                    this.hopStartX = this.x;
+                    // Hop distance: 6-10x body size for very dramatic jumps!
+                    this.hopTargetX = this.x + (this.bodySize * (6.0 + Math.random() * 4.0));
+                }
+
+                // After landing, switch to crawl mode
+                if (this.hopPhase === 0) {
+                    this.hopPhase = 4;
+                    this.crawlPhase = 0;
+                    this.crawlTimer = 0;
+                }
+            }
+
+            this.hopProgress = this.hopTimer / hopPhaseDurations[this.hopPhase];
+
+            // Update legs based on hop phase
+            for (const leg of this.legs) {
+                this.updateLegHopping(leg);
+            }
+
+            // Body movement during flight phase
+            if (this.hopPhase === 2) {
+                const hopDistance = this.hopTargetX - this.hopStartX;
+                const hopDelta = (hopDistance / hopPhaseDurations[2]) * dt * speedMultiplier;
+                this.x += hopDelta;
+                this.y += this.vy * speedMultiplier;
+            }
+        }
+    }
+
+    updateLegHopping(leg) {
+        const scale = this.bodySize / 100;
+        const relPos = CUSTOM_FOOT_POSITIONS[leg.index];
+
+        // Back legs are pairs 2 and 3 (indices 4,5,6,7)
+        const isBackLeg = leg.index >= 4;
+
+        if (this.hopPhase === 0) {
+            // CROUCH: Legs draw in slightly (0.8x normal reach)
+            const crouchFactor = 0.8;
+            const targetX = this.x + relPos.x * scale * crouchFactor;
+            const targetY = this.y + relPos.y * scale * crouchFactor;
+
+            // Smooth transition into crouch
+            leg.worldFootX += (targetX - leg.worldFootX) * 0.3;
+            leg.worldFootY += (targetY - leg.worldFootY) * 0.3;
+
+        } else if (this.hopPhase === 1) {
+            // TAKEOFF: Back legs extend, front legs retract
+            if (isBackLeg) {
+                // Back legs push out (1.2x reach)
+                const pushFactor = 1.2;
+                const targetX = this.x + relPos.x * scale * pushFactor;
+                const targetY = this.y + relPos.y * scale * pushFactor;
+                leg.worldFootX += (targetX - leg.worldFootX) * 0.5;
+                leg.worldFootY += (targetY - leg.worldFootY) * 0.5;
+            } else {
+                // Front legs tuck in (0.5x reach)
+                const tuckFactor = 0.5;
+                const targetX = this.x + relPos.x * scale * tuckFactor;
+                const targetY = this.y + relPos.y * scale * tuckFactor;
+                leg.worldFootX += (targetX - leg.worldFootX) * 0.5;
+                leg.worldFootY += (targetY - leg.worldFootY) * 0.5;
+            }
+
+        } else if (this.hopPhase === 2) {
+            // FLIGHT: All legs tucked close to body (0.4x reach)
+            const tuckFactor = 0.4;
+            const targetX = this.x + relPos.x * scale * tuckFactor;
+            const targetY = this.y + relPos.y * scale * tuckFactor;
+
+            // Keep legs tucked as body moves
+            leg.worldFootX = targetX;
+            leg.worldFootY = targetY;
+
+        } else if (this.hopPhase === 3) {
+            // LANDING: Front legs extend first, back legs follow
+            if (!isBackLeg) {
+                // Front legs extend to catch landing (1.1x reach)
+                const extendFactor = 1.1;
+                const targetX = this.x + relPos.x * scale * extendFactor;
+                const targetY = this.y + relPos.y * scale * extendFactor;
+                leg.worldFootX += (targetX - leg.worldFootX) * 0.6;
+                leg.worldFootY += (targetY - leg.worldFootY) * 0.6;
+            } else {
+                // Back legs prepare to land (0.9x reach)
+                const landFactor = 0.9;
+                const targetX = this.x + relPos.x * scale * landFactor;
+                const targetY = this.y + relPos.y * scale * landFactor;
+                leg.worldFootX += (targetX - leg.worldFootX) * 0.4;
+                leg.worldFootY += (targetY - leg.worldFootY) * 0.4;
+            }
+
+        } else {
+            // PAUSE: Return to normal stance (1.0x reach)
+            const targetX = this.x + relPos.x * scale;
+            const targetY = this.y + relPos.y * scale;
+
+            leg.worldFootX += (targetX - leg.worldFootX) * 0.2;
+            leg.worldFootY += (targetY - leg.worldFootY) * 0.2;
+        }
+    }
+
+    updateLegProceduralForHopping(leg, crawlPhase, stepProgress) {
+        // Same as updateLegProcedural but uses crawlPhase instead of this.gaitPhase
+        const isSwinging = (crawlPhase === 0 && leg.group === 'A') ||
+                          (crawlPhase === 3 && leg.group === 'B');
+
+        if (isSwinging) {
+            // SWING: Foot swings forward in TOP-DOWN view (X-Y plane)
+            const scale = this.bodySize / 100;
+            const relPos = CUSTOM_FOOT_POSITIONS[leg.index];
+
+            // Predict where body will be after the upcoming lurch phase
+            const lurchDistance = this.bodySize * 0.4;
+            const futureBodyX = this.x + lurchDistance;
+
+            // Calculate swing target
+            const swingTargetX = futureBodyX + relPos.x * scale;
+            const swingTargetY = this.y + relPos.y * scale;
+
+            // Store swing start position at beginning of swing
+            if (stepProgress === 0 || !leg.swingStartX) {
+                leg.swingStartX = leg.worldFootX;
+                leg.swingStartY = leg.worldFootY;
+            }
+
+            // Interpolate from start to target
+            leg.worldFootX = leg.swingStartX + (swingTargetX - leg.swingStartX) * stepProgress;
+            leg.worldFootY = leg.swingStartY + (swingTargetY - leg.swingStartY) * stepProgress;
+        } else {
+            // STANCE: Foot stays fixed in world space
+            leg.swingStartX = null;
+            leg.swingStartY = null;
+        }
+    }
+
 
     draw() {
+        // In hopping mode, spider is invisible during flight phase (phase 2)
+        if (config.animationMode === 'hopping' && this.hopPhase === 2) {
+            return; // Don't draw anything - spider disappears mid-hop!
+        }
+
         ctx.save();
         ctx.translate(this.x, this.y);
 
