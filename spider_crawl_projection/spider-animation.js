@@ -14,9 +14,18 @@ scripts.forEach(src => {
 let config = {
     spiderCount: 5,
     spiderSpeed: 1.0,
-    spiderSize: 1.0,
+    spiderSizeMin: 0.5,
+    spiderSizeMax: 3.0,
+    sizeVariation: 0.5,      // 0 = all same size, 1 = full range
+    speedVariation: 0.5,     // 0 = all same speed, 1 = full range
     paused: false,
-    animationMode: 'procedural' // 'keyframe', 'procedural', or 'hopping'
+    animationMode: 'procedural', // 'keyframe', 'procedural', or 'hopping'
+    // Hopping parameters
+    hopDistanceMin: 6.0,     // Minimum hop distance multiplier (× body size)
+    hopDistanceMax: 10.0,    // Maximum hop distance multiplier (× body size)
+    hopFrequencyMin: 1,      // Minimum crawl cycles between hops
+    hopFrequencyMax: 13,     // Maximum crawl cycles between hops
+    hopFlightDuration: 60    // Flight phase duration in ms
 };
 
 // Animation state
@@ -72,11 +81,20 @@ class Spider {
         // Position
         this.x = -50;
         this.y = Math.random() * canvas.height;
-        this.vx = 0.5 + Math.random() * 1.5;
         this.vy = (Math.random() - 0.5) * 0.3;
 
-        // Body model
-        this.bodySize = (8 + Math.random() * 8) * config.spiderSize;
+        // Individual speed based on variation setting
+        // speedVariation: 0 = all spiders same speed, 1 = full range of speeds
+        const speedRange = config.speedVariation;
+        const baseSpeed = config.spiderSpeed;
+        this.speedMultiplier = baseSpeed * (1 - speedRange * 0.5 + Math.random() * speedRange);
+
+        // Individual size based on variation setting
+        // sizeVariation: 0 = all spiders same size, 1 = full range between min/max
+        const sizeRange = config.sizeVariation;
+        const avgSize = (config.spiderSizeMin + config.spiderSizeMax) / 2;
+        const sizeSpread = (config.spiderSizeMax - config.spiderSizeMin) / 2;
+        this.bodySize = (8 + Math.random() * 8) * (avgSize + (Math.random() * 2 - 1) * sizeSpread * sizeRange);
         this.body = new SpiderBody(this.bodySize);
 
         // Animation state
@@ -91,7 +109,9 @@ class Spider {
         this.hopProgress = 0;
         this.hopStartX = 0;
         this.hopTargetX = 0;
-        this.crawlCyclesRemaining = Math.floor(Math.random() * 13) + 1; // 1-13 crawl cycles between hops
+        // Random crawl cycles between hops (based on config)
+        const cycleRange = config.hopFrequencyMax - config.hopFrequencyMin;
+        this.crawlCyclesRemaining = Math.floor(Math.random() * cycleRange) + config.hopFrequencyMin;
         this.crawlPhase = 0;
         this.crawlTimer = 0;
 
@@ -149,7 +169,8 @@ class Spider {
     update() {
         if (config.paused) return;
 
-        const speedMultiplier = config.spiderSpeed;
+        // Use individual spider's speed multiplier
+        const speedMultiplier = this.speedMultiplier;
         const dt = 16.67; // ~60fps
 
         if (config.animationMode === 'keyframe') {
@@ -426,8 +447,8 @@ class Spider {
 
     updateHopping(dt, speedMultiplier) {
         // Hopping gait with crawling in between
-        // Phase 4 is now "crawl mode" - spider crawls for 1-13 cycles before next hop
-        const hopPhaseDurations = [100, 200, 60, 200]; // Crouch, Takeoff (longer!), Flight, Landing (longer!)
+        // Phase 4 is now "crawl mode" - spider crawls for configurable cycles before next hop
+        const hopPhaseDurations = [100, 200, config.hopFlightDuration, 200]; // Crouch, Takeoff, Flight, Landing
         const crawlPhaseDurations = [200, 150, 100, 200, 150, 100]; // Same as procedural gait
 
         if (this.hopPhase === 4) {
@@ -445,7 +466,9 @@ class Spider {
                         // Done crawling, prepare to hop again
                         this.hopPhase = 0;
                         this.hopTimer = 0;
-                        this.crawlCyclesRemaining = Math.floor(Math.random() * 13) + 1; // New random count
+                        // New random crawl count based on config
+                        const cycleRange = config.hopFrequencyMax - config.hopFrequencyMin;
+                        this.crawlCyclesRemaining = Math.floor(Math.random() * cycleRange) + config.hopFrequencyMin;
                     }
                 }
             }
@@ -477,8 +500,10 @@ class Spider {
                 // Initialize hop distance at start of takeoff
                 if (this.hopPhase === 1) {
                     this.hopStartX = this.x;
-                    // Hop distance: 6-10x body size for very dramatic jumps!
-                    this.hopTargetX = this.x + (this.bodySize * (6.0 + Math.random() * 4.0));
+                    // Hop distance based on config range
+                    const distanceRange = config.hopDistanceMax - config.hopDistanceMin;
+                    const hopMultiplier = config.hopDistanceMin + Math.random() * distanceRange;
+                    this.hopTargetX = this.x + (this.bodySize * hopMultiplier);
                 }
 
                 // After landing, switch to crawl mode
@@ -738,19 +763,102 @@ function updateSpiderCount(value) {
 function updateSpeed(value) {
     config.spiderSpeed = parseFloat(value);
     document.getElementById('speedLabel').textContent = value + 'x';
+    resetSpiders(); // Reset to apply new speed distribution
 }
 
-function updateSize(value) {
-    config.spiderSize = parseFloat(value);
-    document.getElementById('sizeLabel').textContent = value + 'x';
+function updateSpeedVariation(value) {
+    config.speedVariation = parseFloat(value);
+    document.getElementById('speedVariationLabel').textContent = value;
+    resetSpiders(); // Reset to apply new speed variation
+}
+
+function updateSizeMin(value) {
+    config.spiderSizeMin = parseFloat(value);
+    document.getElementById('sizeMinLabel').textContent = value + 'x';
+    // Make sure min doesn't exceed max
+    if (config.spiderSizeMin > config.spiderSizeMax) {
+        config.spiderSizeMax = config.spiderSizeMin;
+        document.getElementById('sizeMax').value = config.spiderSizeMax;
+        document.getElementById('sizeMaxLabel').textContent = config.spiderSizeMax + 'x';
+    }
     resetSpiders();
+}
+
+function updateSizeMax(value) {
+    config.spiderSizeMax = parseFloat(value);
+    document.getElementById('sizeMaxLabel').textContent = value + 'x';
+    // Make sure max doesn't go below min
+    if (config.spiderSizeMax < config.spiderSizeMin) {
+        config.spiderSizeMin = config.spiderSizeMax;
+        document.getElementById('sizeMin').value = config.spiderSizeMin;
+        document.getElementById('sizeMinLabel').textContent = config.spiderSizeMin + 'x';
+    }
+    resetSpiders();
+}
+
+function updateSizeVariation(value) {
+    config.sizeVariation = parseFloat(value);
+    document.getElementById('sizeVariationLabel').textContent = value;
+    resetSpiders(); // Reset to apply new size variation
 }
 
 function updateAnimationMode(mode) {
     config.animationMode = mode;
     console.log('🕷️ Animation mode:', mode);
+
+    // Show/hide hopping controls
+    const hoppingControls = document.getElementById('hoppingControls');
+    if (hoppingControls) {
+        hoppingControls.style.display = mode === 'hopping' ? 'block' : 'none';
+    }
+
     // Reset spiders to reinitialize their state for the new mode
     resetSpiders();
+}
+
+function updateHopDistanceMin(value) {
+    config.hopDistanceMin = parseFloat(value);
+    document.getElementById('hopDistanceMinLabel').textContent = value + 'x';
+    if (config.hopDistanceMin > config.hopDistanceMax) {
+        config.hopDistanceMax = config.hopDistanceMin;
+        document.getElementById('hopDistanceMax').value = config.hopDistanceMax;
+        document.getElementById('hopDistanceMaxLabel').textContent = config.hopDistanceMax + 'x';
+    }
+}
+
+function updateHopDistanceMax(value) {
+    config.hopDistanceMax = parseFloat(value);
+    document.getElementById('hopDistanceMaxLabel').textContent = value + 'x';
+    if (config.hopDistanceMax < config.hopDistanceMin) {
+        config.hopDistanceMin = config.hopDistanceMax;
+        document.getElementById('hopDistanceMin').value = config.hopDistanceMin;
+        document.getElementById('hopDistanceMinLabel').textContent = config.hopDistanceMin + 'x';
+    }
+}
+
+function updateHopFrequencyMin(value) {
+    config.hopFrequencyMin = parseInt(value);
+    document.getElementById('hopFrequencyMinLabel').textContent = value;
+    if (config.hopFrequencyMin > config.hopFrequencyMax) {
+        config.hopFrequencyMax = config.hopFrequencyMin;
+        document.getElementById('hopFrequencyMax').value = config.hopFrequencyMax;
+        document.getElementById('hopFrequencyMaxLabel').textContent = config.hopFrequencyMax;
+    }
+}
+
+function updateHopFrequencyMax(value) {
+    config.hopFrequencyMax = parseInt(value);
+    document.getElementById('hopFrequencyMaxLabel').textContent = value;
+    if (config.hopFrequencyMax < config.hopFrequencyMin) {
+        config.hopFrequencyMin = config.hopFrequencyMax;
+        document.getElementById('hopFrequencyMin').value = config.hopFrequencyMin;
+        document.getElementById('hopFrequencyMinLabel').textContent = config.hopFrequencyMin;
+    }
+}
+
+function updateHopFlightDuration(value) {
+    config.hopFlightDuration = parseInt(value);
+    document.getElementById('hopFlightDurationLabel').textContent = value;
 }
 
 // Keyboard shortcuts

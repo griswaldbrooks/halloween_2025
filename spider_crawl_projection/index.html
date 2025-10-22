@@ -85,13 +85,28 @@
         </label>
 
         <label>
-            Spider Speed: <span id="speedLabel">1.0x</span>
+            Base Speed: <span id="speedLabel">1.0x</span>
             <input type="range" id="speed" min="0.1" max="3.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
         </label>
 
         <label>
-            Spider Size: <span id="sizeLabel">1.0x</span>
-            <input type="range" id="size" min="0.5" max="3.0" step="0.1" value="1.0" oninput="updateSize(this.value)">
+            Speed Variation: <span id="speedVariationLabel">0.5</span>
+            <input type="range" id="speedVariation" min="0" max="1" step="0.05" value="0.5" oninput="updateSpeedVariation(this.value)">
+        </label>
+
+        <label>
+            Size Min: <span id="sizeMinLabel">0.5x</span>
+            <input type="range" id="sizeMin" min="0.5" max="10" step="0.1" value="0.5" oninput="updateSizeMin(this.value)">
+        </label>
+
+        <label>
+            Size Max: <span id="sizeMaxLabel">3.0x</span>
+            <input type="range" id="sizeMax" min="0.5" max="10" step="0.1" value="3.0" oninput="updateSizeMax(this.value)">
+        </label>
+
+        <label>
+            Size Variation: <span id="sizeVariationLabel">0.5</span>
+            <input type="range" id="sizeVariation" min="0" max="1" step="0.05" value="0.5" oninput="updateSizeVariation(this.value)">
         </label>
 
         <label style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #0f0; display: block;">
@@ -102,6 +117,35 @@
                 <option value="keyframe">Keyframe (Experimental)</option>
             </select>
         </label>
+
+        <div id="hoppingControls" style="display: none; margin-top: 10px; padding-top: 10px; border-top: 1px solid #0f0;">
+            <div style="font-size: 11px; margin-bottom: 10px; opacity: 0.8;">Hopping Parameters:</div>
+
+            <label>
+                Hop Distance Min: <span id="hopDistanceMinLabel">6.0x</span>
+                <input type="range" id="hopDistanceMin" min="1" max="20" step="0.5" value="6.0" oninput="updateHopDistanceMin(this.value)">
+            </label>
+
+            <label>
+                Hop Distance Max: <span id="hopDistanceMaxLabel">10.0x</span>
+                <input type="range" id="hopDistanceMax" min="1" max="20" step="0.5" value="10.0" oninput="updateHopDistanceMax(this.value)">
+            </label>
+
+            <label>
+                Hop Frequency Min: <span id="hopFrequencyMinLabel">1</span> cycles
+                <input type="range" id="hopFrequencyMin" min="1" max="20" step="1" value="1" oninput="updateHopFrequencyMin(this.value)">
+            </label>
+
+            <label>
+                Hop Frequency Max: <span id="hopFrequencyMaxLabel">13</span> cycles
+                <input type="range" id="hopFrequencyMax" min="1" max="20" step="1" value="13" oninput="updateHopFrequencyMax(this.value)">
+            </label>
+
+            <label>
+                Flight Speed: <span id="hopFlightDurationLabel">60</span>ms
+                <input type="range" id="hopFlightDuration" min="20" max="200" step="10" value="60" oninput="updateHopFlightDuration(this.value)">
+            </label>
+        </div>
 
         <div style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #0f0;">
             <div class="stat">FPS: <span id="fps">0</span></div>
