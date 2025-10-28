@@ -1,0 +1,102 @@
+[project]
+name = "hatching_egg"
+version = "0.1.0"
+description = "Hatching spider egg animatronic with kinematic preview"
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[dependencies]
+python = ">=3.11"
+cxx-compiler = "*"  # C++ compiler for local tests
+gtest = "*"  # Google Test framework for unit tests
+
+[tasks]
+# === Initial Setup ===
+install-arduino-cli = "curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=.pixi/bin sh"
+
+setup-arduino = { cmd = """
+.pixi/bin/arduino-cli config init --config-file .arduino15/arduino-cli.yaml || true
+.pixi/bin/arduino-cli core update-index --config-file .arduino15/arduino-cli.yaml
+.pixi/bin/arduino-cli core install arduino:avr --config-file .arduino15/arduino-cli.yaml
+.pixi/bin/arduino-cli lib install "Adafruit PWM Servo Driver Library" --config-file .arduino15/arduino-cli.yaml
+echo "✓ Arduino AVR core and Adafruit library installed"
+""", depends-on = ["install-arduino-cli"] }
+
+setup = { depends-on = ["setup-arduino"] }
+
+# === Preview Tasks ===
+serve = "python -m http.server 8081"
+open = "xdg-open http://localhost:8081/preview.html"
+preview = { depends-on = ["serve"] }
+
+# === Testing ===
+test-cpp = { cmd = "g++ -std=c++17 test_servo_mapping.cpp -o test_servo_mapping -lgtest -pthread && ./test_servo_mapping", description = "Run C++ unit tests (44 gtest - per-servo ranges)" }
+test-python = { cmd = "python test_servo_mapping.py", description = "Run Python config tests (19 tests - includes symmetry/movement)" }
+test-servo-tester = { cmd = "g++ -std=c++17 test_servo_tester.cpp -o test_servo_tester -lgtest -pthread && ./test_servo_tester", description = "Run servo tester logic tests (34 gtest)" }
+test-servo-sweep = { cmd = "g++ -std=c++17 -I. test_servo_sweep.cpp -o test_servo_sweep -lgtest -pthread && ./test_servo_sweep", description = "Run servo sweep test logic tests (93 gtest with parameterized tests)" }
+test-kinematics = { cmd = "node test_leg_kinematics.js", description = "Run leg kinematics tests (31 tests - JavaScript)" }
+test-animation-behaviors = { cmd = "node test_animation_behaviors.js", description = "Run animation behaviors tests (10 tests - verifies JSON loading and symmetry)" }
+test = { depends-on = ["test-cpp", "test-python", "test-servo-tester", "test-servo-sweep", "test-kinematics", "test-animation-behaviors"], description = "Run all tests (231 total: 171 gtest + 19 Python + 31 kinematics + 10 behaviors)" }
+test-before-upload = { depends-on = ["test"], description = "Run safety tests before hardware upload" }
+
+# === Arduino Tasks ===
+generate-config = "python generate_arduino_config.py"
+arduino-detect = ".pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml"
+upload = { cmd = "bash scripts/upload.sh", depends-on = ["test-before-upload", "generate-config"] }
+monitor = ".pixi/bin/arduino-cli monitor -p $(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep 'Arduino Leonardo' | awk '{print $1}' | head -n 1) --config-file .arduino15/arduino-cli.yaml"
+
+# === Servo Calibration Tasks ===
+servo-compile = """
+.pixi/bin/arduino-cli compile \
+  --fqbn arduino:avr:leonardo \
+  --config-file .arduino15/arduino-cli.yaml \
+  arduino/servo_tester
+"""
+
+servo-upload = "bash scripts/upload_servo_tester.sh"
+
+servo-flash = { depends-on = ["servo-upload"], description = "Upload servo calibration tool" }
+
+servo-monitor = { cmd = "bash -c 'PORT=$(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep Leonardo | awk \"{print \\$1}\" | head -n 1) && .pixi/bin/arduino-cli monitor -p $PORT -c baudrate=9600'", description = "Open serial monitor for servo calibration" }
+
+calibrate = "bash scripts/upload_servo_tester.sh"
+
+# === Servo Sweep Test Tasks ===
+sweep-compile = """
+.pixi/bin/arduino-cli compile \
+  --fqbn arduino:avr:leonardo \
+  --config-file .arduino15/arduino-cli.yaml \
+  arduino/servo_sweep_test
+"""
+
+sweep-upload = "bash scripts/upload_sweep_test.sh"
+
+sweep-flash = { depends-on = ["sweep-compile", "sweep-upload"], description = "Upload servo sweep test" }
+
+sweep-monitor = { cmd = "bash -c 'PORT=$(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep Leonardo | awk \"{print \\$1}\" | head -n 1) && .pixi/bin/arduino-cli monitor -p $PORT -c baudrate=9600'", description = "Open serial monitor for sweep test" }
+
+sweep-test = { depends-on = ["test-servo-sweep", "sweep-flash", "sweep-monitor"], description = "Test sweep logic, upload, and monitor" }
+
+# === Troubleshooting ===
+fix-permissions = """
+echo "Adding user to dialout group..."
+sudo usermod -a -G dialout $USER
+echo "✓ Done! You must log out and back in for this to take effect."
+"""
+
+[tasks.status]
+cmd = """
+echo "Hatching Egg Spider - Kinematic Preview"
+echo "========================================"
+echo ""
+echo "Available commands:"
+echo "  pixi run setup          - First time setup (arduino-cli)"
+echo "  pixi run serve          - Start HTTP server on port 8081"
+echo "  pixi run open           - Open preview in browser"
+echo "  pixi run generate-config- Generate Arduino config from JSON"
+echo "  pixi run arduino-detect - Detect connected Beetle"
+echo "  pixi run upload         - Upload to Beetle"
+echo "  pixi run monitor        - Serial monitor"
+echo ""
+echo "Preview: http://localhost:8081/preview.html"
+"""

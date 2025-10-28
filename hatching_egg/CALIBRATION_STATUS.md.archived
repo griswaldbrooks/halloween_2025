@@ -1,0 +1,126 @@
+# Hatching Egg - Calibration Quick Reference
+
+**Last Updated:** 2025-10-28
+**Current Phase:** Finding safe PWM limits for servos
+
+---
+
+## ✅ Verified Hardware Configuration
+
+| Servo | Channel | Type | Status |
+|-------|---------|------|--------|
+| Right Elbow | 0 | HS-322HD | ✅ Tested |
+| Right Shoulder | 1 | DS-3225MG | ✅ Tested |
+| Left Shoulder | 14 | DS-3225MG | ✅ Tested |
+| Left Elbow | 15 | HS-322HD | ✅ Tested |
+
+**Safe PWM Range:** 150-600 (PCA9685 values, NOT microseconds!)
+- PWM 150 = 0° (safe zero)
+- PWM 600 = 180° (theoretical max)
+
+---
+
+## ⚠️ CRITICAL: Collision Problem
+
+**Problem:** Full servo range causes arms to collide with egg body
+
+**Solution:** Must find safe PWM limits through careful testing
+
+**Status:** Calibration tool uploaded and working, ready to test
+
+---
+
+## 🔧 Working Calibration Tool
+
+**Location:** `hatching_egg/arduino/servo_tester/`
+
+**Upload and open monitor (recommended):**
+```bash
+cd /home/griswald/personal/halloween_2025/hatching_egg
+pixi run calibrate
+```
+
+**Or just open monitor (if already uploaded):**
+```bash
+cd /home/griswald/personal/halloween_2025/hatching_egg
+pixi run servo-monitor
+```
+
+**Commands:**
+- `0-3` = Select servo
+- `+/-` = Adjust PWM by 10
+- `./,` = Adjust PWM by 1 (fine control)
+- `z` = **EMERGENCY: Return all to safe zero (PWM 150)**
+- `p` = Show current positions
+
+---
+
+## 📝 Calibration Procedure
+
+For EACH of the 4 servos:
+
+1. **Type `z`** - Reset all to safe zero (PWM 150)
+2. **Select servo** - Type `0`, `1`, `2`, or `3`
+3. **Increase carefully** - Type `+` (increases by 10)
+4. **WATCH CLOSELY** - Stop BEFORE collision with egg body
+5. **Fine-tune** - Use `.` for +1 PWM adjustments
+6. **Note max safe PWM** - Write it down!
+7. **Reset** - Type `z` to return to safe zero
+8. **Test opposite direction** - Type `-` if needed
+9. **Note min safe PWM** - Write it down!
+10. **Repeat** for next servo
+
+---
+
+## 📊 Document Results Here
+
+```
+Right Elbow (CH0):    Min PWM: ___  Max PWM: ___
+Right Shoulder (CH1): Min PWM: ___  Max PWM: ___
+Left Shoulder (CH14): Min PWM: ___  Max PWM: ___
+Left Elbow (CH15):    Min PWM: ___  Max PWM: ___
+```
+
+**After finding limits:**
+1. Update STATUS.md with results
+2. Update animation-config.json with safe ranges
+3. Run unit tests: `pixi run test`
+4. Upload main animation: `pixi run upload arduino/hatching_egg`
+
+---
+
+## 📁 Project Structure
+
+The hatching_egg directory contains only:
+- `arduino/hatching_egg/` - Main animation sketch
+- `arduino/servo_mapping.h` - Tested core logic
+
+**Calibration tools are in a separate directory:**
+`arduino/servo_tester/`
+
+---
+
+## 🎯 Next Steps
+
+1. **Complete calibration** (20-40 minutes)
+   - Find safe PWM limits for all 4 servos
+   - Document results
+
+2. **Update configuration** (10 minutes)
+   - Edit animation-config.json with safe ranges
+   - Run tests to verify
+
+3. **Tune animations** (30-60 minutes)
+   - Create realistic hatching motions
+   - Test with trigger switch
+
+4. **Integration testing** (20 minutes)
+   - Test complete hatching sequence
+   - Verify no collisions
+   - Check timing and smoothness
+
+**Total estimated time to completion:** 1-2 hours
+
+---
+
+**Remember:** Type `z` immediately if any servo starts to collide!

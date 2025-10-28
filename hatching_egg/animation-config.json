@@ -1,0 +1,320 @@
+{
+  "hardware": {
+    "i2c_address": "0x40",
+    "servo_frequency": 50,
+    "left_leg": {
+      "shoulder_channel": 14,
+      "elbow_channel": 15,
+      "shoulder_min_pulse": 440,
+      "shoulder_max_pulse": 300,
+      "elbow_min_pulse": 530,
+      "elbow_max_pulse": 360,
+      "shoulder_comment": "440=straight up (0°), 300=perpendicular to body (90°) - inverted",
+      "elbow_comment": "530=parallel to leg (0°), 360=perpendicular to leg (90°) - inverted"
+    },
+    "right_leg": {
+      "shoulder_channel": 1,
+      "elbow_channel": 0,
+      "shoulder_min_pulse": 150,
+      "shoulder_max_pulse": 280,
+      "elbow_min_pulse": 150,
+      "elbow_max_pulse": 330,
+      "shoulder_comment": "150=straight up (0°), 280=perpendicular to body (90°)",
+      "elbow_comment": "150=parallel to leg (0°), 330=perpendicular to leg (90°)"
+    },
+    "trigger_pin": 9
+  },
+  "kinematics": {
+    "upper_segment_length": 80,
+    "lower_segment_length": 100,
+    "shoulder_min_angle": 0,
+    "shoulder_max_angle": 90,
+    "elbow_min_angle": 0,
+    "elbow_max_angle": 90,
+    "angle_comment": "0°=straight up (shoulder) or parallel (elbow), 90°=perpendicular"
+  },
+  "animations": {
+    "zero": {
+      "name": "Zero Position (Reference)",
+      "duration_ms": 1000,
+      "loop": true,
+      "keyframes": [
+        {
+          "time_ms": 0,
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 0,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 0,
+          "comment": "All servos at 0° - legs straight up"
+        }
+      ]
+    },
+    "max": {
+      "name": "Max Position (Reference)",
+      "duration_ms": 1000,
+      "loop": true,
+      "keyframes": [
+        {
+          "time_ms": 0,
+          "left_shoulder_deg": 90,
+          "left_elbow_deg": 90,
+          "right_shoulder_deg": 90,
+          "right_elbow_deg": 90,
+          "comment": "All servos at 90° - perpendicular"
+        }
+      ]
+    },
+    "resting": {
+      "name": "Resting (Curled Inside Egg)",
+      "duration_ms": 3000,
+      "loop": true,
+      "keyframes": [
+        {
+          "time_ms": 0,
+          "left_shoulder_deg": 5,
+          "left_elbow_deg": 8,
+          "right_shoulder_deg": 5,
+          "right_elbow_deg": 8,
+          "comment": "Curled up tight inside egg - symmetric"
+        },
+        {
+          "time_ms": 1500,
+          "left_shoulder_deg": 8,
+          "left_elbow_deg": 10,
+          "right_shoulder_deg": 8,
+          "right_elbow_deg": 10,
+          "comment": "Slight breathing/twitching motion - symmetric"
+        },
+        {
+          "time_ms": 3000,
+          "left_shoulder_deg": 5,
+          "left_elbow_deg": 8,
+          "right_shoulder_deg": 5,
+          "right_elbow_deg": 8,
+          "comment": "Return to start - symmetric"
+        }
+      ]
+    },
+    "slow_struggle": {
+      "name": "Slow Struggle (Testing the Shell)",
+      "duration_ms": 4500,
+      "loop": true,
+      "keyframes": [
+        {
+          "time_ms": 0,
+          "left_shoulder_deg": 15,
+          "left_elbow_deg": 10,
+          "right_shoulder_deg": 15,
+          "right_elbow_deg": 10,
+          "comment": "Starting position, mostly tucked in - symmetric"
+        },
+        {
+          "time_ms": 1200,
+          "left_shoulder_deg": 35,
+          "left_elbow_deg": 20,
+          "right_shoulder_deg": 35,
+          "right_elbow_deg": 20,
+          "comment": "Both legs probing outward - symmetric"
+        },
+        {
+          "time_ms": 2000,
+          "left_shoulder_deg": 25,
+          "left_elbow_deg": 30,
+          "right_shoulder_deg": 25,
+          "right_elbow_deg": 30,
+          "comment": "Partial retract, elbows extend - symmetric"
+        },
+        {
+          "time_ms": 3200,
+          "left_shoulder_deg": 45,
+          "left_elbow_deg": 40,
+          "right_shoulder_deg": 45,
+          "right_elbow_deg": 40,
+          "comment": "Both extending, testing resistance - symmetric"
+        },
+        {
+          "time_ms": 4500,
+          "left_shoulder_deg": 15,
+          "left_elbow_deg": 10,
+          "right_shoulder_deg": 15,
+          "right_elbow_deg": 10,
+          "comment": "Return to start - symmetric"
+        }
+      ]
+    },
+    "breaking_through": {
+      "name": "Breaking Through (Violent Pushing)",
+      "duration_ms": 2400,
+      "loop": true,
+      "keyframes": [
+        {
+          "time_ms": 0,
+          "left_shoulder_deg": 25,
+          "left_elbow_deg": 20,
+          "right_shoulder_deg": 25,
+          "right_elbow_deg": 20,
+          "comment": "Coiled for push - symmetric"
+        },
+        {
+          "time_ms": 350,
+          "left_shoulder_deg": 20,
+          "left_elbow_deg": 75,
+          "right_shoulder_deg": 20,
+          "right_elbow_deg": 75,
+          "comment": "PUSH! Violent elbow extension - symmetric"
+        },
+        {
+          "time_ms": 600,
+          "left_shoulder_deg": 30,
+          "left_elbow_deg": 30,
+          "right_shoulder_deg": 30,
+          "right_elbow_deg": 30,
+          "comment": "Quick retract - symmetric"
+        },
+        {
+          "time_ms": 950,
+          "left_shoulder_deg": 70,
+          "left_elbow_deg": 70,
+          "right_shoulder_deg": 70,
+          "right_elbow_deg": 70,
+          "comment": "BOTH EXTEND! Maximum push - symmetric"
+        },
+        {
+          "time_ms": 1200,
+          "left_shoulder_deg": 35,
+          "left_elbow_deg": 35,
+          "right_shoulder_deg": 35,
+          "right_elbow_deg": 35,
+          "comment": "Retract - symmetric"
+        },
+        {
+          "time_ms": 1550,
+          "left_shoulder_deg": 15,
+          "left_elbow_deg": 80,
+          "right_shoulder_deg": 15,
+          "right_elbow_deg": 80,
+          "comment": "Another powerful elbow push - symmetric"
+        },
+        {
+          "time_ms": 1800,
+          "left_shoulder_deg": 80,
+          "left_elbow_deg": 65,
+          "right_shoulder_deg": 80,
+          "right_elbow_deg": 65,
+          "comment": "Shoulder thrust outward - symmetric"
+        },
+        {
+          "time_ms": 2400,
+          "left_shoulder_deg": 25,
+          "left_elbow_deg": 20,
+          "right_shoulder_deg": 25,
+          "right_elbow_deg": 20,
+          "comment": "Return to coiled position - symmetric"
+        }
+      ]
+    },
+    "grasping": {
+      "name": "Grasping (Reaching and Pulling)",
+      "duration_ms": 3500,
+      "loop": true,
+      "keyframes": [
+        {
+          "time_ms": 0,
+          "left_shoulder_deg": 40,
+          "left_elbow_deg": 25,
+          "right_shoulder_deg": 40,
+          "right_elbow_deg": 25,
+          "comment": "Preparing to reach - symmetric"
+        },
+        {
+          "time_ms": 800,
+          "left_shoulder_deg": 25,
+          "left_elbow_deg": 70,
+          "right_shoulder_deg": 25,
+          "right_elbow_deg": 70,
+          "comment": "Reach out - grasping at crack - symmetric"
+        },
+        {
+          "time_ms": 1400,
+          "left_shoulder_deg": 50,
+          "left_elbow_deg": 45,
+          "right_shoulder_deg": 50,
+          "right_elbow_deg": 45,
+          "comment": "Pull inward - gripping motion - symmetric"
+        },
+        {
+          "time_ms": 1800,
+          "left_shoulder_deg": 30,
+          "left_elbow_deg": 65,
+          "right_shoulder_deg": 30,
+          "right_elbow_deg": 65,
+          "comment": "Push out again - widening crack - symmetric"
+        },
+        {
+          "time_ms": 2400,
+          "left_shoulder_deg": 65,
+          "left_elbow_deg": 70,
+          "right_shoulder_deg": 65,
+          "right_elbow_deg": 70,
+          "comment": "Both extend fully - symmetric"
+        },
+        {
+          "time_ms": 3000,
+          "left_shoulder_deg": 50,
+          "left_elbow_deg": 50,
+          "right_shoulder_deg": 50,
+          "right_elbow_deg": 50,
+          "comment": "Pull both back, maintaining grip - symmetric"
+        },
+        {
+          "time_ms": 3500,
+          "left_shoulder_deg": 40,
+          "left_elbow_deg": 25,
+          "right_shoulder_deg": 40,
+          "right_elbow_deg": 25,
+          "comment": "Return to start - symmetric"
+        }
+      ]
+    },
+    "emerged": {
+      "name": "Emerged (Fully Extended Menacing Pose)",
+      "duration_ms": 4000,
+      "loop": true,
+      "keyframes": [
+        {
+          "time_ms": 0,
+          "left_shoulder_deg": 75,
+          "left_elbow_deg": 80,
+          "right_shoulder_deg": 75,
+          "right_elbow_deg": 80,
+          "comment": "Fully extended, menacing - symmetric"
+        },
+        {
+          "time_ms": 1500,
+          "left_shoulder_deg": 85,
+          "left_elbow_deg": 85,
+          "right_shoulder_deg": 85,
+          "right_elbow_deg": 85,
+          "comment": "Stretching to maximum - symmetric"
+        },
+        {
+          "time_ms": 2500,
+          "left_shoulder_deg": 70,
+          "left_elbow_deg": 75,
+          "right_shoulder_deg": 70,
+          "right_elbow_deg": 75,
+          "comment": "Slight relaxation, threatening sway - symmetric"
+        },
+        {
+          "time_ms": 4000,
+          "left_shoulder_deg": 75,
+          "left_elbow_deg": 80,
+          "right_shoulder_deg": 75,
+          "right_elbow_deg": 80,
+          "comment": "Return to menacing pose - symmetric"
+        }
+      ]
+    }
+  },
+  "default_animation": "slow_struggle"
+}

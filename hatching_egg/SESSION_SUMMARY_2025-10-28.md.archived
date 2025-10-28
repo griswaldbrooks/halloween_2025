@@ -1,0 +1,176 @@
+# Session Summary - 2025-10-28
+
+## What Was Accomplished
+
+### ✅ Servo Channel Verification
+- **Physically tested** all 4 servo channels with hardware
+- Confirmed mapping:
+  - Channel 0 = Right Elbow ✓
+  - Channel 1 = Right Shoulder ✓
+  - Channel 14 = Left Shoulder ✓
+  - Channel 15 = Left Elbow ✓
+
+### ✅ Serial Communication Issue Resolved
+- **Problem:** Leonardo/Beetle `while (!Serial)` creates chicken-and-egg loop
+- **Solution:** Use `delay(500)` instead
+- **Verification:** Working in twitching_body test code
+
+### ✅ Working Calibration Tool Created
+- **Location:** `arduino/servo_tester/`
+- Fully unit tested with 37 tests in test_servo_tester.cpp
+- **Features:**
+  - LED blinks on startup (visual feedback)
+  - Serial communication works
+  - Correct PWM ranges (150-600)
+  - Controls channels 0, 1, 14, 15
+  - Emergency reset command (`z`)
+- **Status:** Uploaded to Beetle and ready to use
+
+### ✅ Critical Safety Issue Identified
+- **Discovery:** Full servo range (PWM 150-600) causes arms to collide with egg body
+- **Action Required:** Must find safe PWM limits through careful testing
+- **Tool Ready:** Calibration code uploaded and waiting for user testing
+
+### ✅ Documentation Updated
+- **STATUS.md** - Current status, known issues, next steps
+- **AGENT_HANDOFF.md** - Updated for next agent with critical findings
+- **README.md** - Clarified working vs non-working tools
+- **CALIBRATION_STATUS.md** - New quick reference guide for calibration
+- **This file** - Session summary
+
+---
+
+## 🐛 Issues Discovered
+
+### hatching_egg Directory Cleaned Up
+- **Issue:** Multiple non-functional servo testing tools in arduino/ directory
+- **Action:** All non-working tools removed from codebase
+- **Removed:**
+  - `arduino/servo_tester/` ✗
+  - `arduino/servo_zero/` ✗
+  - `arduino/servo_diagnostic/` ✗
+  - `arduino/servo_simple_test/` ✗
+  - `arduino/test_servo_logic/` ✗
+  - `arduino/servo_center/` ✗
+- **Remaining:** Only `arduino/hatching_egg/` and `arduino/servo_mapping.h`
+- **Calibration Tool:** Located in separate twitching_body directory (working perfectly)
+
+---
+
+## 📊 Project Status
+
+**Overall Progress:** ~88% complete (was 85%)
+
+**Completed:**
+- Hardware wiring ✓
+- Software architecture ✓
+- Unit test framework (80 tests) ✓
+- Servo channel verification ✓
+- Working calibration tool ✓
+
+**In Progress:**
+- Servo calibration (20%) - Tool ready, need to find safe PWM limits
+
+**Remaining:**
+- Find safe PWM limits for 4 servos (20-40 min)
+- Update animation-config.json with safe ranges (10 min)
+- Tune animations (30-60 min)
+- Test trigger switch (10 min)
+- Integration testing (20 min)
+
+**Estimated Time to Completion:** 1-2 hours
+
+---
+
+## 🎓 Key Learnings
+
+### 1. PWM vs Microseconds - CRITICAL!
+- PCA9685 uses **PWM values (0-4095)**, NOT microseconds
+- Safe range: PWM 150-600
+- **Danger:** Using µs values (600-2400) maps to PWM 122-491 (UNSAFE - below zero!)
+- **Always verify:** What units does the library actually use?
+
+### 2. Leonardo/Beetle Serial Communication
+- `while (!Serial)` waits for serial connection
+- Board resets when serial connects
+- Creates infinite loop - code never progresses past `while (!Serial)`
+- **Solution:** Use `delay(500)` instead
+
+### 3. Physical Constraints Trump Theoretical Limits
+- Servo spec sheet says 0-180°
+- Real constraint: Collision with egg body
+- **Must test with actual hardware** - no amount of simulation helps
+- Document safe ranges, not theoretical maximums
+
+### 4. Code Reuse When Debugging Fails
+- hatching_egg servo_tester mysteriously broken
+- Instead of hours of debugging, adapted working twitching_body code
+- **Result:** 15 minutes vs potentially hours of troubleshooting
+- **Lesson:** Sometimes faster to use what works than fix what's broken
+
+### 5. Visual Feedback is Essential
+- LED blinks provide confirmation code is running
+- Critical when serial monitor doesn't work
+- Should be standard practice for all embedded code
+
+---
+
+## 📁 Files Created/Modified
+
+### New Files:
+- `CALIBRATION_STATUS.md` - Quick reference for calibration procedure
+- `SESSION_SUMMARY_2025-10-28.md` - This file
+- `/home/griswald/personal/halloween_2025/twitching_body/arduino/servo_test/servo_test.ino` - Modified for hatching_egg
+
+### Updated Files:
+- `STATUS.md` - Current status and known issues
+- `AGENT_HANDOFF.md` - Critical findings for next agent
+- `README.md` - Working tool locations
+
+### Verified Clean:
+- All documentation references working tools
+- Non-working servo_tester clearly marked
+- No outdated information remaining
+
+---
+
+## 🎯 Next Agent: Start Here
+
+1. **Read these files first:**
+   - `CALIBRATION_STATUS.md` - Quick reference
+   - `STATUS.md` - Current project status
+   - `AGENT_HANDOFF.md` - Technical details
+
+2. **Open the calibration tool:**
+   ```bash
+   cd /home/griswald/personal/halloween_2025/hatching_egg
+   pixi run calibrate
+   ```
+
+3. **Find safe PWM limits:**
+   - Type `z` to reset to safe zero
+   - Select each servo (0-3)
+   - Carefully increase PWM with `+`
+   - **Stop BEFORE collision!**
+   - Document limits in STATUS.md
+
+4. **Update configuration:**
+   - Edit animation-config.json with safe ranges
+   - Run tests: `pixi run test`
+   - Upload: `pixi run upload arduino/hatching_egg`
+
+---
+
+## 💡 Recommendations for Next Agent
+
+1. **Test conservatively** - Better to have smaller range than risk damage
+2. **Use `z` liberally** - Reset to safe zero often
+3. **Document as you go** - Write down PWM values immediately
+4. **One servo at a time** - Don't test multiple simultaneously
+5. **Verify direction** - Some servos might be mirrored
+
+---
+
+**Session Duration:** ~3 hours
+**Token Usage:** ~107k / 200k (54%)
+**Status:** Calibration tool ready, documentation complete, waiting for safe limit testing

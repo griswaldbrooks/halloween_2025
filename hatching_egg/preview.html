@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hatching Egg Spider - Animation Preview</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #0f0;
+            font-family: monospace;
+            display: flex;
+            gap: 20px;
+        }
+
+        #canvas {
+            border: 2px solid #0f0;
+            background: #000;
+            display: block;
+        }
+
+        #controls {
+            background: #000;
+            border: 2px solid #0f0;
+            padding: 20px;
+            width: 300px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #0f0;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+        }
+
+        .behavior-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .behavior-btn:hover {
+            background: #0f0;
+            color: #000;
+        }
+
+        .behavior-btn.active {
+            background: #0a0;
+            color: #000;
+            border-color: #0a0;
+        }
+
+        .control-group {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #0f0;
+        }
+
+        .control-group h3 {
+            margin-top: 0;
+            font-size: 14px;
+            color: #0a0;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0;
+            font-size: 11px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .servo-angles {
+            font-size: 11px;
+            padding: 10px;
+            background: #0a0a0a;
+            border: 1px solid #0f0;
+            margin-top: 10px;
+        }
+
+        .servo-angles div {
+            margin: 5px 0;
+        }
+
+        .info {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+
+    <div id="controls">
+        <h2>🕷️ Hatching Egg Preview</h2>
+
+        <div class="control-group">
+            <h3>Mode</h3>
+            <button class="behavior-btn" id="manualMode">Manual Control</button>
+            <button class="behavior-btn active" id="animationMode">Animation Playback</button>
+        </div>
+
+        <div class="control-group" id="manualControls" style="display: none;">
+            <h3>Manual Joint Control</h3>
+            <label>
+                Left Shoulder: <span id="manualLeftShoulderLabel">0</span>°
+                <input type="range" id="manualLeftShoulder" min="-90" max="90" value="0" step="1">
+            </label>
+            <label>
+                Left Elbow: <span id="manualLeftElbowLabel">0</span>°
+                <input type="range" id="manualLeftElbow" min="0" max="180" value="0" step="1">
+            </label>
+            <label>
+                Right Shoulder: <span id="manualRightShoulderLabel">0</span>°
+                <input type="range" id="manualRightShoulder" min="-90" max="90" value="0" step="1">
+            </label>
+            <label>
+                Right Elbow: <span id="manualRightElbowLabel">0</span>°
+                <input type="range" id="manualRightElbow" min="0" max="180" value="0" step="1">
+            </label>
+            <button class="behavior-btn" onclick="copyManualAngles()" style="margin-top: 10px;">
+                Copy Angles to Console
+            </button>
+        </div>
+
+        <div class="control-group" id="animationControls">
+            <h3>Reference Positions</h3>
+            <button class="behavior-btn" data-behavior="zero" style="background: #003300; border-color: #00ff00;">🔺 Zero (Straight Up)</button>
+            <button class="behavior-btn" data-behavior="max" style="background: #003300; border-color: #00ff00;">⊥ Max (Perpendicular)</button>
+
+            <h3 style="margin-top: 20px;">Animation Behaviors</h3>
+            <button class="behavior-btn" data-behavior="resting">Resting (Curled Inside Egg)</button>
+            <button class="behavior-btn" data-behavior="slow_struggle">Slow Struggle (Testing Shell)</button>
+            <button class="behavior-btn" data-behavior="breaking_through">Breaking Through (Violent Pushing)</button>
+            <button class="behavior-btn" data-behavior="grasping">Grasping (Reaching and Pulling)</button>
+            <button class="behavior-btn" data-behavior="emerged">Emerged (Fully Extended)</button>
+        </div>
+
+        <div class="control-group">
+            <h3>Leg Parameters</h3>
+            <label>
+                Upper Segment Length: <span id="upperLengthLabel">80</span>px
+                <input type="range" id="upperLength" min="40" max="120" value="80" step="5">
+            </label>
+            <label>
+                Lower Segment Length: <span id="lowerLengthLabel">100</span>px
+                <input type="range" id="lowerLength" min="60" max="150" value="100" step="5">
+            </label>
+            <label>
+                Animation Speed: <span id="speedLabel">1.0</span>x
+                <input type="range" id="speed" min="0.1" max="3.0" value="1.0" step="0.1">
+            </label>
+        </div>
+
+        <div class="control-group">
+            <h3>Servo Angles (Real-time)</h3>
+            <div class="servo-angles">
+                <strong>Left Leg:</strong>
+                <div>Shoulder: <span id="leftShoulder">0</span>°</div>
+                <div>Elbow: <span id="leftElbow">0</span>°</div>
+                <br>
+                <strong>Right Leg:</strong>
+                <div>Shoulder: <span id="rightShoulder">0</span>°</div>
+                <div>Elbow: <span id="rightElbow">0</span>°</div>
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>Controls:</strong><br>
+            - Click behavior to preview<br>
+            - Adjust leg lengths to match hardware<br>
+            - Servo angles shown in real-time (0-180°)<br>
+            - Use these values for Arduino programming
+        </div>
+    </div>
+
+    <script src="leg-kinematics.js"></script>
+    <script src="animation-behaviors.js"></script>
+    <script src="preview-app.js"></script>
+</body>
+</html>
