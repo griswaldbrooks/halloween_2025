@@ -57,9 +57,16 @@ void setup() {
   moveToResting();
 
   Serial.println(F("Ready! Waiting for trigger..."));
+  Serial.println();
+  printHelp();
 }
 
 void loop() {
+  // Check for serial commands
+  if (Serial.available()) {
+    handleSerialCommand();
+  }
+
   // Check trigger
   bool triggerState = digitalRead(TRIGGER_PIN);
 
@@ -203,4 +210,102 @@ void moveToResting() {
   int re = pgm_read_word(&(keyframes[0].right_elbow_deg));
 
   moveLegs(ls, le, rs, re);
+}
+
+void handleSerialCommand() {
+  char cmd = Serial.read();
+
+  // Clear any remaining characters
+  while (Serial.available()) {
+    Serial.read();
+  }
+
+  switch (cmd) {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+      {
+        int animIndex = cmd - '0';
+        if (animIndex < ANIMATION_COUNT) {
+          Serial.print(F("Selected animation "));
+          Serial.println(animIndex);
+          currentAnimation = animIndex;
+          startAnimation(animIndex);
+        } else {
+          Serial.println(F("Invalid animation index"));
+        }
+      }
+      break;
+
+    case 's':
+    case 'S':
+      Serial.println(F("Stopping animation..."));
+      animationActive = false;
+      moveToResting();
+      break;
+
+    case 'r':
+    case 'R':
+      Serial.println(F("Restarting current animation..."));
+      startAnimation(currentAnimation);
+      break;
+
+    case 'l':
+    case 'L':
+      printAnimationList();
+      break;
+
+    case 'h':
+    case 'H':
+    case '?':
+      printHelp();
+      break;
+
+    case '\n':
+    case '\r':
+      // Ignore newlines
+      break;
+
+    default:
+      Serial.print(F("Unknown command: "));
+      Serial.println(cmd);
+      Serial.println(F("Type 'h' for help"));
+      break;
+  }
+}
+
+void printHelp() {
+  Serial.println();
+  Serial.println(F("===== Hatching Egg Spider Commands ====="));
+  Serial.println(F("0-6  : Select animation by number"));
+  Serial.println(F("l    : List all animations"));
+  Serial.println(F("s    : Stop current animation"));
+  Serial.println(F("r    : Restart current animation"));
+  Serial.println(F("h    : Show this help"));
+  Serial.println(F("========================================"));
+  Serial.println();
+}
+
+void printAnimationList() {
+  Serial.println();
+  Serial.println(F("Available Animations:"));
+  Serial.println(F("---------------------"));
+
+  for (int i = 0; i < ANIMATION_COUNT; i++) {
+    char name[64];
+    strcpy_P(name, (char*)pgm_read_ptr(&(ANIMATIONS[i].name)));
+
+    Serial.print(i);
+    Serial.print(F(". "));
+    Serial.println(name);
+  }
+
+  Serial.println();
+  Serial.print(F("Current: "));
+  Serial.println(currentAnimation);
+  Serial.println();
 }

@@ -1,5 +1,23 @@
 # Changelog - Hatching Egg Spider
 
+## 2025-10-28 (Session 5b) - Interactive Animation Testing
+
+### Added
+
+**Interactive Serial Commands:**
+- Added serial command handling for testing animations
+- Type single character commands to control animations in real-time
+- Commands:
+  - `0-6`: Select animation by number
+  - `l`: List all animations with names
+  - `s`: Stop current animation
+  - `r`: Restart current animation
+  - `h`: Show help menu
+- Help menu auto-displays on startup
+- Makes testing all animations easy without re-uploading code
+
+---
+
 ## 2025-10-28 (Session 5) - Symmetric Animations & Test Suite Expansion
 
 ### Added
