@@ -89,12 +89,12 @@ const Keyframe SLOW_STRUGGLE_KEYFRAMES[] PROGMEM = {
 // Breaking Through (Violent Pushing)
 const Keyframe BREAKING_THROUGH_KEYFRAMES[] PROGMEM = {
   {0, 25, 20, 25, 20},
-  {350, 20, 75, 20, 75},
+  {350, 20, 70, 20, 70},
   {600, 30, 30, 30, 30},
-  {950, 70, 70, 70, 70},
+  {950, 65, 65, 65, 65},
   {1200, 35, 35, 35, 35},
-  {1550, 15, 80, 15, 80},
-  {1800, 80, 65, 80, 65},
+  {1550, 15, 70, 15, 70},
+  {1800, 70, 60, 70, 60},
   {2400, 25, 20, 25, 20},
 };
 
@@ -111,10 +111,10 @@ const Keyframe GRASPING_KEYFRAMES[] PROGMEM = {
 
 // Emerged (Fully Extended Menacing Pose)
 const Keyframe EMERGED_KEYFRAMES[] PROGMEM = {
-  {0, 75, 80, 75, 80},
-  {1500, 85, 85, 85, 85},
-  {2500, 70, 75, 70, 75},
-  {4000, 75, 80, 75, 80},
+  {0, 65, 70, 65, 70},
+  {1500, 70, 70, 70, 70},
+  {2500, 60, 65, 60, 65},
+  {4000, 65, 70, 65, 70},
 };
 
 // Animation Definitions
@@ -129,6 +129,6 @@ const Animation ANIMATIONS[] PROGMEM = {
 };
 
 #define ANIMATION_COUNT 7
-#define DEFAULT_ANIMATION 1  // slow_struggle
+#define DEFAULT_ANIMATION 3  // slow_struggle
 
 #endif // ANIMATION_CONFIG_H

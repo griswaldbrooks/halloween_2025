@@ -119,11 +119,15 @@ def generate_arduino_header(config_path, output_path):
             f"{kf_count}, {anim_id.upper()}_KEYFRAMES}},"
         )
 
+    # Find default animation index
+    default_anim_name = config['default_animation']
+    default_index = list(animations.keys()).index(default_anim_name)
+
     header_lines.extend([
         "};",
         "",
         f"#define ANIMATION_COUNT {len(animations)}",
-        f"#define DEFAULT_ANIMATION 1  // {config['default_animation']}",
+        f"#define DEFAULT_ANIMATION {default_index}  // {default_anim_name}",
         "",
         "#endif // ANIMATION_CONFIG_H",
         ""

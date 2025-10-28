@@ -158,10 +158,10 @@
         {
           "time_ms": 350,
           "left_shoulder_deg": 20,
-          "left_elbow_deg": 75,
+          "left_elbow_deg": 70,
           "right_shoulder_deg": 20,
-          "right_elbow_deg": 75,
-          "comment": "PUSH! Violent elbow extension - symmetric"
+          "right_elbow_deg": 70,
+          "comment": "PUSH! Violent elbow extension - symmetric (reduced from 75)"
         },
         {
           "time_ms": 600,
@@ -173,11 +173,11 @@
         },
         {
           "time_ms": 950,
-          "left_shoulder_deg": 70,
-          "left_elbow_deg": 70,
-          "right_shoulder_deg": 70,
-          "right_elbow_deg": 70,
-          "comment": "BOTH EXTEND! Maximum push - symmetric"
+          "left_shoulder_deg": 65,
+          "left_elbow_deg": 65,
+          "right_shoulder_deg": 65,
+          "right_elbow_deg": 65,
+          "comment": "BOTH EXTEND! Maximum push - symmetric (reduced from 70)"
         },
         {
           "time_ms": 1200,
@@ -190,18 +190,18 @@
         {
           "time_ms": 1550,
           "left_shoulder_deg": 15,
-          "left_elbow_deg": 80,
+          "left_elbow_deg": 70,
           "right_shoulder_deg": 15,
-          "right_elbow_deg": 80,
-          "comment": "Another powerful elbow push - symmetric"
+          "right_elbow_deg": 70,
+          "comment": "Another powerful elbow push - symmetric (reduced from 80)"
         },
         {
           "time_ms": 1800,
-          "left_shoulder_deg": 80,
-          "left_elbow_deg": 65,
-          "right_shoulder_deg": 80,
-          "right_elbow_deg": 65,
-          "comment": "Shoulder thrust outward - symmetric"
+          "left_shoulder_deg": 70,
+          "left_elbow_deg": 60,
+          "right_shoulder_deg": 70,
+          "right_elbow_deg": 60,
+          "comment": "Shoulder thrust outward - symmetric (reduced from 80/65)"
         },
         {
           "time_ms": 2400,
@@ -283,35 +283,35 @@
       "keyframes": [
         {
           "time_ms": 0,
-          "left_shoulder_deg": 75,
-          "left_elbow_deg": 80,
-          "right_shoulder_deg": 75,
-          "right_elbow_deg": 80,
-          "comment": "Fully extended, menacing - symmetric"
+          "left_shoulder_deg": 65,
+          "left_elbow_deg": 70,
+          "right_shoulder_deg": 65,
+          "right_elbow_deg": 70,
+          "comment": "Fully extended, menacing - symmetric (reduced from 75/80)"
         },
         {
           "time_ms": 1500,
-          "left_shoulder_deg": 85,
-          "left_elbow_deg": 85,
-          "right_shoulder_deg": 85,
-          "right_elbow_deg": 85,
-          "comment": "Stretching to maximum - symmetric"
+          "left_shoulder_deg": 70,
+          "left_elbow_deg": 70,
+          "right_shoulder_deg": 70,
+          "right_elbow_deg": 70,
+          "comment": "Stretching to maximum - symmetric (reduced from 85/85)"
         },
         {
           "time_ms": 2500,
-          "left_shoulder_deg": 70,
-          "left_elbow_deg": 75,
-          "right_shoulder_deg": 70,
-          "right_elbow_deg": 75,
-          "comment": "Slight relaxation, threatening sway - symmetric"
+          "left_shoulder_deg": 60,
+          "left_elbow_deg": 65,
+          "right_shoulder_deg": 60,
+          "right_elbow_deg": 65,
+          "comment": "Slight relaxation, threatening sway - symmetric (reduced from 70/75)"
         },
         {
           "time_ms": 4000,
-          "left_shoulder_deg": 75,
-          "left_elbow_deg": 80,
-          "right_shoulder_deg": 75,
-          "right_elbow_deg": 80,
-          "comment": "Return to menacing pose - symmetric"
+          "left_shoulder_deg": 65,
+          "left_elbow_deg": 70,
+          "right_shoulder_deg": 65,
+          "right_elbow_deg": 70,
+          "comment": "Return to menacing pose - symmetric (reduced from 75/80)"
         }
       ]
     }
