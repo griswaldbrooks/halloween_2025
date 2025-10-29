@@ -255,6 +255,19 @@ class TestServoPulseMapping(unittest.TestCase):
         self.assertEqual(kin['elbow_min_angle'], 0, "Elbow min should be 0°")
         self.assertEqual(kin['elbow_max_angle'], 90, "Elbow max should be 90°")
 
+    def test_animation_names_fit_in_buffer(self):
+        """Test that animation names don't exceed Arduino buffer size (PREVENTS BUFFER OVERFLOW)"""
+        # Arduino code uses char name[64] for animation names
+        MAX_NAME_LENGTH = 63  # 64 bytes - 1 for null terminator
+
+        for anim_name, anim in self.config['animations'].items():
+            name = anim['name']
+            name_length = len(name)
+
+            self.assertLessEqual(name_length, MAX_NAME_LENGTH,
+                f"Animation '{anim_name}' name is {name_length} chars, exceeds buffer size {MAX_NAME_LENGTH}. "
+                f"Name: '{name}'. This will cause buffer overflow and crash the Arduino!")
+
 
 class TestServoChannels(unittest.TestCase):
     """Test servo channel assignments"""

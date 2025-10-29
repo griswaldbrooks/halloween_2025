@@ -94,7 +94,7 @@ void startAnimation(int animIndex) {
   animationActive = true;
 
   // Read animation name from PROGMEM
-  char name[32];
+  char name[64];  // Increased from 32 to 64 bytes
   strcpy_P(name, (char*)pgm_read_ptr(&(ANIMATIONS[animIndex].name)));
 
   Serial.print(F("Starting: "));
@@ -296,7 +296,7 @@ void printAnimationList() {
   Serial.println(F("---------------------"));
 
   for (int i = 0; i < ANIMATION_COUNT; i++) {
-    char name[64];
+    char name[64];  // Already 64 bytes - good!
     strcpy_P(name, (char*)pgm_read_ptr(&(ANIMATIONS[i].name)));
 
     Serial.print(i);

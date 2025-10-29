@@ -27,16 +27,15 @@ setup = { depends-on = ["setup-arduino"] }
 # === Preview Tasks ===
 serve = "python -m http.server 8081"
 open = "xdg-open http://localhost:8081/preview.html"
-preview = { depends-on = ["serve"] }
 
 # === Testing ===
 test-cpp = { cmd = "g++ -std=c++17 test_servo_mapping.cpp -o test_servo_mapping -lgtest -pthread && ./test_servo_mapping", description = "Run C++ unit tests (44 gtest - per-servo ranges)" }
-test-python = { cmd = "python test_servo_mapping.py", description = "Run Python config tests (19 tests - includes symmetry/movement)" }
+test-python = { cmd = "python test_servo_mapping.py", description = "Run Python config tests (20 tests - includes buffer overflow check)" }
 test-servo-tester = { cmd = "g++ -std=c++17 test_servo_tester.cpp -o test_servo_tester -lgtest -pthread && ./test_servo_tester", description = "Run servo tester logic tests (34 gtest)" }
-test-servo-sweep = { cmd = "g++ -std=c++17 -I. test_servo_sweep.cpp -o test_servo_sweep -lgtest -pthread && ./test_servo_sweep", description = "Run servo sweep test logic tests (93 gtest with parameterized tests)" }
-test-kinematics = { cmd = "node test_leg_kinematics.js", description = "Run leg kinematics tests (31 tests - JavaScript)" }
-test-animation-behaviors = { cmd = "node test_animation_behaviors.js", description = "Run animation behaviors tests (10 tests - verifies JSON loading and symmetry)" }
-test = { depends-on = ["test-cpp", "test-python", "test-servo-tester", "test-servo-sweep", "test-kinematics", "test-animation-behaviors"], description = "Run all tests (231 total: 171 gtest + 19 Python + 31 kinematics + 10 behaviors)" }
+test-servo-sweep = { cmd = "g++ -std=c++17 -I. test_servo_sweep.cpp -o test_servo_sweep -lgtest -pthread && ./test_servo_sweep", description = "Run servo sweep test logic tests (93 gtest)" }
+test-kinematics = { cmd = "node test_leg_kinematics.js", description = "Run leg kinematics tests (31 tests)" }
+test-animation-behaviors = { cmd = "node test_animation_behaviors.js", description = "Run animation behaviors tests (10 tests)" }
+test = { depends-on = ["test-cpp", "test-python", "test-servo-tester", "test-servo-sweep", "test-kinematics", "test-animation-behaviors"], description = "Run all tests (232 total - includes buffer overflow prevention)" }
 test-before-upload = { depends-on = ["test"], description = "Run safety tests before hardware upload" }
 
 # === Arduino Tasks ===
@@ -46,36 +45,11 @@ upload = { cmd = "bash scripts/upload.sh", depends-on = ["test-before-upload", "
 monitor = ".pixi/bin/arduino-cli monitor -p $(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep 'Arduino Leonardo' | awk '{print $1}' | head -n 1) --config-file .arduino15/arduino-cli.yaml"
 
 # === Servo Calibration Tasks ===
-servo-compile = """
-.pixi/bin/arduino-cli compile \
-  --fqbn arduino:avr:leonardo \
-  --config-file .arduino15/arduino-cli.yaml \
-  arduino/servo_tester
-"""
-
-servo-upload = "bash scripts/upload_servo_tester.sh"
-
-servo-flash = { depends-on = ["servo-upload"], description = "Upload servo calibration tool" }
-
-servo-monitor = { cmd = "bash -c 'PORT=$(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep Leonardo | awk \"{print \\$1}\" | head -n 1) && .pixi/bin/arduino-cli monitor -p $PORT -c baudrate=9600'", description = "Open serial monitor for servo calibration" }
-
 calibrate = "bash scripts/upload_servo_tester.sh"
 
 # === Servo Sweep Test Tasks ===
-sweep-compile = """
-.pixi/bin/arduino-cli compile \
-  --fqbn arduino:avr:leonardo \
-  --config-file .arduino15/arduino-cli.yaml \
-  arduino/servo_sweep_test
-"""
-
 sweep-upload = "bash scripts/upload_sweep_test.sh"
-
-sweep-flash = { depends-on = ["sweep-compile", "sweep-upload"], description = "Upload servo sweep test" }
-
-sweep-monitor = { cmd = "bash -c 'PORT=$(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep Leonardo | awk \"{print \\$1}\" | head -n 1) && .pixi/bin/arduino-cli monitor -p $PORT -c baudrate=9600'", description = "Open serial monitor for sweep test" }
-
-sweep-test = { depends-on = ["test-servo-sweep", "sweep-flash", "sweep-monitor"], description = "Test sweep logic, upload, and monitor" }
+sweep-monitor = ".pixi/bin/arduino-cli monitor -p $(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep 'Arduino Leonardo' | awk '{print $1}' | head -n 1) --config-file .arduino15/arduino-cli.yaml"
 
 # === Troubleshooting ===
 fix-permissions = """
