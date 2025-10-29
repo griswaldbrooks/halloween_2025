@@ -1,9 +1,23 @@
 /*
- * Hatching Egg Spider - Main Animation Controller
+ * Hatching Egg Spider - Production Animation Controller
  *
- * Behavior:
- * - Idle: Cycles between "resting" and "slow_struggle"
- * - Triggered: Plays "grasping" → "breaking_through" → back to idle cycle
+ * Autonomous Behavior:
+ * - Idle Mode: Cycles resting (3s) ↔ slow_struggle (4.5s) continuously
+ * - Triggered Mode: 3 cycles of grasping (3.5s) → breaking_through (2.4s)
+ *   Total triggered duration: ~17.7 seconds
+ *   Adjustable via TRIGGERED_CYCLES constant (currently 3)
+ *
+ * Available Animations (7 total):
+ * - 0: zero - Reference position (straight up)
+ * - 1: max - Reference position (perpendicular)
+ * - 2: resting - Curled inside egg with breathing
+ * - 3: slow_struggle - Testing the shell
+ * - 4: breaking_through - Violent pushing
+ * - 5: grasping - Reaching and pulling
+ * - 6: stabbing - Asymmetric poking (not used in production sequencing)
+ *
+ * For Interactive Testing:
+ * Upload animation_tester/ instead - has serial commands (0-6, l, s, r, h)
  *
  * Hardware:
  * - DFRobot Beetle (Leonardo) on Pin 9 trigger

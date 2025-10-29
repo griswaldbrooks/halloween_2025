@@ -1,8 +1,20 @@
 /*
- * Hatching Egg Spider - Animation Tester
+ * Hatching Egg Spider - Animation Tester (Development Tool)
  *
  * Interactive tool for testing animations via serial commands.
  * Use this to preview all 7 animations without needing the trigger.
+ *
+ * Animations:
+ * - 0: zero - Reference position (straight up)
+ * - 1: max - Reference position (perpendicular)
+ * - 2: resting - Curled inside egg with breathing
+ * - 3: slow_struggle - Testing the shell
+ * - 4: breaking_through - Violent pushing
+ * - 5: grasping - Reaching and pulling
+ * - 6: stabbing - Asymmetric poking with L-shape start
+ *
+ * Upload: pixi run test-animations
+ * Production: Use arduino/hatching_egg/ instead (has smart sequencing)
  *
  * Hardware:
  * - DFRobot Beetle (Leonardo)

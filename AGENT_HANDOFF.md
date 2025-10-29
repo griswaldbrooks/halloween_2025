@@ -31,6 +31,37 @@ pixi run integration-test  # ✅ All 5 tests pass
 
 ---
 
+## ✅ Completed: Hatching Egg Spider (PRODUCTION READY)
+
+**Status:** ✅ COMPLETE - Smart sequencing with autonomous behavior
+
+**Location:** `hatching_egg/`
+
+**What it does:**
+- **Idle Mode:** Cycles resting ↔ slow_struggle automatically (ambient movement)
+- **Triggered Mode:** Button press → 3 cycles of grasping → breaking_through (~17.7s)
+- **7 Animations:** zero, max, resting, slow_struggle, breaking_through, grasping, stabbing
+
+**Key Features:**
+- Autonomous behavior - works without serial commands
+- Trigger-based hatching sequence (Pin 9 to GND)
+- Interactive tester tool for development (animation_tester/)
+- Web preview: http://localhost:8081/preview.html
+- 241 tests passing
+- Memory: 11,912 bytes (41%) program, 408 bytes (15%) RAM
+
+**Commands:**
+```bash
+cd hatching_egg
+pixi run upload           # Production code
+pixi run test-animations  # Interactive tester
+pixi run monitor          # Serial monitor
+pixi run serve            # Web preview
+pixi run test             # All 241 tests
+```
+
+---
+
 ## ✅ Completed: Twitching Body Animatronic (TUNED & READY)
 
 **Status:** ✅ COMPLETE - Extensively tuned with dressed animatronic

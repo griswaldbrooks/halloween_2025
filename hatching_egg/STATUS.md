@@ -11,9 +11,9 @@
 |-----------|--------|
 | Hardware Configuration | ✅ Complete - All 4 servos verified |
 | Calibration | ✅ Complete - Per-servo ranges tested |
-| Unit Tests | ✅ 226/226 passing (C++ + Python + JavaScript) |
+| Unit Tests | ✅ 241/241 passing (C++ + Python + JavaScript) |
 | Kinematics & PWM Mapping | ✅ Complete - Verified with 31 tests |
-| **Animation Count** | ✅ **6 animations (removed "emerged")** |
+| **Animation Count** | ✅ **7 animations (added "stabbing")** |
 | **Animation Symmetry** | ✅ **Complete - All animations symmetric** |
 | **Animation Sequencing** | ✅ **Idle cycle + 3x triggered sequence** |
 | **Interactive Tester** | ✅ **animation_tester/ for development** |
@@ -57,17 +57,17 @@
 - **Adjustable:** `TRIGGERED_CYCLES` constant
 
 **Interactive Testing:** `arduino/animation_tester/animation_tester.ino`
-- Serial commands: 0-5 (select), l (list), s (stop), r (restart), h (help)
+- Serial commands: 0-6 (select), l (list), s (stop), r (restart), h (help)
 - Upload with: `pixi run test-animations`
 
-**✅ All 6 Animations Verified Working:**
+**✅ All 7 Animations Verified Working:**
 - Animation 0 (zero) - Reference position ✅
 - Animation 1 (max) - Reference position ✅
 - Animation 2 (resting) - Curled breathing ✅
 - Animation 3 (slow_struggle) - Testing the shell ✅
-- Animation 4 (breaking_through) - Violent pushing ✅ (FIXED)
+- Animation 4 (breaking_through) - Violent pushing ✅
 - Animation 5 (grasping) - Reaching and pulling ✅
-- Animation 6 (emerged) - Fully extended menacing ✅ (FIXED)
+- Animation 6 (stabbing) - Asymmetric poking ✅ NEW!
 
 ### Interactive Testing Commands
 
