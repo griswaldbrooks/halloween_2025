@@ -2,7 +2,7 @@
  * Hatching Egg Spider - Animation Tester
  *
  * Interactive tool for testing animations via serial commands.
- * Use this to preview all 6 animations without needing the trigger.
+ * Use this to preview all 7 animations without needing the trigger.
  *
  * Hardware:
  * - DFRobot Beetle (Leonardo)
@@ -14,7 +14,7 @@
  *   - Left Elbow (CH15): PWM 530-360 (0-90°, inverted)
  *
  * Serial Commands:
- * - 0-5: Select and play animation by number
+ * - 0-6: Select and play animation by number
  * - l: List all available animations
  * - s: Stop current animation
  * - r: Restart current animation
@@ -237,6 +237,7 @@ void handleSerialCommand() {
     case '3':
     case '4':
     case '5':
+    case '6':
       {
         int animIndex = cmd - '0';
         if (animIndex < ANIMATION_COUNT) {
@@ -290,7 +291,7 @@ void handleSerialCommand() {
 void printHelp() {
   Serial.println();
   Serial.println(F("===== Hatching Egg Spider Commands ====="));
-  Serial.println(F("0-5  : Select animation by number"));
+  Serial.println(F("0-6  : Select animation by number"));
   Serial.println(F("l    : List all animations"));
   Serial.println(F("s    : Stop current animation"));
   Serial.println(F("r    : Restart current animation"));

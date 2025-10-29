@@ -29,7 +29,7 @@ function test(description, fn) {
 
 // Test 1: Verify all animations exist in JSON
 test('All required animations exist in JSON', () => {
-    const required = ['zero', 'max', 'resting', 'slow_struggle', 'breaking_through', 'grasping'];
+    const required = ['zero', 'max', 'resting', 'slow_struggle', 'breaking_through', 'grasping', 'stabbing'];
     for (const anim of required) {
         assert(config.animations[anim], `Animation '${anim}' not found`);
     }
@@ -76,7 +76,7 @@ test('Symmetric animations are symmetric', () => {
 
 // Test 5: Verify animations have movement
 test('Animations have movement between keyframes', () => {
-    const animated = ['resting', 'slow_struggle', 'breaking_through', 'grasping'];
+    const animated = ['resting', 'slow_struggle', 'breaking_through', 'grasping', 'stabbing'];
     for (const name of animated) {
         const anim = config.animations[name];
         assert(anim.keyframes.length >= 2, `${name} needs at least 2 keyframes`);

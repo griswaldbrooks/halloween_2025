@@ -214,9 +214,9 @@ class TestServoPulseMapping(unittest.TestCase):
 
     def test_animation_count(self):
         """Test that we have the expected number of animations"""
-        # We have 6 animations: zero, max, resting, slow_struggle, breaking_through, grasping
-        self.assertEqual(len(self.config['animations']), 6,
-                        "Should have 6 animations total")
+        # We have 7 animations: zero, max, resting, slow_struggle, breaking_through, grasping, stabbing
+        self.assertEqual(len(self.config['animations']), 7,
+                        "Should have 7 animations total")
 
     def test_all_keyframe_angles_in_range(self):
         """Test that all animation keyframes use valid 0-90° range"""

@@ -58,6 +58,7 @@ const char RESTING_NAME[] PROGMEM = "Resting (Curled Inside Egg)";
 const char SLOW_STRUGGLE_NAME[] PROGMEM = "Slow Struggle (Testing the Shell)";
 const char BREAKING_THROUGH_NAME[] PROGMEM = "Breaking Through (Violent Pushing)";
 const char GRASPING_NAME[] PROGMEM = "Grasping (Reaching and Pulling)";
+const char STABBING_NAME[] PROGMEM = "Stabbing (Asymmetric Poking)";
 
 // Zero Position (Reference)
 const Keyframe ZERO_KEYFRAMES[] PROGMEM = {
@@ -108,6 +109,25 @@ const Keyframe GRASPING_KEYFRAMES[] PROGMEM = {
   {3500, 40, 25, 40, 25},
 };
 
+// Stabbing (Asymmetric Poking)
+const Keyframe STABBING_KEYFRAMES[] PROGMEM = {
+  {0, 10, 10, 10, 10},
+  {200, 35, 50, 10, 10},
+  {350, 25, 40, 10, 10},
+  {500, 40, 60, 10, 10},
+  {650, 30, 45, 10, 10},
+  {800, 45, 65, 10, 10},
+  {1000, 10, 10, 10, 10},
+  {1400, 10, 10, 10, 10},
+  {1600, 10, 10, 35, 50},
+  {1750, 10, 10, 25, 40},
+  {1900, 10, 10, 40, 60},
+  {2050, 10, 10, 30, 45},
+  {2200, 10, 10, 45, 65},
+  {2400, 10, 10, 10, 10},
+  {4000, 10, 10, 10, 10},
+};
+
 // Animation Definitions
 const Animation ANIMATIONS[] PROGMEM = {
   {ZERO_NAME, 1000, true, 1, ZERO_KEYFRAMES},
@@ -116,9 +136,10 @@ const Animation ANIMATIONS[] PROGMEM = {
   {SLOW_STRUGGLE_NAME, 4500, true, 5, SLOW_STRUGGLE_KEYFRAMES},
   {BREAKING_THROUGH_NAME, 2400, true, 8, BREAKING_THROUGH_KEYFRAMES},
   {GRASPING_NAME, 3500, true, 7, GRASPING_KEYFRAMES},
+  {STABBING_NAME, 4000, true, 15, STABBING_KEYFRAMES},
 };
 
-#define ANIMATION_COUNT 6
+#define ANIMATION_COUNT 7
 #define DEFAULT_ANIMATION 3  // slow_struggle
 
 #endif // ANIMATION_CONFIG_H
