@@ -283,123 +283,123 @@
       "keyframes": [
         {
           "time_ms": 0,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
-          "comment": "Both tucked in - starting position"
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
+          "comment": "Both in L-shape - ready to stab"
         },
         {
           "time_ms": 200,
           "left_shoulder_deg": 35,
           "left_elbow_deg": 50,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
           "comment": "Left leg extends - quick stab"
         },
         {
           "time_ms": 350,
           "left_shoulder_deg": 25,
           "left_elbow_deg": 40,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
           "comment": "Left leg retract slightly - shaky"
         },
         {
           "time_ms": 500,
           "left_shoulder_deg": 40,
           "left_elbow_deg": 60,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
           "comment": "Left leg push harder - stuttering motion"
         },
         {
           "time_ms": 650,
           "left_shoulder_deg": 30,
           "left_elbow_deg": 45,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
           "comment": "Left leg shake back"
         },
         {
           "time_ms": 800,
           "left_shoulder_deg": 45,
           "left_elbow_deg": 65,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
           "comment": "Left leg final push at shell"
         },
         {
           "time_ms": 1000,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
-          "comment": "Left leg retracts - both tucked"
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
+          "comment": "Left leg retracts - both in L-shape"
         },
         {
           "time_ms": 1400,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
           "comment": "Brief pause before right leg"
         },
         {
           "time_ms": 1600,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
           "right_shoulder_deg": 35,
           "right_elbow_deg": 50,
           "comment": "Right leg extends - quick stab"
         },
         {
           "time_ms": 1750,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
           "right_shoulder_deg": 25,
           "right_elbow_deg": 40,
           "comment": "Right leg retract slightly - shaky"
         },
         {
           "time_ms": 1900,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
           "right_shoulder_deg": 40,
           "right_elbow_deg": 60,
           "comment": "Right leg push harder - stuttering motion"
         },
         {
           "time_ms": 2050,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
           "right_shoulder_deg": 30,
           "right_elbow_deg": 45,
           "comment": "Right leg shake back"
         },
         {
           "time_ms": 2200,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
           "right_shoulder_deg": 45,
           "right_elbow_deg": 65,
           "comment": "Right leg final push at shell"
         },
         {
           "time_ms": 2400,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
-          "comment": "Right leg retracts - both tucked"
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
+          "comment": "Right leg retracts - both in L-shape"
         },
         {
           "time_ms": 4000,
-          "left_shoulder_deg": 10,
-          "left_elbow_deg": 10,
-          "right_shoulder_deg": 10,
-          "right_elbow_deg": 10,
-          "comment": "Hold tucked position before loop"
+          "left_shoulder_deg": 0,
+          "left_elbow_deg": 90,
+          "right_shoulder_deg": 0,
+          "right_elbow_deg": 90,
+          "comment": "Hold L-shape position before loop"
         }
       ]
     }
