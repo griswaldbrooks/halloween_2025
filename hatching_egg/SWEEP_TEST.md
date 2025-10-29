@@ -2,7 +2,7 @@
 
 **Purpose:** Visual verification of all 4 servos sweeping through their full calibrated safe range.
 
-**Status:** ✅ Unit Tested (181 tests passed) | ✅ Compiled Successfully
+**Status:** ✅ Unit Tested (93 tests passed) | ✅ Compiled and Hardware Verified
 
 ---
 
@@ -35,7 +35,7 @@ pixi run sweep-monitor
 
 ### Option 2: Test, Upload, and Monitor
 ```bash
-# Run unit tests first (181 tests)
+# Run unit tests first (93 tests)
 pixi run test-servo-sweep
 
 # Upload to Beetle
@@ -43,11 +43,6 @@ pixi run sweep-upload
 
 # Open serial monitor
 pixi run sweep-monitor
-```
-
-### Option 3: Quick Upload
-```bash
-pixi run sweep-flash  # Compile + upload
 ```
 
 ---
@@ -105,7 +100,7 @@ R.Elbow: 0° (PWM 150)  R.Shoulder: 0° (PWM 150)  L.Shoulder: 0° (PWM 440)  L.
    - Uses calibrated per-servo limits
 
 3. **Unit Tested**
-   - 181 unit tests verify sweep logic
+   - 93 unit tests verify sweep logic
    - Tests every angle in sweep sequence
    - Validates all PWM values are safe
 
@@ -118,7 +113,7 @@ R.Elbow: 0° (PWM 150)  R.Shoulder: 0° (PWM 150)  L.Shoulder: 0° (PWM 440)  L.
 
 ## Unit Test Coverage
 
-**test_servo_sweep.cpp** - 181 tests
+**test_servo_sweep.cpp** - 93 tests (Google Test with parameterized testing)
 
 **State Management:**
 - ✅ Initialization
@@ -131,7 +126,7 @@ R.Elbow: 0° (PWM 150)  R.Shoulder: 0° (PWM 150)  L.Shoulder: 0° (PWM 440)  L.
 - ✅ Full cycle (0° → 90° → 0°)
 - ✅ Multiple servos synchronized
 
-**PWM Generation:**
+**PWM Generation (Parameterized Tests):**
 - ✅ Right elbow: 150 (0°) → 330 (90°)
 - ✅ Right shoulder: 150 (0°) → 280 (90°)
 - ✅ Left shoulder: 440 (0°) → 300 (90°) inverted
@@ -141,6 +136,7 @@ R.Elbow: 0° (PWM 150)  R.Shoulder: 0° (PWM 150)  L.Shoulder: 0° (PWM 440)  L.
 - ✅ All sweep angles produce safe PWM
 - ✅ Every 5° step validated (0°, 5°, 10°, ..., 90°)
 - ✅ Validates for all 4 servos
+- ✅ Efficient coverage via parameterized testing
 
 ---
 
@@ -175,7 +171,7 @@ R.Elbow: 0° (PWM 150)  R.Shoulder: 0° (PWM 150)  L.Shoulder: 0° (PWM 440)  L.
 - `arduino/servo_sweep_test/servo_sweep_test.ino` - Main sketch (200 lines)
 - `arduino/servo_sweep_test/servo_mapping.h` - Per-servo PWM mapping
 - `arduino/servo_sweep_test/servo_sweep_test_logic.h` - Testable logic
-- `test_servo_sweep.cpp` - 181 unit tests
+- `test_servo_sweep.cpp` - 93 unit tests (Google Test with parameterized testing)
 
 **Functions:**
 - `initSweepState()` - Initialize servo state
@@ -228,18 +224,15 @@ R.Elbow: 0° (PWM 150)  R.Shoulder: 0° (PWM 150)  L.Shoulder: 0° (PWM 440)  L.
 
 ```bash
 # Run tests
-pixi run test-servo-sweep       # 181 unit tests
+pixi run test-servo-sweep       # 93 unit tests
 
 # Upload
 pixi run sweep-upload           # Upload to Beetle
 
 # Monitor
 pixi run sweep-monitor          # Open serial monitor
-
-# All-in-one
-pixi run sweep-flash            # Compile + upload
 ```
 
 ---
 
-**Status:** ✅ Ready to Use - All Tests Passing
+**Status:** ✅ Production Ready - All Tests Passing - Hardware Verified

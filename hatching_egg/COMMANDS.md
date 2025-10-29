@@ -1,6 +1,7 @@
 # Hatching Egg - Command Reference
 
-**Last Updated:** 2025-10-28
+**Last Updated:** 2025-10-29
+**Status:** 100% Complete - Production Ready
 
 All commands run from the `hatching_egg/` directory.
 
@@ -8,18 +9,20 @@ All commands run from the `hatching_egg/` directory.
 
 ## ⚡ Quick Start Commands
 
-### Upload Main Animation (READY!)
-```bash
-pixi run upload            # Upload main hatching animation
-pixi run monitor           # Monitor serial output
-```
-Ground Pin 9 to trigger the animation!
-
-### Main Animation Upload
+### Upload Main Animation (PRODUCTION READY!)
 ```bash
 pixi run upload            # Test, compile, and upload main sketch
-pixi run monitor           # View serial output
+pixi run monitor           # Monitor serial output
 ```
+
+**Interactive Serial Commands:**
+- `0-6`: Select animation (0=zero, 1=max, 2=resting, 3=slow_struggle, 4=breaking_through, 5=grasping, 6=emerged)
+- `l`: List all animations
+- `s`: Stop animation
+- `r`: Restart animation
+- `h`: Help
+
+Ground Pin 9 to trigger default animation (slow_struggle)!
 
 ---
 
@@ -27,28 +30,27 @@ pixi run monitor           # View serial output
 
 ### Testing
 ```bash
-pixi run test              # Run all 275 tests (C++ + Python)
+pixi run test              # Run all 232 tests (C++ + Python + JavaScript)
 pixi run test-cpp          # Run 44 C++ servo mapping tests
-pixi run test-python       # Run 13 Python config tests
-pixi run test-servo-tester # Run 37 servo tester tests
-pixi run test-servo-sweep  # Run 181 servo sweep tests
+pixi run test-python       # Run 20 Python config tests (includes buffer overflow check)
+pixi run test-servo-tester # Run 34 servo tester tests
+pixi run test-servo-sweep  # Run 93 servo sweep tests
+pixi run test-kinematics   # Run 31 JavaScript kinematics tests
+pixi run test-animation-behaviors # Run 10 JavaScript animation behaviors tests
 ```
 
 ### Servo Calibration
 ```bash
-pixi run calibrate         # Upload calibration tool and open monitor (recommended)
-pixi run servo-compile     # Just compile calibration tool
-pixi run servo-upload      # Just upload calibration tool
-pixi run servo-flash       # Compile + upload calibration tool
-pixi run servo-monitor     # Just open serial monitor at 9600 baud
+pixi run calibrate         # Upload calibration tool (all-in-one)
+# Then open monitor manually if needed:
+pixi run monitor           # Open serial monitor
 ```
 
 ### Servo Sweep Test
 ```bash
-pixi run test-servo-sweep  # Run 181 unit tests for sweep logic
+pixi run test-servo-sweep  # Run 93 unit tests for sweep logic
 pixi run sweep-upload      # Upload sweep test to Beetle
 pixi run sweep-monitor     # Open serial monitor
-pixi run sweep-flash       # Compile + upload sweep test
 ```
 
 ### Arduino Main Sketch
@@ -97,37 +99,35 @@ h      Help
 
 ---
 
-## 📝 Typical Workflow
+## 📝 Deployment Workflow
 
-### 1. First Time Setup
+**Status: Calibration Complete - Ready for Production**
+
+### Quick Deploy
+```bash
+pixi run upload            # Upload main animation
+pixi run monitor           # Monitor serial output
+# Test: Type '0-6' to test each animation
+# Test: Ground Pin 9 to trigger default animation
+```
+
+### Test Animations Interactively
+Once uploaded and monitor is open:
+- Type `l` to list all 7 animations
+- Type `0` for zero position (reference)
+- Type `1` for max position (reference)
+- Type `2` for resting (curled breathing)
+- Type `3` for slow_struggle (default - plays on trigger)
+- Type `4` for breaking_through (violent pushing)
+- Type `5` for grasping (reaching motions)
+- Type `6` for emerged (fully extended menacing)
+
+### First Time Setup (Already Complete)
 ```bash
 pixi install
 pixi run setup
+pixi run test    # All 232 tests passing
 ```
-
-### 2. Servo Calibration
-```bash
-pixi run calibrate
-# Use commands above to find safe limits
-# Document results in STATUS.md
-```
-
-### 3. Update Configuration
-Edit `animation-config.json` with safe PWM limits from calibration.
-
-### 4. Test Configuration
-```bash
-pixi run test    # All tests must pass!
-```
-
-### 5. Upload Main Animation
-```bash
-pixi run upload
-pixi run monitor
-```
-
-### 6. Test with Trigger
-Ground Pin 9 to trigger animation.
 
 ---
 
@@ -164,7 +164,9 @@ pixi run fix-permissions
 
 ## 📚 More Information
 
-- **README.md** - Project overview and setup
-- **CALIBRATION_STATUS.md** - Calibration procedure details
-- **STATUS.md** - Current project status
+- **README.md** - Project overview and quick start
+- **CALIBRATION_COMPLETE.md** - Calibration results and hardware specs
+- **STATUS.md** - Current project status (100% complete)
 - **AGENT_HANDOFF.md** - Complete technical documentation
+- **SWEEP_TEST.md** - Hardware verification tool
+- **CHANGELOG.md** - Version history and bug fixes
