@@ -1,7 +1,7 @@
 # Hatching Egg Spider - Project Status
 
-**Date:** 2025-10-29 (Session 6 Complete)
-**Phase:** 🎉 **100% COMPLETE - PRODUCTION READY**
+**Date:** 2025-10-29 (Session 7 Complete)
+**Phase:** 🎉 **100% COMPLETE - PRODUCTION READY WITH SEQUENCING**
 
 ---
 
@@ -11,17 +11,18 @@
 |-----------|--------|
 | Hardware Configuration | ✅ Complete - All 4 servos verified |
 | Calibration | ✅ Complete - Per-servo ranges tested |
-| Unit Tests | ✅ 232/232 passing (C++ + Python + JavaScript) |
+| Unit Tests | ✅ 226/226 passing (C++ + Python + JavaScript) |
 | Kinematics & PWM Mapping | ✅ Complete - Verified with 31 tests |
+| **Animation Count** | ✅ **6 animations (removed "emerged")** |
 | **Animation Symmetry** | ✅ **Complete - All animations symmetric** |
-| **Animation Testing** | ✅ **Complete - All 7 animations verified working** |
-| **Buffer Overflow Bug** | ✅ **FIXED - Animation names now safe** |
+| **Animation Sequencing** | ✅ **Idle cycle + 3x triggered sequence** |
+| **Interactive Tester** | ✅ **animation_tester/ for development** |
 | Hardware Verification | ✅ All animations tested without crashes |
 | Web Preview | ✅ Complete with real-time coordinates |
-| Main Animation | ✅ **DEPLOYED AND WORKING** |
+| Production Code | ✅ **DEPLOYED WITH SMART SEQUENCING** |
 | Documentation | ✅ Complete and up-to-date |
 
-**Status:** Ready for production deployment and integration with haunted house trigger system
+**Status:** Production ready with autonomous idle behavior and trigger-based hatching sequence
 
 ---
 
@@ -47,7 +48,19 @@
 
 ### Hardware Testing Results
 
-**✅ All 7 Animations Verified Working:**
+## 🎬 Current Animation Behavior (Session 7)
+
+**Production Code:** `arduino/hatching_egg/hatching_egg.ino`
+- **Idle Mode:** Cycles resting (3s) ↔ slow_struggle (4.5s)
+- **Triggered Mode:** 3 cycles of grasping (3.5s) → breaking_through (2.4s)
+- **Total triggered duration:** ~17.7 seconds
+- **Adjustable:** `TRIGGERED_CYCLES` constant
+
+**Interactive Testing:** `arduino/animation_tester/animation_tester.ino`
+- Serial commands: 0-5 (select), l (list), s (stop), r (restart), h (help)
+- Upload with: `pixi run test-animations`
+
+**✅ All 6 Animations Verified Working:**
 - Animation 0 (zero) - Reference position ✅
 - Animation 1 (max) - Reference position ✅
 - Animation 2 (resting) - Curled breathing ✅
@@ -249,7 +262,7 @@ All documentation updated 2025-10-28:
 | Servo Configuration | 100% | ✅ Complete |
 | Servo Calibration | 100% | ✅ Complete |
 | Kinematics & PWM Mapping | 100% | ✅ Complete (31 tests) |
-| Animation System | 100% | ✅ Complete (7 animations) |
+| Animation System | 100% | ✅ Complete (6 animations + sequencing) |
 | **Buffer Overflow Fix** | 100% | ✅ **Complete** |
 | **Hardware Testing** | 100% | ✅ **Complete - All animations verified** |
 | Web Preview System | 100% | ✅ Complete (real-time coords) |
