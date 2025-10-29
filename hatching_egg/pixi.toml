@@ -47,6 +47,9 @@ monitor = ".pixi/bin/arduino-cli monitor -p $(.pixi/bin/arduino-cli board list -
 # === Servo Calibration Tasks ===
 calibrate = "bash scripts/upload_servo_tester.sh"
 
+# === Animation Tester Tasks ===
+test-animations = "bash scripts/upload_animation_tester.sh"
+
 # === Servo Sweep Test Tasks ===
 sweep-upload = "bash scripts/upload_sweep_test.sh"
 sweep-monitor = ".pixi/bin/arduino-cli monitor -p $(.pixi/bin/arduino-cli board list --config-file .arduino15/arduino-cli.yaml | grep 'Arduino Leonardo' | awk '{print $1}' | head -n 1) --config-file .arduino15/arduino-cli.yaml"
@@ -69,7 +72,8 @@ echo "  pixi run serve          - Start HTTP server on port 8081"
 echo "  pixi run open           - Open preview in browser"
 echo "  pixi run generate-config- Generate Arduino config from JSON"
 echo "  pixi run arduino-detect - Detect connected Beetle"
-echo "  pixi run upload         - Upload to Beetle"
+echo "  pixi run upload         - Upload production code to Beetle"
+echo "  pixi run test-animations- Upload animation tester (interactive)"
 echo "  pixi run monitor        - Serial monitor"
 echo ""
 echo "Preview: http://localhost:8081/preview.html"
