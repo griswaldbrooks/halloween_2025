@@ -275,45 +275,6 @@
           "comment": "Return to start - symmetric"
         }
       ]
-    },
-    "emerged": {
-      "name": "Emerged (Fully Extended Menacing Pose)",
-      "duration_ms": 4000,
-      "loop": true,
-      "keyframes": [
-        {
-          "time_ms": 0,
-          "left_shoulder_deg": 65,
-          "left_elbow_deg": 70,
-          "right_shoulder_deg": 65,
-          "right_elbow_deg": 70,
-          "comment": "Fully extended, menacing - symmetric (reduced from 75/80)"
-        },
-        {
-          "time_ms": 1500,
-          "left_shoulder_deg": 70,
-          "left_elbow_deg": 70,
-          "right_shoulder_deg": 70,
-          "right_elbow_deg": 70,
-          "comment": "Stretching to maximum - symmetric (reduced from 85/85)"
-        },
-        {
-          "time_ms": 2500,
-          "left_shoulder_deg": 60,
-          "left_elbow_deg": 65,
-          "right_shoulder_deg": 60,
-          "right_elbow_deg": 65,
-          "comment": "Slight relaxation, threatening sway - symmetric (reduced from 70/75)"
-        },
-        {
-          "time_ms": 4000,
-          "left_shoulder_deg": 65,
-          "left_elbow_deg": 70,
-          "right_shoulder_deg": 65,
-          "right_elbow_deg": 70,
-          "comment": "Return to menacing pose - symmetric (reduced from 75/80)"
-        }
-      ]
     }
   },
   "default_animation": "slow_struggle"

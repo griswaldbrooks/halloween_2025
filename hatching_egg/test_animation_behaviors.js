@@ -29,7 +29,7 @@ function test(description, fn) {
 
 // Test 1: Verify all animations exist in JSON
 test('All required animations exist in JSON', () => {
-    const required = ['zero', 'max', 'resting', 'slow_struggle', 'breaking_through', 'grasping', 'emerged'];
+    const required = ['zero', 'max', 'resting', 'slow_struggle', 'breaking_through', 'grasping'];
     for (const anim of required) {
         assert(config.animations[anim], `Animation '${anim}' not found`);
     }
@@ -61,7 +61,7 @@ test('Keyframes have all required angle properties', () => {
 
 // Test 4: Verify symmetric animations are symmetric
 test('Symmetric animations are symmetric', () => {
-    const symmetric = ['resting', 'slow_struggle', 'breaking_through', 'grasping', 'emerged'];
+    const symmetric = ['resting', 'slow_struggle', 'breaking_through', 'grasping'];
     for (const name of symmetric) {
         const anim = config.animations[name];
         for (let i = 0; i < anim.keyframes.length; i++) {
@@ -76,7 +76,7 @@ test('Symmetric animations are symmetric', () => {
 
 // Test 5: Verify animations have movement
 test('Animations have movement between keyframes', () => {
-    const animated = ['resting', 'slow_struggle', 'breaking_through', 'grasping', 'emerged'];
+    const animated = ['resting', 'slow_struggle', 'breaking_through', 'grasping'];
     for (const name of animated) {
         const anim = config.animations[name];
         assert(anim.keyframes.length >= 2, `${name} needs at least 2 keyframes`);

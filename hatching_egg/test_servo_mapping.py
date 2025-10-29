@@ -152,7 +152,7 @@ class TestServoPulseMapping(unittest.TestCase):
 
     def test_animations_are_symmetric(self):
         """Test that all animations (except zero/max) are symmetric"""
-        symmetric_animations = ['resting', 'slow_struggle', 'breaking_through', 'grasping', 'emerged']
+        symmetric_animations = ['resting', 'slow_struggle', 'breaking_through', 'grasping']
 
         for anim_name in symmetric_animations:
             with self.subTest(animation=anim_name):
@@ -212,14 +212,11 @@ class TestServoPulseMapping(unittest.TestCase):
         self.assertGreater(max(angles) - min(angles), 20,
                           "grasping should have significant elbow movement")
 
-    def test_emerged_exists_and_has_keyframes(self):
-        """Test that emerged animation exists and is configured"""
-        self.assertIn('emerged', self.config['animations'],
-                     "emerged animation should exist")
-
-        anim = self.config['animations']['emerged']
-        self.assertGreaterEqual(len(anim['keyframes']), 2,
-                               "emerged should have at least 2 keyframes")
+    def test_animation_count(self):
+        """Test that we have the expected number of animations"""
+        # We have 6 animations: zero, max, resting, slow_struggle, breaking_through, grasping
+        self.assertEqual(len(self.config['animations']), 6,
+                        "Should have 6 animations total")
 
     def test_all_keyframe_angles_in_range(self):
         """Test that all animation keyframes use valid 0-90° range"""
