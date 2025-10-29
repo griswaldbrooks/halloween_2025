@@ -36,8 +36,11 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(I2C_ADDRESS);
 // Animation modes
 enum AnimationMode {
   MODE_IDLE_CYCLE,      // Cycle between resting and slow_struggle
-  MODE_TRIGGERED        // Play grasping -> breaking_through
+  MODE_TRIGGERED        // Play grasping -> breaking_through (multiple cycles)
 };
+
+// Triggered sequence configuration
+#define TRIGGERED_CYCLES 3  // Number of times to repeat grasping->breaking_through
 
 // Animation state
 int currentAnimation = ANIM_RESTING;
@@ -46,6 +49,7 @@ bool animationActive = true;  // Start immediately with resting
 bool lastTriggerState = HIGH;
 AnimationMode currentMode = MODE_IDLE_CYCLE;
 int triggeredStep = 0;  // 0=grasping, 1=breaking_through
+int triggeredCyclesRemaining = 0;  // How many more cycles to run
 
 // Servo position cache
 int lastLeftShoulder = -1;
@@ -85,9 +89,12 @@ void loop() {
 
   if (triggerState == LOW && lastTriggerState == HIGH) {
     // Trigger pressed - start triggered sequence
-    Serial.println(F("TRIGGERED! Starting grasping -> breaking_through"));
+    Serial.print(F("TRIGGERED! Starting "));
+    Serial.print(TRIGGERED_CYCLES);
+    Serial.println(F(" cycles of grasping -> breaking_through"));
     currentMode = MODE_TRIGGERED;
     triggeredStep = 0;
+    triggeredCyclesRemaining = TRIGGERED_CYCLES;
     startAnimation(ANIM_GRASPING);
   }
 
@@ -220,18 +227,30 @@ void handleAnimationComplete() {
       startAnimation(ANIM_RESTING);
     }
   } else {
-    // MODE_TRIGGERED: grasping -> breaking_through -> back to idle
+    // MODE_TRIGGERED: grasping -> breaking_through (multiple cycles)
     if (triggeredStep == 0) {
       // Just finished grasping, start breaking_through
       Serial.println(F("-> breaking_through"));
       triggeredStep = 1;
       startAnimation(ANIM_BREAKING_THROUGH);
     } else {
-      // Finished breaking_through, return to idle cycle
-      Serial.println(F("-> back to idle cycle (resting)"));
-      currentMode = MODE_IDLE_CYCLE;
-      triggeredStep = 0;
-      startAnimation(ANIM_RESTING);
+      // Finished breaking_through
+      triggeredCyclesRemaining--;
+
+      if (triggeredCyclesRemaining > 0) {
+        // Continue with another cycle
+        Serial.print(F("-> grasping ("));
+        Serial.print(triggeredCyclesRemaining);
+        Serial.println(F(" cycles remaining)"));
+        triggeredStep = 0;
+        startAnimation(ANIM_GRASPING);
+      } else {
+        // All cycles complete, return to idle
+        Serial.println(F("-> back to idle cycle (resting)"));
+        currentMode = MODE_IDLE_CYCLE;
+        triggeredStep = 0;
+        startAnimation(ANIM_RESTING);
+      }
     }
   }
 }
