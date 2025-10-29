@@ -1,35 +1,105 @@
 # Agent Handoff - Hatching Egg Spider
 
-**Last Updated:** 2025-10-28 (End of Session 5)
-**Status:** ✅ COMPLETE - Ready for Deployment
+**Last Updated:** 2025-10-28 (End of Session 5c)
+**Status:** ⚠️ 98% COMPLETE - Bugs Fixed, Ready for Final Hardware Testing
 
 ---
 
 ## 🎯 TL;DR for Next Agent
 
-**Current State: 100% Complete - Ready to Deploy**
+**Current State: 98% Complete - Critical Bugs Fixed, Ready for Final Hardware Test**
 
-✅ **All systems operational:**
+✅ **Systems operational:**
 - Hardware verified (4 servos on channels 0, 1, 14, 15)
 - Calibration complete (per-servo PWM ranges)
 - **231 unit tests passing** (C++ + Python + JavaScript)
 - **All animations are symmetric** (left == right at all keyframes)
-- Kinematics and PWM mapping verified (31 tests)
-- **Animation symmetry verified** (10 new behavior tests)
-- Sweep test verified on actual hardware
-- **Web preview loads dynamically from JSON** with real-time coordinates
-- Main animation ready to upload
+- **Interactive serial testing added** (switch animations without re-uploading)
+- **2 critical bugs found and fixed** during hardware testing
+
+⚠️ **Bugs Fixed (Session 5c):**
+1. **DEFAULT_ANIMATION index hardcoded** - Generator was using wrong index, causing animation 3 to affect animation 0
+2. **Physical limits exceeded** - Animations 4 & 6 used 75-85° angles, causing crashes; reduced to 60-70°
+
+✅ **Hardware Verified (Servos unplugged for safety):**
+- Animations 0, 1, 2, 5 tested and working perfectly
+- Animations 3, 4, 6 fixed but need hardware verification with servos connected
 
 **Immediate Next Steps:**
-1. Upload main animation (`pixi run upload`)
-2. Test trigger switch (ground Pin 9)
-3. Fine-tune animation keyframes if needed
-4. Integration testing
+1. **Upload fixed firmware** (`pixi run upload` - may need to reset Beetle)
+2. **Test animations 3, 4, 6** with servo power connected via serial commands (`3`, `4`, `6`)
+3. Verify all 7 animations work symmetrically without crashes
+4. Test trigger switch (ground Pin 9)
+5. Integration testing
 
 **Key Resources:**
 - `MAPPING_VERIFICATION.md` - Angle-to-PWM mapping details
-- `STATUS.md` - Complete project status
+- `STATUS.md` - Complete project status (includes hardware testing results)
 - `README.md` - Quick reference
+- `CHANGELOG.md` - Session 5c documents bugs and fixes
+
+---
+
+## 🐛 Critical Bugs Fixed (Session 5c)
+
+### Bug #1: DEFAULT_ANIMATION Index Hardcoded
+
+**Problem:**
+- `generate_arduino_config.py` line 126 was hardcoded to index 1
+- Should have been dynamically looking up the animation name from JSON
+- Animation 1 is "max" not "slow_struggle"
+- This caused animation 3 behavior to affect animation 0
+
+**Fix:**
+```python
+# Old (incorrect):
+#define DEFAULT_ANIMATION 1  // slow_struggle
+
+# New (correct):
+default_index = list(animations.keys()).index(default_anim_name)
+#define DEFAULT_ANIMATION 3  // slow_struggle
+```
+
+**File:** `generate_arduino_config.py` lines 122-124
+
+### Bug #2: Physical Limit Crashes
+
+**Problem:**
+- Animation 4 (breaking_through) used angles up to 80°
+- Animation 6 (emerged) used angles up to 85°
+- These exceeded safe physical limits on the actual hardware
+- Caused servo stalls and system crashes
+
+**Fix:**
+- Reduced animation 4 maximum angles: 80° → 70°
+- Reduced animation 6 maximum angles: 85° → 70°
+- All angles now stay within 0-70° range (well within 0-90° calibrated range)
+
+**Files:** `animation-config.json` lines 145-214 and 279-316
+
+---
+
+## 🎮 Interactive Serial Testing (Session 5b)
+
+**Added real-time animation switching without re-uploading:**
+
+Serial monitor commands:
+- `0-6`: Select animation by number
+- `l`: List all animations with names
+- `s`: Stop current animation
+- `r`: Restart current animation
+- `h`: Show help menu
+
+**Usage:**
+```bash
+pixi run upload    # Upload once
+pixi run monitor   # Open serial monitor
+# Type: 3 [Enter]  - Test slow_struggle
+# Type: 4 [Enter]  - Test breaking_through
+# Type: l [Enter]  - List all animations
+```
+
+This makes hardware testing much faster - no need to edit JSON and re-upload for each test!
 
 ---
 

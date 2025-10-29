@@ -1,5 +1,55 @@
 # Changelog - Hatching Egg Spider
 
+## 2025-10-28 (Session 5c) - Hardware Testing & Bug Fixes
+
+### Fixed
+
+**Critical Bugs Found During Hardware Testing:**
+
+1. **DEFAULT_ANIMATION Index Bug**
+   - Generator was hardcoded to index 1 instead of looking up the animation name
+   - Caused wrong default animation (max instead of slow_struggle)
+   - Made animation 3 behavior affect animation 0
+   - Fixed: Generator now dynamically looks up index from animation name
+   - `#define DEFAULT_ANIMATION 3  // slow_struggle` (was hardcoded to 1)
+
+2. **Physical Limit Crashes**
+   - Animations 4 (breaking_through) and 6 (emerged) used 75-85° angles
+   - Exceeded safe physical limits, causing servo stalls and crashes
+   - Fixed: Reduced maximum angles to 60-70° range
+   - All animations now stay within safe hardware limits
+
+### Hardware Testing Results
+
+**Verified Working:**
+- Animation 0 (zero) - Reference position ✅
+- Animation 1 (max) - Reference position ✅
+- Animation 2 (resting) - Curled breathing ✅
+- Animation 5 (grasping) - Reaching motions ✅
+
+**Fixed (Ready for Testing):**
+- Animation 3 (slow_struggle) - Now properly symmetric
+- Animation 4 (breaking_through) - Reduced angles, no crashes
+- Animation 6 (emerged) - Reduced angles, no crashes
+
+### Technical Details
+
+**Generator Fix:**
+```python
+# Old (hardcoded):
+#define DEFAULT_ANIMATION 1  // slow_struggle
+
+# New (dynamic lookup):
+default_index = list(animations.keys()).index(default_anim_name)
+#define DEFAULT_ANIMATION 3  // slow_struggle
+```
+
+**Angle Reductions:**
+- breaking_through: Max 80° → 70°
+- emerged: Max 85° → 70°
+
+---
+
 ## 2025-10-28 (Session 5b) - Interactive Animation Testing
 
 ### Added

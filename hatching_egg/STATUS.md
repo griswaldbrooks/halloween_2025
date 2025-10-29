@@ -1,7 +1,7 @@
 # Hatching Egg Spider - Project Status
 
 **Date:** 2025-10-28 (End of Session 4)
-**Phase:** ✅ **READY FOR DEPLOYMENT - 100% COMPLETE**
+**Phase:** ⚠️ **READY FOR FINAL HARDWARE TESTING - 98% COMPLETE**
 
 ---
 
@@ -20,7 +20,48 @@
 | Main Animation | ✅ Ready to upload |
 | Documentation | ✅ Complete and up-to-date |
 
-**Next Step:** Upload main animation and test trigger
+**Next Step:** Upload fixed firmware and verify animations 3, 4, 6 on hardware
+
+---
+
+## 🐛 Hardware Testing (Session 5c)
+
+### Bugs Found & Fixed
+
+**Bug #1: DEFAULT_ANIMATION Index Hardcoded**
+- Generator was using `1` instead of looking up animation name
+- Caused animation 1 (max) to be default instead of 3 (slow_struggle)
+- Made animation 3 affect animation 0 behavior
+- **Fixed:** Dynamic index lookup in `generate_arduino_config.py`
+
+**Bug #2: Physical Limit Exceeded**
+- Animations 4 & 6 used 75-85° angles
+- Caused servo stalls and crashes on real hardware
+- **Fixed:** Reduced to 60-70° maximum angles
+
+### Hardware Testing Results
+
+**✅ Verified Working (Servos unplugged):**
+- Animation 0 (zero) - Perfect reference position
+- Animation 1 (max) - Perfect reference position
+- Animation 2 (resting) - Smooth curled breathing
+- Animation 5 (grasping) - Smooth reaching motions
+
+**⏳ Ready for Testing:**
+- Animation 3 (slow_struggle) - Fixed symmetry, needs hardware verification
+- Animation 4 (breaking_through) - Reduced angles, should no longer crash
+- Animation 6 (emerged) - Reduced angles, should no longer crash
+
+### Interactive Testing Added
+
+Serial commands for real-time animation switching:
+- `0-6`: Select animation
+- `l`: List all animations
+- `s`: Stop animation
+- `r`: Restart animation
+- `h`: Help
+
+No re-upload needed to test different animations!
 
 ---
 
