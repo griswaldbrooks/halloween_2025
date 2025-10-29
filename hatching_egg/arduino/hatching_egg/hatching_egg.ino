@@ -1,6 +1,10 @@
 /*
  * Hatching Egg Spider - Main Animation Controller
  *
+ * Behavior:
+ * - Idle: Cycles between "resting" and "slow_struggle"
+ * - Triggered: Plays "grasping" → "breaking_through" → back to idle cycle
+ *
  * Hardware:
  * - DFRobot Beetle (Leonardo) on Pin 9 trigger
  * - PCA9685 PWM Servo Driver (I2C)
@@ -23,11 +27,25 @@
 // Servo driver
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(I2C_ADDRESS);
 
+// Animation indices (from animation-config.json order)
+#define ANIM_RESTING 2
+#define ANIM_SLOW_STRUGGLE 3
+#define ANIM_BREAKING_THROUGH 4
+#define ANIM_GRASPING 5
+
+// Animation modes
+enum AnimationMode {
+  MODE_IDLE_CYCLE,      // Cycle between resting and slow_struggle
+  MODE_TRIGGERED        // Play grasping -> breaking_through
+};
+
 // Animation state
-int currentAnimation = DEFAULT_ANIMATION;
+int currentAnimation = ANIM_RESTING;
 unsigned long animationStartTime = 0;
-bool animationActive = false;
+bool animationActive = true;  // Start immediately with resting
 bool lastTriggerState = HIGH;
+AnimationMode currentMode = MODE_IDLE_CYCLE;
+int triggeredStep = 0;  // 0=grasping, 1=breaking_through
 
 // Servo position cache
 int lastLeftShoulder = -1;
@@ -53,27 +71,24 @@ void setup() {
   Serial.print(F("Animations: "));
   Serial.println(ANIMATION_COUNT);
 
-  // Move to resting position
-  moveToResting();
-
-  Serial.println(F("Ready! Waiting for trigger..."));
+  Serial.println(F("Mode: Idle Cycle (resting <-> slow_struggle)"));
+  Serial.println(F("Trigger: grasping -> breaking_through"));
   Serial.println();
-  printHelp();
+
+  // Start with resting animation
+  startAnimation(ANIM_RESTING);
 }
 
 void loop() {
-  // Check for serial commands
-  if (Serial.available()) {
-    handleSerialCommand();
-  }
-
-  // Check trigger
+  // Check trigger button
   bool triggerState = digitalRead(TRIGGER_PIN);
 
   if (triggerState == LOW && lastTriggerState == HIGH) {
-    // Trigger pressed
-    Serial.println(F("TRIGGERED!"));
-    startAnimation(currentAnimation);
+    // Trigger pressed - start triggered sequence
+    Serial.println(F("TRIGGERED! Starting grasping -> breaking_through"));
+    currentMode = MODE_TRIGGERED;
+    triggeredStep = 0;
+    startAnimation(ANIM_GRASPING);
   }
 
   lastTriggerState = triggerState;
@@ -110,17 +125,9 @@ void updateAnimation() {
 
   // Check if animation finished
   if (elapsed >= duration) {
-    if (loop) {
-      // Restart animation
-      animationStartTime = millis();
-      elapsed = 0;
-    } else {
-      // Animation complete
-      animationActive = false;
-      moveToResting();
-      Serial.println(F("Animation complete"));
-      return;
-    }
+    // Animation complete - determine next animation
+    handleAnimationComplete();
+    return;
   }
 
   // Interpolate between keyframes
@@ -200,112 +207,31 @@ void setServo(int channel, int degrees, int minPulse, int maxPulse) {
   pwm.setPWM(channel, 0, pulse);
 }
 
-void moveToResting() {
-  // Move to first keyframe of first animation (resting position)
-  const Keyframe* keyframes = (const Keyframe*)pgm_read_ptr(&(ANIMATIONS[0].keyframes));
+void handleAnimationComplete() {
+  Serial.println(F("Animation complete"));
 
-  int ls = pgm_read_word(&(keyframes[0].left_shoulder_deg));
-  int le = pgm_read_word(&(keyframes[0].left_elbow_deg));
-  int rs = pgm_read_word(&(keyframes[0].right_shoulder_deg));
-  int re = pgm_read_word(&(keyframes[0].right_elbow_deg));
-
-  moveLegs(ls, le, rs, re);
-}
-
-void handleSerialCommand() {
-  char cmd = Serial.read();
-
-  // Clear any remaining characters
-  while (Serial.available()) {
-    Serial.read();
+  if (currentMode == MODE_IDLE_CYCLE) {
+    // Cycle between resting and slow_struggle
+    if (currentAnimation == ANIM_RESTING) {
+      Serial.println(F("-> slow_struggle"));
+      startAnimation(ANIM_SLOW_STRUGGLE);
+    } else {
+      Serial.println(F("-> resting"));
+      startAnimation(ANIM_RESTING);
+    }
+  } else {
+    // MODE_TRIGGERED: grasping -> breaking_through -> back to idle
+    if (triggeredStep == 0) {
+      // Just finished grasping, start breaking_through
+      Serial.println(F("-> breaking_through"));
+      triggeredStep = 1;
+      startAnimation(ANIM_BREAKING_THROUGH);
+    } else {
+      // Finished breaking_through, return to idle cycle
+      Serial.println(F("-> back to idle cycle (resting)"));
+      currentMode = MODE_IDLE_CYCLE;
+      triggeredStep = 0;
+      startAnimation(ANIM_RESTING);
+    }
   }
-
-  switch (cmd) {
-    case '0':
-    case '1':
-    case '2':
-    case '3':
-    case '4':
-    case '5':
-    case '6':
-      {
-        int animIndex = cmd - '0';
-        if (animIndex < ANIMATION_COUNT) {
-          Serial.print(F("Selected animation "));
-          Serial.println(animIndex);
-          currentAnimation = animIndex;
-          startAnimation(animIndex);
-        } else {
-          Serial.println(F("Invalid animation index"));
-        }
-      }
-      break;
-
-    case 's':
-    case 'S':
-      Serial.println(F("Stopping animation..."));
-      animationActive = false;
-      moveToResting();
-      break;
-
-    case 'r':
-    case 'R':
-      Serial.println(F("Restarting current animation..."));
-      startAnimation(currentAnimation);
-      break;
-
-    case 'l':
-    case 'L':
-      printAnimationList();
-      break;
-
-    case 'h':
-    case 'H':
-    case '?':
-      printHelp();
-      break;
-
-    case '\n':
-    case '\r':
-      // Ignore newlines
-      break;
-
-    default:
-      Serial.print(F("Unknown command: "));
-      Serial.println(cmd);
-      Serial.println(F("Type 'h' for help"));
-      break;
-  }
-}
-
-void printHelp() {
-  Serial.println();
-  Serial.println(F("===== Hatching Egg Spider Commands ====="));
-  Serial.println(F("0-6  : Select animation by number"));
-  Serial.println(F("l    : List all animations"));
-  Serial.println(F("s    : Stop current animation"));
-  Serial.println(F("r    : Restart current animation"));
-  Serial.println(F("h    : Show this help"));
-  Serial.println(F("========================================"));
-  Serial.println();
-}
-
-void printAnimationList() {
-  Serial.println();
-  Serial.println(F("Available Animations:"));
-  Serial.println(F("---------------------"));
-
-  for (int i = 0; i < ANIMATION_COUNT; i++) {
-    char name[64];  // Already 64 bytes - good!
-    strcpy_P(name, (char*)pgm_read_ptr(&(ANIMATIONS[i].name)));
-
-    Serial.print(i);
-    Serial.print(F(". "));
-    Serial.println(name);
-  }
-
-  Serial.println();
-  Serial.print(F("Current: "));
-  Serial.println(currentAnimation);
-  Serial.println();
 }
