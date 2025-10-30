@@ -226,14 +226,27 @@ pixi run monitor    # View serial output
 1. **zero** - All servos at 0° (legs straight up)
 2. **max** - All servos at 90° (legs perpendicular)
 
-**Hatching Sequence (All Symmetric):**
-3. **resting** - Curled inside egg (5-10°, gentle breathing)
-4. **slow_struggle** - Testing the shell (15-45°, probing movements)
-5. **breaking_through** - Violent pushing (15-80°, rapid thrusts) ⚡
-6. **grasping** - Reaching and pulling (25-70°, gripping motions)
-7. **emerged** - Fully extended menacing pose (70-85°, threatening sway)
+**Hatching Sequence:**
+3. **resting** - Curled inside egg (5-10°, gentle breathing) - Symmetric
+4. **slow_struggle** - Testing the shell (15-45°, probing movements) - Symmetric
+5. **breaking_through** - Violent pushing (15-80°, rapid thrusts) - Symmetric ⚡
+6. **grasping** - Reaching and pulling (25-70°, gripping motions) - Symmetric
+7. **stabbing** - Asymmetric poking (L-shape position, alternating legs) - Asymmetric
 
-**Default:** `slow_struggle` plays on trigger
+**Triggered Sequence (14 steps with progressive speed):**
+- Steps 1-7 (normal speed): grasping → grasping → stabbing → grasping → stabbing → breaking_through → breaking_through
+- Steps 8-9 (1.5x faster): stabbing → breaking_through
+- Steps 10-11 (2.0x very fast): stabbing → breaking_through
+- Steps 12-13 (2.5x violent/jerky): stabbing → breaking_through
+- Step 14 (0.3x very slow/exhausted): breaking_through (final exhausted push, ~8 seconds)
+- Total: ~36 seconds building to frantic climax, ending very slow/exhausted → return to idle
+
+**Emotional Arc:**
+1. **Testing** (1.0x) - Deliberate, methodical escape attempts
+2. **Escalation** (1.5x) - Getting more aggressive
+3. **Desperation** (2.0x) - Frantic struggle
+4. **Violence** (2.5x) - EXPLOSIVE, maximum effort ⚡
+5. **Exhaustion** (0.3x) - Completely spent, one final slow weakened push before collapse
 
 **All animations are symmetric** - left and right legs move in unison.
 

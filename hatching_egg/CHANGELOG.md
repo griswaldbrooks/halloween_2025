@@ -1,5 +1,44 @@
 # Changelog - Hatching Egg Spider
 
+## 2025-10-29 (Session 8) - Progressive Speed Sequence with 14 Steps
+
+### Changed
+
+**Triggered Sequence Enhancement:**
+- Extended to 14-step sequence with 3 additional stabbing/breaking cycles
+- **Added progressive playback speed system** - animations get faster and jerkier, then very slow for finale
+- Speed multipliers: 1.0x (normal) → 1.5x (faster) → 2.0x (very fast) → 2.5x (violent/jerky) → 0.3x (very slow/exhausted)
+- Total triggered duration: ~36 seconds building to frantic climax, ending very slow/exhausted
+
+**14-Step Sequence:**
+1. Steps 1-7 (1.0x): grasping, grasping, stabbing, grasping, stabbing, breaking_through, breaking_through
+2. Steps 8-9 (1.5x): stabbing, breaking_through
+3. Steps 10-11 (2.0x): stabbing, breaking_through
+4. Steps 12-13 (2.5x): stabbing, breaking_through
+5. Step 14 (0.3x): breaking_through (final very slow/exhausted push, ~8 seconds)
+
+**Files Modified:**
+- `arduino/hatching_egg/hatching_egg.ino` - Added playback speed system
+- `STATUS.md` - Updated animation behavior documentation
+- `README.md` - Updated animation sequence description
+
+**State Machine Changes:**
+- Extended `triggeredSequence[]` array from 7 to 14 steps
+- Added `triggeredSequenceSpeed[]` array for per-step speed multipliers
+- Added `playbackSpeed` variable (default 1.0)
+- Modified `updateAnimation()` to multiply elapsed time by playback speed
+- Supports speeds both faster (>1.0) and slower (<1.0) than normal
+- Updated serial output to show speed multiplier: "Step 14/14: Breaking Through (0.70x speed)"
+- Playback speed resets to 1.0 when returning to idle mode
+
+### Documentation
+
+**Removed "Pulsating Egg Sacs" references:**
+- Removed from AGENT_HANDOFF.md as a recommended next project
+- Keeping room decoration references in PROJECT_PLAN.md (non-electronics)
+
+---
+
 ## 2025-10-29 (Session 6) - Buffer Overflow Fix & Project Complete
 
 ### Fixed

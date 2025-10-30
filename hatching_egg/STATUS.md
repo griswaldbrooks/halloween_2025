@@ -48,13 +48,25 @@
 
 ### Hardware Testing Results
 
-## 🎬 Current Animation Behavior (Session 7)
+## 🎬 Current Animation Behavior (Session 8)
 
 **Production Code:** `arduino/hatching_egg/hatching_egg.ino`
 - **Idle Mode:** Cycles resting (3s) ↔ slow_struggle (4.5s)
-- **Triggered Mode:** 3 cycles of grasping (3.5s) → breaking_through (2.4s)
-- **Total triggered duration:** ~17.7 seconds
-- **Adjustable:** `TRIGGERED_CYCLES` constant
+- **Triggered Mode:** 14-step sequence with progressive speed increase, ending very slow
+  - **Steps 1-7 (1.0x):** grasping → grasping → stabbing → grasping → stabbing → breaking_through → breaking_through
+  - **Steps 8-9 (1.5x faster):** stabbing → breaking_through
+  - **Steps 10-11 (2.0x very fast):** stabbing → breaking_through
+  - **Steps 12-13 (2.5x violent/jerky):** stabbing → breaking_through
+  - **Step 14 (0.3x very slow/exhausted):** breaking_through (final exhausted push, ~8 seconds)
+- **Total triggered duration:** ~36 seconds (builds to frantic climax, ends very slow/exhausted)
+- **Implementation:** `triggeredSequence[]` array + `triggeredSequenceSpeed[]` playback multipliers
+
+**Emotional Arc:**
+1. Testing (1.0x) - Deliberate, methodical attempts
+2. Escalation (1.5x) - Getting more aggressive
+3. Desperation (2.0x) - Frantic struggle
+4. Violence (2.5x) - EXPLOSIVE maximum effort
+5. Exhaustion (0.3x) - Completely spent, final slow push before collapse
 
 **Interactive Testing:** `arduino/animation_tester/animation_tester.ino`
 - Serial commands: 0-6 (select), l (list), s (stop), r (restart), h (help)

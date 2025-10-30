@@ -115,27 +115,15 @@ pixi run deploy
 - Dripping Effect (LED or projected)
 
 **Chamber 5 (Hatchery):**
-- Pulsating Egg Sacs (LED breathing pattern)
 - Scavenger Hunt Container
 
 **Chamber 6 (Spider's Lair):**
 - Baby Spider Projection (floor/walls)
 - Giant Animatronic Spider (track slider or multi-servo)
 
-### Recommended Next: Pulsating Egg Sacs (Chamber 5)
+### Other Remaining Effects
 
-**Why:**
-- Similar to completed projects (LED control, Arduino)
-- Can use PCA9685 for 16+ LED channels
-- Good practice before complex spider animatronic
-- Independent effect (doesn't depend on other chambers)
-
-**Approach:**
-- Pixi-based environment
-- Arduino + PCA9685 for LED control
-- Breathing/pulsing algorithm (slow fade in/out)
-- Random variations between egg sacs
-- Test-first methodology
+See PROJECT_PLAN.md for additional chamber effects that could be implemented.
 
 ---
 

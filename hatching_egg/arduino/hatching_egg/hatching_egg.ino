@@ -3,9 +3,20 @@
  *
  * Autonomous Behavior:
  * - Idle Mode: Cycles resting (3s) ↔ slow_struggle (4.5s) continuously
- * - Triggered Mode: 3 cycles of grasping (3.5s) → breaking_through (2.4s)
- *   Total triggered duration: ~17.7 seconds
- *   Adjustable via TRIGGERED_CYCLES constant (currently 3)
+ * - Triggered Mode: 14-step sequence with progressive speed increase, ending very slow
+ *   Steps 1-7: Normal speed (1.0x)
+ *   Steps 8-9: Faster (1.5x speed)
+ *   Steps 10-11: Very fast (2.0x speed)
+ *   Steps 12-13: Violent/jerky (2.5x speed)
+ *   Step 14: Very slow/exhausted (0.3x speed)
+ *   Total triggered duration: ~36 seconds
+ *
+ * Sequence:
+ *   grasping → grasping → stabbing → grasping → stabbing → breaking_through → breaking_through →
+ *   stabbing (faster) → breaking_through (faster) →
+ *   stabbing (very fast) → breaking_through (very fast) →
+ *   stabbing (violent) → breaking_through (violent) →
+ *   breaking_through (slow/exhausted)
  *
  * Available Animations (7 total):
  * - 0: zero - Reference position (straight up)
@@ -14,7 +25,7 @@
  * - 3: slow_struggle - Testing the shell
  * - 4: breaking_through - Violent pushing
  * - 5: grasping - Reaching and pulling
- * - 6: stabbing - Asymmetric poking (not used in production sequencing)
+ * - 6: stabbing - Asymmetric poking
  *
  * For Interactive Testing:
  * Upload animation_tester/ instead - has serial commands (0-6, l, s, r, h)
@@ -46,15 +57,51 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(I2C_ADDRESS);
 #define ANIM_SLOW_STRUGGLE 3
 #define ANIM_BREAKING_THROUGH 4
 #define ANIM_GRASPING 5
+#define ANIM_STABBING 6
 
 // Animation modes
 enum AnimationMode {
   MODE_IDLE_CYCLE,      // Cycle between resting and slow_struggle
-  MODE_TRIGGERED        // Play grasping -> breaking_through (multiple cycles)
+  MODE_TRIGGERED        // Play 13-step sequence with progressive speed increase
 };
 
-// Triggered sequence configuration
-#define TRIGGERED_CYCLES 3  // Number of times to repeat grasping->breaking_through
+// Triggered sequence steps (14 steps total with progressive speed)
+#define TRIGGERED_SEQUENCE_LENGTH 14
+const int triggeredSequence[TRIGGERED_SEQUENCE_LENGTH] = {
+  ANIM_GRASPING,         // Step 0 - Normal speed
+  ANIM_GRASPING,         // Step 1 - Normal speed
+  ANIM_STABBING,         // Step 2 - Normal speed
+  ANIM_GRASPING,         // Step 3 - Normal speed
+  ANIM_STABBING,         // Step 4 - Normal speed
+  ANIM_BREAKING_THROUGH, // Step 5 - Normal speed
+  ANIM_BREAKING_THROUGH, // Step 6 - Normal speed
+  ANIM_STABBING,         // Step 7 - Faster (1.5x)
+  ANIM_BREAKING_THROUGH, // Step 8 - Faster (1.5x)
+  ANIM_STABBING,         // Step 9 - Very fast (2.0x)
+  ANIM_BREAKING_THROUGH, // Step 10 - Very fast (2.0x)
+  ANIM_STABBING,         // Step 11 - Violent (2.5x)
+  ANIM_BREAKING_THROUGH, // Step 12 - Violent (2.5x)
+  ANIM_BREAKING_THROUGH  // Step 13 - Slow/exhausted (0.7x)
+};
+
+// Playback speed multiplier for each step (makes animations faster and jerkier)
+// 1.0 = normal speed, 2.0 = 2x faster (half the duration), 0.3 = very slow (more duration)
+const float triggeredSequenceSpeed[TRIGGERED_SEQUENCE_LENGTH] = {
+  1.0,  // Step 0 - Normal
+  1.0,  // Step 1 - Normal
+  1.0,  // Step 2 - Normal
+  1.0,  // Step 3 - Normal
+  1.0,  // Step 4 - Normal
+  1.0,  // Step 5 - Normal
+  1.0,  // Step 6 - Normal
+  1.5,  // Step 7 - Faster
+  1.5,  // Step 8 - Faster
+  2.0,  // Step 9 - Very fast
+  2.0,  // Step 10 - Very fast
+  2.5,  // Step 11 - Violent/jerky
+  2.5,  // Step 12 - Violent/jerky
+  0.3   // Step 13 - Very slow/exhausted
+};
 
 // Animation state
 int currentAnimation = ANIM_RESTING;
@@ -62,8 +109,8 @@ unsigned long animationStartTime = 0;
 bool animationActive = true;  // Start immediately with resting
 bool lastTriggerState = HIGH;
 AnimationMode currentMode = MODE_IDLE_CYCLE;
-int triggeredStep = 0;  // 0=grasping, 1=breaking_through
-int triggeredCyclesRemaining = 0;  // How many more cycles to run
+int triggeredStep = 0;  // Current step in triggered sequence (0-13)
+float playbackSpeed = 1.0;  // Animation playback speed multiplier
 
 // Servo position cache
 int lastLeftShoulder = -1;
@@ -90,7 +137,12 @@ void setup() {
   Serial.println(ANIMATION_COUNT);
 
   Serial.println(F("Mode: Idle Cycle (resting <-> slow_struggle)"));
-  Serial.println(F("Trigger: grasping -> breaking_through"));
+  Serial.println(F("Trigger: 14-step sequence with progressive speed:"));
+  Serial.println(F("  Steps 1-7: Normal speed"));
+  Serial.println(F("  Steps 8-9: 1.5x faster"));
+  Serial.println(F("  Steps 10-11: 2.0x very fast"));
+  Serial.println(F("  Steps 12-13: 2.5x violent/jerky"));
+  Serial.println(F("  Step 14: 0.3x very slow/exhausted"));
   Serial.println();
 
   // Start with resting animation
@@ -103,13 +155,11 @@ void loop() {
 
   if (triggerState == LOW && lastTriggerState == HIGH) {
     // Trigger pressed - start triggered sequence
-    Serial.print(F("TRIGGERED! Starting "));
-    Serial.print(TRIGGERED_CYCLES);
-    Serial.println(F(" cycles of grasping -> breaking_through"));
+    Serial.println(F("TRIGGERED! Starting 14-step sequence with progressive speed..."));
     currentMode = MODE_TRIGGERED;
     triggeredStep = 0;
-    triggeredCyclesRemaining = TRIGGERED_CYCLES;
-    startAnimation(ANIM_GRASPING);
+    playbackSpeed = triggeredSequenceSpeed[0];  // Set speed for first animation
+    startAnimation(triggeredSequence[0]);
   }
 
   lastTriggerState = triggerState;
@@ -142,10 +192,17 @@ void updateAnimation() {
   unsigned long duration = pgm_read_dword(&(ANIMATIONS[currentAnimation].duration_ms));
   bool loop = pgm_read_byte(&(ANIMATIONS[currentAnimation].loop));
 
-  unsigned long elapsed = millis() - animationStartTime;
+  // Calculate elapsed time with playback speed multiplier
+  // Higher speed = faster playback (elapsed time passes faster)
+  unsigned long realElapsed = millis() - animationStartTime;
+  unsigned long elapsed = (unsigned long)(realElapsed * playbackSpeed);
+
+  // Adjust duration check for playback speed
+  // At 2x speed, animation finishes in half the time
+  unsigned long adjustedDuration = (unsigned long)(duration / playbackSpeed);
 
   // Check if animation finished
-  if (elapsed >= duration) {
+  if (realElapsed >= adjustedDuration) {
     // Animation complete - determine next animation
     handleAnimationComplete();
     return;
@@ -241,30 +298,35 @@ void handleAnimationComplete() {
       startAnimation(ANIM_RESTING);
     }
   } else {
-    // MODE_TRIGGERED: grasping -> breaking_through (multiple cycles)
-    if (triggeredStep == 0) {
-      // Just finished grasping, start breaking_through
-      Serial.println(F("-> breaking_through"));
-      triggeredStep = 1;
-      startAnimation(ANIM_BREAKING_THROUGH);
-    } else {
-      // Finished breaking_through
-      triggeredCyclesRemaining--;
+    // MODE_TRIGGERED: Play through the 14-step sequence
+    triggeredStep++;
 
-      if (triggeredCyclesRemaining > 0) {
-        // Continue with another cycle
-        Serial.print(F("-> grasping ("));
-        Serial.print(triggeredCyclesRemaining);
-        Serial.println(F(" cycles remaining)"));
-        triggeredStep = 0;
-        startAnimation(ANIM_GRASPING);
-      } else {
-        // All cycles complete, return to idle
-        Serial.println(F("-> back to idle cycle (resting)"));
-        currentMode = MODE_IDLE_CYCLE;
-        triggeredStep = 0;
-        startAnimation(ANIM_RESTING);
-      }
+    if (triggeredStep < TRIGGERED_SEQUENCE_LENGTH) {
+      // Continue to next step in sequence
+      int nextAnim = triggeredSequence[triggeredStep];
+      playbackSpeed = triggeredSequenceSpeed[triggeredStep];  // Set speed for this step
+
+      // Print animation name and speed for next step
+      char name[64];
+      strcpy_P(name, (char*)pgm_read_ptr(&(ANIMATIONS[nextAnim].name)));
+      Serial.print(F("-> Step "));
+      Serial.print(triggeredStep + 1);
+      Serial.print(F("/"));
+      Serial.print(TRIGGERED_SEQUENCE_LENGTH);
+      Serial.print(F(": "));
+      Serial.print(name);
+      Serial.print(F(" ("));
+      Serial.print(playbackSpeed);
+      Serial.println(F("x speed)"));
+
+      startAnimation(nextAnim);
+    } else {
+      // Sequence complete, return to idle
+      Serial.println(F("-> Sequence complete, back to idle cycle (resting)"));
+      currentMode = MODE_IDLE_CYCLE;
+      triggeredStep = 0;
+      playbackSpeed = 1.0;  // Reset to normal speed for idle animations
+      startAnimation(ANIM_RESTING);
     }
   }
 }
